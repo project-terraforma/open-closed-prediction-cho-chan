@@ -1,0 +1,7 @@
+# dev
+.venv
+
+# data files
+/data
+.parquet
+*.geojson
