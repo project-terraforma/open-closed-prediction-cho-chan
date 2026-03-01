@@ -38,7 +38,17 @@ df = pd.read_parquet(parquet_path, engine="pyarrow")
 n_show = 5
 cols = list(df.columns)
 
+print(f"File: {parquet_path}")
+print(f"Total rows: {df.shape[0]}")
 print(f"Shape: {df.shape[0]} rows × {df.shape[1]} columns")
+if "open" in df.columns:
+    open_counts = df["open"].value_counts(dropna=False).to_dict()
+    num_open = int(open_counts.get(1, 0))
+    num_not_open = int(df.shape[0] - num_open)
+    frac_open = num_open / df.shape[0] if df.shape[0] else 0.0
+    print(f"Open vs non-open: {num_open} open, {num_not_open} not-open "
+          f"({frac_open:.3%} open)")
+
 print(f"\nColumns: {cols}\n")
 print("=" * 50)
 
