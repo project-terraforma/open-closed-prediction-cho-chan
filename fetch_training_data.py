@@ -1,8 +1,8 @@
 """
 fetch_training_data.py
 
-Grabs a balanced sample of US places from the Overture 2026-02-18.0 release
-and saves it to data/overture_us_balanced.parquet for training.
+Grabs a balanced sample of US places from the latest Overture release
+and saves it to data/overture_us_balanced_{release}.parquet for training.
 
 A few things that are different from overture.parquet:
   - 'name'            : just the primary name string instead of the full names struct
@@ -17,16 +17,22 @@ Usage:
 
 import duckdb
 from pathlib import Path
-
-S3_PATH = "s3://overturemaps-us-west-2/release/2026-02-18.0/theme=places/type=place/*"
+from obstore.store import S3Store
 
 # how many records to grab per class — keeps the dataset 50/50 so the model
 # doesn't just learn to always predict "open". lower this for a quick test run.
 SAMPLE_PER_CLASS = 50_000
 
+# pull the latest release from the same S3 bucket my teammate uses
+store = S3Store("overturemaps-us-west-2", region="us-west-2", skip_signature=True)
+releases = store.list_with_delimiter("release/")
+latest_release = sorted(releases.get("common_prefixes"), reverse=True)[0].split("/")[1]
+
+S3_PATH = f"s3://overturemaps-us-west-2/release/{latest_release}/theme=places/type=place/*"
+
 data_dir = Path(__file__).resolve().parent / "data"
 data_dir.mkdir(exist_ok=True)
-output_path = str(data_dir / "overture_us_balanced.parquet")
+output_path = str(data_dir / f"overture_us_balanced_{latest_release}.parquet")
 
 print("Setting up DuckDB...")
 con = duckdb.connect()
