@@ -1,0 +1,22 @@
+[
+  "source_count",
+  "has_meta",
+  "has_microsoft",
+  "max_source_confidence",
+  "min_source_confidence",
+  "mean_source_confidence",
+  "confidence_spread",
+  "msft_update_age_days",
+  "has_website",
+  "has_phone",
+  "has_socials",
+  "has_brand",
+  "website_count",
+  "phone_count",
+  "completeness_score",
+  "has_alternate_categories",
+  "alternate_category_count",
+  "confidence",
+  "address_completeness",
+  "primary_category"
+]

@@ -4,6 +4,18 @@ Project C for Winter 2026 — Overture Maps Foundation
 
 Caleb Cho, Kevin Chan
 
+## OKRs
+
+**Objective 1:** Deliver a scalable, continual-learning model that improves over baseline for open/closed prediction.
+- KR 1.1: Achieve AUC-ROC ≥ 0.78 and F1 ≥ 0.40, with ≥ 5% AUC-ROC improvement over GBM.
+- KR 1.2: Evaluate per-category performance only if at least 20 closed samples exist.
+- KR 1.3: Maintain scalability to 100M+ places with efficient inference and incremental updates per release.
+
+**Objective 2:** Make a data-driven recommendation on the optimal model and feature set.
+- KR 2.1: Identify and rank the top 5 predictive features.
+- KR 2.2: Benchmark model architectures and produce a cost vs accuracy comparison.
+- KR 2.3: Deliver a final deployment recommendation supported by empirical evidence.
+
 ## Goal
 
 Predict whether a place (business/service/amenity) is open or permanently closed using its attributes and cross-source signals. The solution must scale to score 100M+ places per release with sub-millisecond inference.

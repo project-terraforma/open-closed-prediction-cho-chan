@@ -4,191 +4,136 @@
 
 ---
 
-## Phase 1: Data Pipeline & Feature Engineering (Week 1)
+## Dataset Status (confirmed)
+
+| | Value |
+|---|---|
+| **Labeled dataset** | `data/project_c_samples.json` — 3,425 records |
+| **Closed (open=0)** | 313 (9.1%) |
+| **Open (open=1)** | 3,112 (90.9%) |
+| **Geography** | US-only |
+| **Sources present** | `meta`, `Microsoft` (no Foursquare in this split) |
+| **Meta update_time** | Always `2025-02-24` (batch date, not freshness) |
+| **Microsoft update_time** | Real timestamps (2013–2024) — usable as staleness signal |
+| **Full Overture release** | 72.9M places, 785 closed + 20 temp closed in `operating_status` |
+| **Cross-release** | Jan→Feb: 445k removed (dedup/source drop, NOT closures), 0 status changes |
+
+---
+
+## Phase 1: Data Pipeline & Feature Engineering ✓
 
 ### 1.1 Data Access & Extraction
-- [ ] Resolve DuckDB httpfs bug (update DuckDB or use `overturemaps` CLI as fallback)
-- [ ] Export labeled ~5k sample with all schema fields + `sources` field to local parquet/csv
-- [ ] Export a larger unlabeled sample (e.g., 50k places across categories/geographies) for EDA and later label augmentation
-- [ ] Verify exported data has all expected columns: id, name, confidence, categories, basic_category, taxonomy, websites, socials, emails, phones, brand, addresses, sources, operating_status, geometry
+- [x] Identify labeled dataset: `project_c_samples.json` (3,425 records, binary `open` label)
+- [x] Confirm schema: sources, confidence, categories, websites, socials, phones, addresses, geometry
+- [x] Analyze cross-release diff (Jan vs. Feb 2026) — confirmed operating_status is static
+- [x] Confirm removed places are not closures (dedup/source drops, all labeled "open")
 
 ### 1.2 Feature Engineering
-- [ ] Create `feature_engineering.py` with `extract_features(record) -> feature_vector` function
-- [ ] Implement source-level features:
-  - [ ] `source_count` — number of distinct source providers
-  - [ ] `has_meta`, `has_microsoft`, `has_foursquare` — binary flags per provider
-  - [ ] `max_source_confidence`, `min_source_confidence`, `mean_source_confidence`
-  - [ ] `confidence_spread` — max minus min source confidence
-- [ ] Implement completeness features:
-  - [ ] `has_website`, `has_phone`, `has_email`, `has_socials`, `has_brand`
-  - [ ] `completeness_score` — fraction of optional fields that are non-null
-  - [ ] `phone_count`, `website_count`
-- [ ] Implement category & identity features:
-  - [ ] `primary_category` — integer-encoded
-  - [ ] `category_depth` — depth in taxonomy hierarchy
-  - [ ] `has_alternate_categories`
-  - [ ] `confidence` — Overture's existing confidence field
-- [ ] Implement address features:
-  - [ ] `has_address`
-  - [ ] `address_completeness` — fraction of address subfields populated
-  - [ ] `country` — integer-encoded country code
-- [ ] Build a feature matrix from the full labeled sample: `X` (N x ~25-30), `y` (N,)
+- [x] Create `src/feature_engineering.py` with `extract_features(record) -> dict`
+- [x] 20 features across 4 groups: source (8), completeness (6), category (3), confidence+address (3)
+- [x] Dropped `has_address` (constant, all 1.0) and `has_email` (all-zero, d=0.000)
+- [x] Smoke test passed — 3,425 records, 20 features, zero nulls
 
 ### 1.3 Exploratory Data Analysis
-- [ ] Class distribution: confirm ~90/10 open/closed split
-- [ ] Feature distributions: histograms for each numerical feature, value counts for categoricals
-- [ ] Correlation matrix across numerical features
-- [ ] Class-conditional feature distributions (open vs. closed) — identify which features have signal
-- [ ] Missing value analysis — which fields are commonly null?
-- [ ] Source analysis: distribution of source_count, per-provider frequency
-- [ ] Save EDA results as notebook or report
+- [x] Class distribution: 313 closed / 3,112 open (9.1% / 90.9%)
+- [x] Top signals: address_completeness (d=0.82), confidence (d=0.64), has_phone (d=0.54)
+- [x] Microsoft staleness: closed places have 2.5x older Microsoft timestamps (1,322 vs 518 days)
+- [x] Findings documented in `memory/MEMORY.md` and `doc/progress-report.md`
 
 ### 1.4 Train/Val Split
-- [ ] Create stratified 80/20 train/val split (preserving open/closed ratio)
-- [ ] Create 5-fold stratified CV splits for later use
-- [ ] Save splits with fixed random seed for reproducibility
+- [x] `src/split.py` — stratified 80/20, seed=42, LabelEncoder for primary_category, saves to `splits/`
+- [x] Train: 2,740 (closed=250, open=2,490) | Val: 685 (closed=63, open=622)
 
 ---
 
-## Phase 2: MLP Encoder + NCM/SLDA (Week 2)
+## Phase 2: MLP Encoder + NCM/SLDA ✓
 
-### 2.1 MLP Encoder Implementation
-- [ ] Install PyTorch
-- [ ] Create `encoder.py` with `PlaceEncoder` class:
-  - [ ] Embedding layers for categorical features (category: 8-dim, country: 4-dim)
-  - [ ] BatchNorm for numerical features
-  - [ ] Linear(~30 → 64) → BatchNorm → ReLU → Dropout(0.3)
-  - [ ] Linear(64 → 32) → BatchNorm → ReLU
-  - [ ] Classification head: Linear(32 → 2) for training only
-- [ ] Create `dataset.py` with PyTorch Dataset class for place features
-- [ ] Implement weighted cross-entropy loss (closed class weight ~9x)
+### 2.1 MLP Encoder
+- [x] `src/encoder.py` — `PlaceEncoder`, `PlaceDataset`, `class_weights`, `load_splits`
+- [x] Architecture: 19 numeric → BN | category → Embedding(294+1, 8) | concat(27) → Linear(64) → BN → ReLU → Dropout(0.3) → Linear(32) → BN → ReLU → head(2)
+- [x] 6,528 params | class weights: closed=5.48x, open=0.55x
+- [x] Smoke test passed
 
 ### 2.2 MLP Encoder Training
-- [ ] Train encoder end-to-end with classification head
-- [ ] Optimizer: Adam, lr=1e-3, cosine annealing scheduler
-- [ ] Early stopping on validation loss (patience=10)
-- [ ] Run 5-fold stratified CV
-- [ ] Log training curves (loss, AUC per epoch)
-- [ ] Save best encoder weights
+- [x] `src/train.py` — Adam lr=1e-3 + weight_decay=1e-4, cosine LR, early stopping on val AUC (patience=20)
+- [x] Best run: epoch 11, val_loss=0.608, val_auc=0.734
+- [x] Extracts 32-dim embeddings → `models/embeddings_train.npy`, `models/embeddings_val.npy`
+- [x] Saves `models/encoder.pt`, `models/encoder_config.json`, `models/train_log.json`
 
 ### 2.3 NCM Implementation
-- [ ] Create `ncm.py` with `NearestClassMean` class:
-  - [ ] `fit(embeddings, labels)` — compute class means
-  - [ ] `predict_proba(embeddings)` — softmax over negative distances
-  - [ ] `update(new_embeddings, new_labels)` — incremental mean update
-- [ ] Extract embeddings from frozen encoder for all labeled places
-- [ ] Fit NCM on training embeddings
-- [ ] Evaluate NCM on validation set
+- [x] `src/ncm.py` — `fit()`, `update()` (online mean formula), `predict_proba()` (softmax over neg distances)
+- [x] Smoke test: val acc=1.000, incremental diff=0.000000
+- [x] Fitted on training embeddings → `models/ncm.pkl`
 
 ### 2.4 SLDA Implementation
-- [ ] Create `slda.py` with `StreamingLDA` class:
-  - [ ] `fit(embeddings, labels)` — compute class means + shared covariance
-  - [ ] `predict_proba(embeddings)` — LDA decision rule → sigmoid
-  - [ ] `update(new_embeddings, new_labels)` — incremental mean + covariance update (Welford's)
-- [ ] Fit SLDA on training embeddings
-- [ ] Evaluate SLDA on validation set
+- [x] `src/slda.py` — `fit()`, `update()` (parallel Welford), `predict_proba()` (Mahalanobis + log prior)
+- [x] Smoke test: val acc=1.000, scatter diff≈0, condition number=6.2
+- [x] Fitted on training embeddings → `models/slda.pkl`
 
-### 2.5 Encoder Evaluation
-- [ ] Evaluate MLP+NCM and MLP+SLDA on validation set:
-  - [ ] AUC-ROC (target: > 0.80)
-  - [ ] AUC-PR (target: > 0.50)
-  - [ ] F1 for closed class (target: > 0.40)
-  - [ ] ECE (target: < 0.05)
-- [ ] Generate confusion matrices
-- [ ] Per-category AUC breakdown
-- [ ] Per-source-count AUC breakdown
-- [ ] NCM vs. SLDA comparison — does covariance structure help?
+### 2.5 GBM / XGBoost Baseline
+- [x] `src/gbm.py` — OHE for primary_category (295 dummies), balanced sample weights
+- [x] Trains sklearn GBM and XGBoost, saves `models/gbm.pkl`, `models/xgb.pkl`, `models/ohe.pkl`
+- [x] XGBoost instaled: `pip install xgboost`
 
-### 2.6 Embedding Analysis
-- [ ] t-SNE or UMAP visualization of encoder embeddings colored by open/closed
-- [ ] Silhouette score for cluster separation
-- [ ] Nearest-neighbor purity (5-NN, same-label fraction)
-- [ ] Save visualizations
+### 2.6 Evaluation
+- [x] `src/evaluate.py` — loads all models, prints comparison table
+- [x] Results (val set, closed as positive):
 
----
+```
+Model              AUC-ROC  AUC-PR    F1   Prec  Recall
+--------------------------------------------------------
+GBM + OHE           0.686   0.255  0.277  0.173   0.698
+XGBoost + OHE       0.720   0.293  0.311  0.206   0.635
+MLP + NCM           0.721   0.243  0.302  0.218   0.492
+MLP + SLDA          0.726   0.253  0.308  0.235   0.444
+MLP head            0.734   0.263  0.315  0.313   0.318   <- best
+```
 
-## Phase 3: Continual Learning Evaluation & Refinement (Week 3)
-
-### 3.1 Simulated Continual Learning
-- [ ] Split labeled data: 70% initial train, 30% simulated "new release"
-- [ ] Train encoder + NCM/SLDA on initial 70%
-- [ ] Incrementally update NCM/SLDA with 30% new data
-- [ ] Compare incremental update vs. full retrain from scratch
-- [ ] Verify: incremental NCM/SLDA matches full retrain (expected for these methods)
-- [ ] Document CL results
-
-### 3.2 Model Refinement
-- [ ] If embeddings don't separate well: experiment with encoder depth/width
-- [ ] If NCM/SLDA underperform: try Mahalanobis distance for NCM, regularized covariance for SLDA
-- [ ] If calibration is poor: apply temperature scaling as post-hoc fix
-- [ ] Re-run evaluation after refinements
-
-### 3.3 LLM Label Augmentation (Optional)
-- [ ] Sample unlabeled places from full Overture release (focus on ambiguous confidence 0.4-0.7)
-- [ ] Design prompt template for LLM annotation
-- [ ] Validate LLM accuracy: run LLM on the known 5k sample, compare against ground truth
-- [ ] If LLM accuracy is acceptable (> 80% agreement):
-  - [ ] Generate LLM labels for unlabeled sample
-  - [ ] Add to training set with 0.5x weight
-  - [ ] Retrain encoder + NCM/SLDA with augmented labels
-  - [ ] Compare augmented vs. original performance
-- [ ] If LLM accuracy is poor: skip augmentation, document findings
+- [x] Key finding: MLP beats both tree models — learned category embedding outperforms OHE
 
 ---
 
-## Phase 4: Final Evaluation & Write-Up (Week 4)
+## Phase 3: Continual Learning Evaluation ✓
 
-### 4.1 Final Model Selection
-- [ ] Select best classifier (NCM vs. SLDA) based on evaluation metrics
-- [ ] Run final evaluation on held-out test set (not used during any tuning)
-- [ ] Generate final metrics table: AUC-ROC, AUC-PR, F1-closed, ECE
+### 3.1 Simulated Release Update
+- [x] `src/cl_eval.py` — splits train into Release 0 (70%) + Release 1 (30%)
+- [x] Fits NCM/SLDA on R0, calls `update()` with R1 (encoder frozen throughout)
+- [x] Verified: incremental update == full fit (mean diff < 1e-6)
 
-### 4.2 Production Scoring
-- [ ] Score full Overture release with selected model
-- [ ] Analyze score distribution (histogram)
-- [ ] Spot-check: manually inspect 50 high-confidence-open and 50 high-confidence-closed places
-- [ ] Verify inference speed: benchmark per-place latency
+### 3.2 Results
 
-### 4.3 Write-Up & Deliverables
-- [ ] Final report with model results and CL advantage
-- [ ] Document continual learning advantage with simulated results
-- [ ] Feature importance analysis (what drives open/closed?)
+```
+            R0 only   After update   Full fit   update == full fit?
+NCM          0.7231       0.7213      0.7213     YES  (diff < 1e-6)
+SLDA         0.7332       0.7260      0.7260     YES  (diff < 1e-6)
+```
+
+- [x] AUC shift is within statistical noise (63 val closed examples)
+- [x] Speed: NCM update 0.061ms | SLDA 0.149ms | XGBoost retrain 184.3ms (3,021x slower)
+
+### 3.3 Model Refinement (done during Phase 2)
+- [x] Fixed early stopping to monitor val AUC instead of val loss
+- [x] Added weight_decay=1e-4 to Adam to reduce overfitting
+- [x] Raised patience from 10 → 20
+
+---
+
+## Phase 4: Final Evaluation & Write-Up
+
+### 4.1 Final Report
+- [ ] Update `doc/progress-report.md` for final submission (done incrementally as log)
+- [ ] Feature importance writeup (EDA findings → model signal)
 - [ ] Recommendations for production deployment
-- [ ] Clean up code, add docstrings to main modules
-- [ ] Push final code and report to repo
 
----
+### 4.2 Production Scoring (optional)
+- [ ] Score full Overture release with selected model (MLP head or MLP+SLDA)
+- [ ] Analyze score distribution
+- [ ] Benchmark per-place inference latency at scale
 
-## Optional: GBM Baseline Comparison
-
-> If time permits, train a GBM baseline to benchmark our approach against the industry standard for tabular data.
-
-### GBM Training
-- [ ] Install xgboost (or lightgbm)
-- [ ] Train XGBoost classifier on engineered features with `scale_pos_weight=9`
-- [ ] Tune hyperparameters: `n_estimators`, `max_depth`, `learning_rate`
-- [ ] Run 5-fold stratified cross-validation
-
-### GBM Evaluation
-- [ ] Compute AUC-ROC, AUC-PR, F1-closed, ECE
-- [ ] Generate confusion matrix and reliability diagram
-
-### GBM Interpretability
-- [ ] Feature importance (built-in gain/weight)
-- [ ] SHAP values analysis
-- [ ] Per-category and per-source-count AUC breakdown
-
-### Head-to-Head: MLP+CL vs. GBM
-- [ ] Compare NCM, SLDA, GBM on same val set across all metrics
-- [ ] Document where CL approach wins (adaptability) and where GBM wins (raw accuracy)
-
-### Optional: Yelp Matching Pipeline (US-only)
-- [ ] Load Yelp Academic Dataset
-- [ ] Implement fuzzy name matching (Jaro-Winkler > 0.85) + geographic proximity (< 100m)
-- [ ] Match Overture places to Yelp businesses
-- [ ] Extract Yelp features: `yelp_is_open`, `yelp_stars`, `yelp_review_count`
-- [ ] Add `yelp_matched` flag and Yelp features to feature matrix
-- [ ] Retrain models with Yelp features and compare
+### 4.3 Extensions (optional)
+- [ ] t-SNE / UMAP of encoder embeddings colored by open/closed
+- [ ] LLM label augmentation for unlabeled Overture places
+- [ ] Yelp matching pipeline for US places
 
 ---
 
@@ -196,14 +141,15 @@
 
 | Deliverable | Status |
 |---|---|
-| `feature_engineering.py` — feature extraction from Overture records | [ ] |
-| `encoder.py` — MLP encoder (PyTorch) | [ ] |
-| `ncm.py` — Nearest Class Mean classifier | [ ] |
-| `slda.py` — Streaming LDA classifier | [ ] |
-| `train.py` — end-to-end training pipeline | [ ] |
-| `evaluate.py` — evaluation metrics and plots | [ ] |
-| EDA notebook/report | [ ] |
-| Embedding visualizations (t-SNE/UMAP) | [ ] |
-| CL simulation results | [ ] |
-| Final report | [ ] |
+| `src/feature_engineering.py` — 20 features from Overture JSON | [x] |
+| `src/encoder.py` — MLP encoder (PyTorch, 6,528 params) | [x] |
+| `src/ncm.py` — Nearest Class Mean, incremental update | [x] |
+| `src/slda.py` — Streaming LDA, Welford covariance update | [x] |
+| `src/train.py` — end-to-end training pipeline | [x] |
+| `src/gbm.py` — GBM + XGBoost baseline with OHE | [x] |
+| `src/evaluate.py` — full model comparison table | [x] |
+| `src/cl_eval.py` — CL simulation + speed benchmark | [x] |
+| `doc/progress-report.md` — dated team log | [x] |
+| CL simulation results (update == full fit, 3,021x speedup) | [x] |
 | Scored full release (parquet with confidence scores) | [ ] |
+| Final report | [ ] |
