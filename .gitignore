@@ -1,10 +1,35 @@
-# dev
-.venv
-.claude
-__pycache__
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.venv/
+venv/
 
-# data files
-/data
-*/evals
-.parquet
+# IDE / editor
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# AI / tooling
+.claude/
+/memory/
+
+# Data — large files that shouldn't be in git
+/data/
+*.parquet
 *.geojson
+*.ddb
+*.csv
+
+# Model artifacts — reproducible from code + data
+/models/
+/splits/
+*/evals/
+*.pkl
+*.pt
+*.npy
+
+# OS junk
+.DS_Store
+Thumbs.db
