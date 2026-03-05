@@ -15,19 +15,27 @@ from pathlib import Path
 import numpy as np
 import pandas as pd
 
-# Add src/ to path so we can import feature_engineering
-sys.path.insert(0, str(Path(__file__).parent))
+# Add src/ml/ to path so we can import feature_engineering
+sys.path.insert(0, str(Path(__file__).parent.parent / "ml"))
 from feature_engineering import load_dataset
 
 NUMERIC_FEATURES = [
+    # source / staleness
     "source_count",
     "has_meta",
     "has_microsoft",
+    "has_only_meta",
+    "msft_update_age_days",
+    "n_sources_with_update_time",
+    "min_update_age_days",
+    "max_update_age_days",
+    # confidence (excluded by default in split.py — shown here for ablation)
     "max_source_confidence",
     "min_source_confidence",
     "mean_source_confidence",
     "confidence_spread",
-    "msft_update_age_days",
+    "confidence",
+    # completeness
     "has_website",
     "has_phone",
     "has_socials",
@@ -35,9 +43,10 @@ NUMERIC_FEATURES = [
     "website_count",
     "phone_count",
     "completeness_score",
+    # category
     "has_alternate_categories",
     "alternate_category_count",
-    "confidence",
+    # address
     "address_completeness",
 ]
 

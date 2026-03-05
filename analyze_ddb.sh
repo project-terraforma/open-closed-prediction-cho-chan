@@ -92,7 +92,7 @@ SELECT
 FROM feb.place
 GROUP BY state
 ORDER BY total DESC;
-*/
+
 
 SELECT
   addresses[1].region AS state,
@@ -100,8 +100,29 @@ SELECT
 FROM feb.place
 GROUP BY state
 ORDER BY temp_closed DESC;
+*/
 
-/*
+-- SF bbox place tally (total / open / closed)
+SELECT
+  COUNT(*) AS total,
+  COUNT(*) FILTER (WHERE operating_status = 'open') AS open_cnt,
+  COUNT(*) FILTER (WHERE operating_status = 'closed') AS closed_cnt
+FROM feb.place
+WHERE ST_Within(
+  ST_Point(
+    (bbox.xmin + bbox.xmax) / 2,
+    (bbox.ymin + bbox.ymax) / 2
+  ),
+  ST_GeomFromText(
+    'POLYGON((-122.5169725197 37.7086546752, -122.355084726 37.7086546752, -122.355084726 37.8107793103, -122.5169725197 37.8107793103, -122.5169725197 37.7086546752))'
+  )
+);
+
+-- specific place lookup by id
+SELECT id, names.primary AS name, operating_status, addresses[1] AS address,
+FROM feb.place
+WHERE id = '08f268cd1b32a45c03b9137cddcec17b';
+
 -- Closed entries by region with confidence stats
 SELECT
   addresses[1].region AS region,
@@ -114,6 +135,7 @@ WHERE operating_status = 'closed'
 GROUP BY region
 ORDER BY closed_count DESC;
 
+/*
 -- 3 sample closed entries from each of the top-10 regions by closed count
 WITH top_regions AS (
   SELECT addresses[1].region AS region

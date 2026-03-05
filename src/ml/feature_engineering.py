@@ -62,6 +62,12 @@ def extract_features(record: dict[str, Any]) -> dict[str, Any]:
     # Microsoft update_time is a real staleness signal (meta is always batch date)
     msft_update_age_days = _msft_update_age(sources)
 
+    # All-source update staleness (meta excluded — always batch date, not real freshness)
+    all_src_ages = _all_source_ages(sources)
+    n_sources_with_update_time = len(all_src_ages)
+    min_update_age_days = min(all_src_ages) if all_src_ages else -1.0
+    max_update_age_days = max(all_src_ages) if all_src_ages else -1.0
+
     # --- Completeness features ---
     websites = record.get("websites") or []
     phones = record.get("phones") or []
@@ -78,6 +84,9 @@ def extract_features(record: dict[str, Any]) -> dict[str, Any]:
 
     optional_flags = [has_website, has_phone, has_socials, has_brand]
     completeness_score = sum(optional_flags) / len(optional_flags)
+
+    # Single-source Meta-only places: lower quality / more likely stale
+    has_only_meta = int(source_count == 1 and has_meta == 1)
 
     # --- Category features ---
     cats = record.get("categories") or {}
@@ -99,11 +108,15 @@ def extract_features(record: dict[str, Any]) -> dict[str, Any]:
         "source_count": source_count,
         "has_meta": has_meta,
         "has_microsoft": has_microsoft,
+        "has_only_meta": has_only_meta,
         "max_source_confidence": max_src_conf,
         "min_source_confidence": min_src_conf,
         "mean_source_confidence": mean_src_conf,
         "confidence_spread": confidence_spread,
         "msft_update_age_days": msft_update_age_days,
+        "n_sources_with_update_time": n_sources_with_update_time,
+        "min_update_age_days": min_update_age_days,
+        "max_update_age_days": max_update_age_days,
         # completeness
         "has_website": has_website,
         "has_phone": has_phone,
@@ -178,6 +191,27 @@ def _msft_update_age(sources: list[dict]) -> float:
         return -1.0
 
     return float((_REFERENCE_DATE - max(times)).days)
+
+
+def _all_source_ages(sources: list[dict]) -> list[float]:
+    """Ages in days for all non-meta sources that have a real update_time.
+
+    Meta is excluded because its update_time is always the batch date (not a
+    real freshness signal).  Returns a list of floats; empty if none qualify.
+    """
+    ages = []
+    for s in sources:
+        if s.get("dataset", "").lower() == _META:
+            continue
+        raw = s.get("update_time")
+        if not raw:
+            continue
+        try:
+            dt = datetime.fromisoformat(raw.replace("Z", "+00:00"))
+            ages.append(float((_REFERENCE_DATE - dt).days))
+        except ValueError:
+            pass
+    return ages
 
 
 def _address_completeness(addresses: list[dict]) -> float:
