@@ -8,7 +8,7 @@ Steps:
     2. Train PlaceEncoder end-to-end with weighted CrossEntropy + Adam + cosine LR
     3. Early stopping on validation loss (patience=10)
     4. Extract 32-dim embeddings from best frozen encoder
-    5. Fit NearestClassMean and StreamingLDA on training embeddings
+    5. Fit NearestClassMean, StreamingLDA, and StreamingQDA on training embeddings
     6. Save all artifacts to models/
 
 Run:
@@ -28,6 +28,7 @@ Outputs saved to models/:
     encoder_config.json  — cat_vocab_size (for reloading the model)
     ncm.pkl              — fitted NearestClassMean
     slda.pkl             — fitted StreamingLDA
+    qda.pkl              — fitted StreamingQDA
     embeddings_train.npy — (N_train, 32) training embeddings
     embeddings_val.npy   — (N_val,   32) validation embeddings
     train_log.json       — per-epoch metrics
@@ -44,6 +45,7 @@ from pathlib import Path
 import numpy as np
 import torch
 import torch.nn as nn
+import torch.nn.functional as F
 from sklearn.metrics import roc_auc_score
 from torch.optim import Adam
 from torch.optim.lr_scheduler import CosineAnnealingLR
@@ -52,7 +54,48 @@ from torch.utils.data import DataLoader
 sys.path.insert(0, str(Path(__file__).parent))
 from encoder import PlaceDataset, PlaceEncoder, class_weights, load_splits
 from ncm import NearestClassMean
+from qda import StreamingQDA
 from slda import StreamingLDA
+
+import random
+
+def _seed_everything(seed: int = 42) -> None:
+    random.seed(seed)
+    np.random.seed(seed)
+    torch.manual_seed(seed)
+    if torch.cuda.is_available():
+        torch.cuda.manual_seed_all(seed)
+
+
+# ---------------------------------------------------------------------------
+# Focal loss
+# ---------------------------------------------------------------------------
+
+class FocalLoss(nn.Module):
+    """Focal loss with optional class weighting.
+
+    FL(p_t) = -alpha_t * (1 - p_t)^gamma * log(p_t)
+
+    The focal term (1 - p_t)^gamma downweights easy examples so training
+    focuses on hard, ambiguous cases — useful for the 9:1 closed/open imbalance.
+    gamma=0 reduces to standard weighted cross-entropy.
+
+    Args:
+        weight: per-class weights (same as nn.CrossEntropyLoss weight)
+        gamma:  focusing exponent (0 = off, 2 = typical)
+    """
+
+    def __init__(self, weight: torch.Tensor | None = None, gamma: float = 0.0) -> None:
+        super().__init__()
+        self.weight = weight
+        self.gamma = gamma
+
+    def forward(self, logits: torch.Tensor, targets: torch.Tensor) -> torch.Tensor:
+        # p_t: model confidence in the correct class (separate from class weighting)
+        pt = F.softmax(logits, dim=1).gather(1, targets.unsqueeze(1)).squeeze(1)
+        # per-sample weighted CE (applies alpha_t class weight)
+        ce = F.cross_entropy(logits, targets, weight=self.weight, reduction="none")
+        return ((1 - pt) ** self.gamma * ce).mean()
 
 
 # ---------------------------------------------------------------------------
@@ -129,7 +172,10 @@ def train(
     lr: float = 1e-3,
     batch_size: int = 64,
     patience: int = 20,
+    gamma: float = 0.0,
 ) -> tuple:
+    _seed_everything(42)
+
     splits_dir = Path(splits_dir)
     out_dir = Path(out_dir)
 
@@ -158,14 +204,15 @@ def train(
     loader_val   = DataLoader(ds_val,   batch_size=batch_size, shuffle=False)
 
     # --- Model, loss, optimizer, scheduler ---
-    model = PlaceEncoder(cat_vocab_size=cat_vocab_size).to(device)
+    model = PlaceEncoder(cat_vocab_size=cat_vocab_size, n_numeric=X_train.shape[1]-1).to(device)
     weights = class_weights(y_train, device)
-    criterion = nn.CrossEntropyLoss(weight=weights)
+    criterion = FocalLoss(weight=weights, gamma=gamma)
     optimizer = Adam(model.parameters(), lr=lr, weight_decay=1e-4)
     scheduler = CosineAnnealingLR(optimizer, T_max=max_epochs)
 
     print(f"Params: {model.param_count():,}  |  "
           f"Class weights: closed={weights[0]:.3f}  open={weights[1]:.3f}")
+    print(f"Loss: FocalLoss(gamma={gamma})  {'(= weighted CE)' if gamma == 0 else ''}")
     print(f"Max epochs: {max_epochs}  |  Patience: {patience}  |  LR: {lr}  |  WD: 1e-4  |  Batch: {batch_size}\n")
 
     # --- Training loop ---
@@ -211,7 +258,7 @@ def train(
 
     # Save encoder config and log
     with open(out_dir / "encoder_config.json", "w") as f:
-        json.dump({"cat_vocab_size": cat_vocab_size}, f)
+        json.dump({"cat_vocab_size": cat_vocab_size, "n_numeric": X_train.shape[1]-1}, f)
     with open(out_dir / "train_log.json", "w") as f:
         json.dump(log, f, indent=2)
 
@@ -241,8 +288,16 @@ def train(
     with open(out_dir / "slda.pkl", "wb") as f:
         pickle.dump(slda, f)
 
+    # --- Fit QDA ---
+    print("\nFitting QDA ...")
+    qda = StreamingQDA()
+    qda.fit(Z_train, y_train)
+    qda.summary()
+    with open(out_dir / "qda.pkl", "wb") as f:
+        pickle.dump(qda, f)
+
     print(f"\nAll artifacts saved to {out_dir}/")
-    return model, ncm, slda, Z_train, Z_val, y_train, y_val
+    return model, ncm, slda, qda, Z_train, Z_val, y_train, y_val
 
 
 # ---------------------------------------------------------------------------
@@ -250,13 +305,15 @@ def train(
 # ---------------------------------------------------------------------------
 
 if __name__ == "__main__":
-    parser = argparse.ArgumentParser(description="Train PlaceEncoder + fit NCM/SLDA")
+    parser = argparse.ArgumentParser(description="Train PlaceEncoder + fit NCM/SLDA/QDA")
     parser.add_argument("--splits",  default="splits", help="splits/ directory")
     parser.add_argument("--out",     default="models",  help="output directory")
     parser.add_argument("--epochs",  type=int,   default=100)
     parser.add_argument("--lr",      type=float, default=1e-3)
     parser.add_argument("--batch",   type=int,   default=64)
     parser.add_argument("--patience",type=int,   default=20)
+    parser.add_argument("--gamma",   type=float, default=0.0,
+                        help="Focal loss gamma (0 = standard weighted CE, 2 = focal;)")
     args = parser.parse_args()
 
     train(
@@ -266,4 +323,5 @@ if __name__ == "__main__":
         lr=args.lr,
         batch_size=args.batch,
         patience=args.patience,
+        gamma=args.gamma,
     )

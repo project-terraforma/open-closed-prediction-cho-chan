@@ -14,12 +14,14 @@ Numerical features are left unscaled — BatchNorm inside the encoder handles th
 
 Run:
     python src/split.py data/project_c_samples.json
-    python src/split.py data/project_c_samples.json --augment data/parquet_augment.json
+    python src/split.py data/project_c_samples.json --augment data/yelp_features.jsonl
+    python src/split.py data/project_c_samples.json --augment data/parquet_augment.json data/yelp_features.jsonl
 
 With --augment:
     The original file is split 80/20 as usual; the val set is kept as-is
-    (permanent hard-case benchmark).  All records from the augment file go
+    (permanent hard-case benchmark).  All records from the augment file(s) go
     directly into the train set — none contaminate val.
+    Multiple files can be passed: --augment file1.jsonl file2.jsonl ...
 """
 
 from __future__ import annotations
@@ -69,16 +71,23 @@ ALL_FEATURES = NUMERIC_FEATURES + CATEGORICAL_FEATURES  # category always last
 
 def make_splits(
     data_path: str | Path,
-    augment_path: str | Path | None = None,
+    augment_paths: list[str | Path] | None = None,
     out_dir: str | Path = "splits",
 ) -> dict:
     """Load dataset, encode, split, and save.
 
-    If augment_path is given, ALL records from that file are added to the
+    If augment_paths is given, ALL records from those files are added to the
     train set only.  The val set comes exclusively from data_path (80/20
     stratified split), keeping it as a stable hard-case benchmark.
 
-    Returns a dict with keys: X_train, X_val, y_train, y_val, encoder.
+    Args:
+        data_path:     Primary JSONL file (e.g. project_c_samples.json).
+        augment_paths: Optional list of supplementary JSONL files whose records
+                       are appended to train only (e.g. yelp_features.jsonl).
+        out_dir:       Directory to write split arrays and encoder.
+
+    Returns:
+        Dict with keys: X_train, X_val, y_train, y_val, encoder.
     """
     out_dir = Path(out_dir)
     out_dir.mkdir(exist_ok=True)
@@ -97,14 +106,15 @@ def make_splits(
     y_train    = y[idx_train]
     y_val      = y[idx_val]
 
-    # --- Append augment records to train only ---
-    if augment_path is not None:
-        print(f"Loading augment records from {Path(augment_path).name} ...")
-        X_aug_df, y_aug = load_dataset(augment_path)
-        X_train_df = pd.concat([X_train_df, X_aug_df], ignore_index=True)
-        y_train    = np.concatenate([y_train, y_aug])
-        print(f"  +{len(y_aug):,} records  "
-              f"({(y_aug==0).sum():,} closed, {(y_aug==1).sum():,} open)")
+    # --- Append each augment file to train only ---
+    if augment_paths:
+        for aug_path in augment_paths:
+            print(f"Loading augment records from {Path(aug_path).name} ...")
+            X_aug_df, y_aug = load_dataset(aug_path)
+            X_train_df = pd.concat([X_train_df, X_aug_df], ignore_index=True)
+            y_train    = np.concatenate([y_train, y_aug])
+            print(f"  +{len(y_aug):,} records  "
+                  f"({(y_aug==0).sum():,} closed, {(y_aug==1).sum():,} open)")
 
     # --- Encode primary_category (fit on combined train only) ---
     enc = LabelEncoder()
@@ -133,7 +143,7 @@ def make_splits(
         json.dump(ALL_FEATURES, f, indent=2)
 
     # --- Report ---
-    aug_note = f"  (val = original {data_path} benchmark only)" if augment_path else ""
+    aug_note = "  (val = original benchmark only)" if augment_paths else ""
     print(f"\nSplit complete  (seed={RANDOM_SEED}){aug_note}")
     print(f"  Train: {len(y_train):>6,}  |  closed={(y_train==0).sum():,}  open={(y_train==1).sum():,}")
     print(f"  Val:   {len(y_val):>6,}  |  closed={(y_val==0).sum():,}  open={(y_val==1).sum():,}")
@@ -150,9 +160,12 @@ def make_splits(
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
-    parser.add_argument("data",    type=Path, nargs="?",
+    parser.add_argument("data", type=Path, nargs="?",
                         default=Path("data/project_c_samples.json"))
-    parser.add_argument("--augment", type=Path, default=None,
-                        help="JSONL of extra records added to train only")
+    parser.add_argument(
+        "--augment", type=Path, nargs="+", default=None,
+        help="One or more JSONL files added to train only "
+             "(e.g. --augment data/yelp_features.jsonl data/parquet_augment.json)",
+    )
     args = parser.parse_args()
-    make_splits(args.data, augment_path=args.augment)
+    make_splits(args.data, augment_paths=args.augment)

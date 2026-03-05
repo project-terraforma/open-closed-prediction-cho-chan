@@ -1,0 +1,5486 @@
+{
+  "threshold": 0.495050505050505,
+  "f1": 0.33070866141732286,
+  "samples": [
+    {
+      "idx": 0,
+      "true_label": "open",
+      "p_closed": 0.09636934101581573,
+      "predicted": "open",
+      "error_type": "TN",
+      "category": "outdoor_gear"
+    },
+    {
+      "idx": 1,
+      "true_label": "open",
+      "p_closed": 0.17504148185253143,
+      "predicted": "open",
+      "error_type": "TN",
+      "category": "self_storage_facility"
+    },
+    {
+      "idx": 2,
+      "true_label": "open",
+      "p_closed": 0.03220537304878235,
+      "predicted": "open",
+      "error_type": "TN",
+      "category": "hotel"
+    },
+    {
+      "idx": 3,
+      "true_label": "open",
+      "p_closed": 0.20566903054714203,
+      "predicted": "open",
+      "error_type": "TN",
+      "category": "seafood_restaurant"
+    },
+    {
+      "idx": 4,
+      "true_label": "open",
+      "p_closed": 0.10932575911283493,
+      "predicted": "open",
+      "error_type": "TN",
+      "category": "lawyer"
+    },
+    {
+      "idx": 5,
+      "true_label": "open",
+      "p_closed": 0.38763344287872314,
+      "predicted": "open",
+      "error_type": "TN",
+      "category": "bakery"
+    },
+    {
+      "idx": 6,
+      "true_label": "open",
+      "p_closed": 0.1538112759590149,
+      "predicted": "open",
+      "error_type": "TN",
+      "category": "musical_instrument_store"
+    },
+    {
+      "idx": 7,
+      "true_label": "open",
+      "p_closed": 0.15557530522346497,
+      "predicted": "open",
+      "error_type": "TN",
+      "category": "OOV"
+    },
+    {
+      "idx": 8,
+      "true_label": "open",
+      "p_closed": 0.5315256118774414,
+      "predicted": "closed",
+      "error_type": "FP",
+      "category": "professional_services"
+    },
+    {
+      "idx": 9,
+      "true_label": "open",
+      "p_closed": 0.07504338771104813,
+      "predicted": "open",
+      "error_type": "TN",
+      "category": "italian_restaurant"
+    },
+    {
+      "idx": 10,
+      "true_label": "open",
+      "p_closed": 0.1058436781167984,
+      "predicted": "open",
+      "error_type": "TN",
+      "category": "vitamins_and_supplements"
+    },
+    {
+      "idx": 11,
+      "true_label": "closed",
+      "p_closed": 0.3724081516265869,
+      "predicted": "open",
+      "error_type": "FN",
+      "category": "pharmacy"
+    },
+    {
+      "idx": 12,
+      "true_label": "closed",
+      "p_closed": 0.3191763460636139,
+      "predicted": "open",
+      "error_type": "FN",
+      "category": "tobacco_shop"
+    },
+    {
+      "idx": 13,
+      "true_label": "open",
+      "p_closed": 0.3540085256099701,
+      "predicted": "open",
+      "error_type": "TN",
+      "category": "convenience_store"
+    },
+    {
+      "idx": 14,
+      "true_label": "open",
+      "p_closed": 0.05819866433739662,
+      "predicted": "open",
+      "error_type": "TN",
+      "category": "arts_and_crafts"
+    },
+    {
+      "idx": 15,
+      "true_label": "open",
+      "p_closed": 0.13793134689331055,
+      "predicted": "open",
+      "error_type": "TN",
+      "category": "liquor_store"
+    },
+    {
+      "idx": 16,
+      "true_label": "open",
+      "p_closed": 0.16441982984542847,
+      "predicted": "open",
+      "error_type": "TN",
+      "category": "pest_control_service"
+    },
+    {
+      "idx": 17,
+      "true_label": "open",
+      "p_closed": 0.11045201122760773,
+      "predicted": "open",
+      "error_type": "TN",
+      "category": "department_store"
+    },
+    {
+      "idx": 18,
+      "true_label": "open",
+      "p_closed": 0.039362385869026184,
+      "predicted": "open",
+      "error_type": "TN",
+      "category": "pawn_shop"
+    },
+    {
+      "idx": 19,
+      "true_label": "open",
+      "p_closed": 0.2704385221004486,
+      "predicted": "open",
+      "error_type": "TN",
+      "category": "shoe_store"
+    },
+    {
+      "idx": 20,
+      "true_label": "open",
+      "p_closed": 0.3331441581249237,
+      "predicted": "open",
+      "error_type": "TN",
+      "category": "professional_services"
+    },
+    {
+      "idx": 21,
+      "true_label": "open",
+      "p_closed": 0.5053630471229553,
+      "predicted": "closed",
+      "error_type": "FP",
+      "category": "convenience_store"
+    },
+    {
+      "idx": 22,
+      "true_label": "open",
+      "p_closed": 0.03705805912613869,
+      "predicted": "open",
+      "error_type": "TN",
+      "category": "marketing_agency"
+    },
+    {
+      "idx": 23,
+      "true_label": "open",
+      "p_closed": 0.1644529551267624,
+      "predicted": "open",
+      "error_type": "TN",
+      "category": "OOV"
+    },
+    {
+      "idx": 24,
+      "true_label": "closed",
+      "p_closed": 0.5443204641342163,
+      "predicted": "closed",
+      "error_type": "TP",
+      "category": "hotel"
+    },
+    {
+      "idx": 25,
+      "true_label": "open",
+      "p_closed": 0.17735756933689117,
+      "predicted": "open",
+      "error_type": "TN",
+      "category": "discount_store"
+    },
+    {
+      "idx": 26,
+      "true_label": "open",
+      "p_closed": 0.13884548842906952,
+      "predicted": "open",
+      "error_type": "TN",
+      "category": "OOV"
+    },
+    {
+      "idx": 27,
+      "true_label": "open",
+      "p_closed": 0.36297181248664856,
+      "predicted": "open",
+      "error_type": "TN",
+      "category": "professional_services"
+    },
+    {
+      "idx": 28,
+      "true_label": "open",
+      "p_closed": 0.21051844954490662,
+      "predicted": "open",
+      "error_type": "TN",
+      "category": "venue_and_event_space"
+    },
+    {
+      "idx": 29,
+      "true_label": "open",
+      "p_closed": 0.03733617067337036,
+      "predicted": "open",
+      "error_type": "TN",
+      "category": "personal_injury_law"
+    },
+    {
+      "idx": 30,
+      "true_label": "closed",
+      "p_closed": 0.6651691794395447,
+      "predicted": "closed",
+      "error_type": "TP",
+      "category": "hotel"
+    },
+    {
+      "idx": 31,
+      "true_label": "open",
+      "p_closed": 0.025292912498116493,
+      "predicted": "open",
+      "error_type": "TN",
+      "category": "hotel"
+    },
+    {
+      "idx": 32,
+      "true_label": "open",
+      "p_closed": 0.15921734273433685,
+      "predicted": "open",
+      "error_type": "TN",
+      "category": "shipping_center"
+    },
+    {
+      "idx": 33,
+      "true_label": "open",
+      "p_closed": 0.23343563079833984,
+      "predicted": "open",
+      "error_type": "TN",
+      "category": "web_designer"
+    },
+    {
+      "idx": 34,
+      "true_label": "open",
+      "p_closed": 0.4285808205604553,
+      "predicted": "open",
+      "error_type": "TN",
+      "category": "home_improvement_store"
+    },
+    {
+      "idx": 35,
+      "true_label": "open",
+      "p_closed": 0.07504338771104813,
+      "predicted": "open",
+      "error_type": "TN",
+      "category": "italian_restaurant"
+    },
+    {
+      "idx": 36,
+      "true_label": "open",
+      "p_closed": 0.15156571567058563,
+      "predicted": "open",
+      "error_type": "TN",
+      "category": "liquor_store"
+    },
+    {
+      "idx": 37,
+      "true_label": "closed",
+      "p_closed": 0.8530740141868591,
+      "predicted": "closed",
+      "error_type": "TP",
+      "category": "hotel"
+    },
+    {
+      "idx": 38,
+      "true_label": "closed",
+      "p_closed": 0.385079950094223,
+      "predicted": "open",
+      "error_type": "FN",
+      "category": "convenience_store"
+    },
+    {
+      "idx": 39,
+      "true_label": "open",
+      "p_closed": 0.046594150364398956,
+      "predicted": "open",
+      "error_type": "TN",
+      "category": "bar"
+    },
+    {
+      "idx": 40,
+      "true_label": "open",
+      "p_closed": 0.4721999168395996,
+      "predicted": "open",
+      "error_type": "TN",
+      "category": "pizza_restaurant"
+    },
+    {
+      "idx": 41,
+      "true_label": "open",
+      "p_closed": 0.07394606620073318,
+      "predicted": "open",
+      "error_type": "TN",
+      "category": "bed_and_breakfast"
+    },
+    {
+      "idx": 42,
+      "true_label": "open",
+      "p_closed": 0.1590387374162674,
+      "predicted": "open",
+      "error_type": "TN",
+      "category": "professional_services"
+    },
+    {
+      "idx": 43,
+      "true_label": "open",
+      "p_closed": 0.311518132686615,
+      "predicted": "open",
+      "error_type": "TN",
+      "category": "lawyer"
+    },
+    {
+      "idx": 44,
+      "true_label": "open",
+      "p_closed": 0.1589546501636505,
+      "predicted": "open",
+      "error_type": "TN",
+      "category": "lawyer"
+    },
+    {
+      "idx": 45,
+      "true_label": "open",
+      "p_closed": 0.4531840980052948,
+      "predicted": "open",
+      "error_type": "TN",
+      "category": "coffee_shop"
+    },
+    {
+      "idx": 46,
+      "true_label": "open",
+      "p_closed": 0.12624408304691315,
+      "predicted": "open",
+      "error_type": "TN",
+      "category": "funeral_services_and_cemeteries"
+    },
+    {
+      "idx": 47,
+      "true_label": "open",
+      "p_closed": 0.4896225929260254,
+      "predicted": "open",
+      "error_type": "TN",
+      "category": "public_relations"
+    },
+    {
+      "idx": 48,
+      "true_label": "open",
+      "p_closed": 0.03235575929284096,
+      "predicted": "open",
+      "error_type": "TN",
+      "category": "sushi_restaurant"
+    },
+    {
+      "idx": 49,
+      "true_label": "open",
+      "p_closed": 0.07348091155290604,
+      "predicted": "open",
+      "error_type": "TN",
+      "category": "clothing_store"
+    },
+    {
+      "idx": 50,
+      "true_label": "open",
+      "p_closed": 0.1726161241531372,
+      "predicted": "open",
+      "error_type": "TN",
+      "category": "convenience_store"
+    },
+    {
+      "idx": 51,
+      "true_label": "open",
+      "p_closed": 0.12746256589889526,
+      "predicted": "open",
+      "error_type": "TN",
+      "category": "furniture_store"
+    },
+    {
+      "idx": 52,
+      "true_label": "open",
+      "p_closed": 0.281384140253067,
+      "predicted": "open",
+      "error_type": "TN",
+      "category": "convenience_store"
+    },
+    {
+      "idx": 53,
+      "true_label": "open",
+      "p_closed": 0.25366100668907166,
+      "predicted": "open",
+      "error_type": "TN",
+      "category": "shopping"
+    },
+    {
+      "idx": 54,
+      "true_label": "open",
+      "p_closed": 0.06802871823310852,
+      "predicted": "open",
+      "error_type": "TN",
+      "category": "hotel"
+    },
+    {
+      "idx": 55,
+      "true_label": "open",
+      "p_closed": 0.06802871823310852,
+      "predicted": "open",
+      "error_type": "TN",
+      "category": "hotel"
+    },
+    {
+      "idx": 56,
+      "true_label": "open",
+      "p_closed": 0.006820578593760729,
+      "predicted": "open",
+      "error_type": "TN",
+      "category": "bar"
+    },
+    {
+      "idx": 57,
+      "true_label": "open",
+      "p_closed": 0.17320451140403748,
+      "predicted": "open",
+      "error_type": "TN",
+      "category": "liquor_store"
+    },
+    {
+      "idx": 58,
+      "true_label": "open",
+      "p_closed": 0.1733909249305725,
+      "predicted": "open",
+      "error_type": "TN",
+      "category": "auto_parts_and_supply_store"
+    },
+    {
+      "idx": 59,
+      "true_label": "open",
+      "p_closed": 0.14620321989059448,
+      "predicted": "open",
+      "error_type": "TN",
+      "category": "dry_cleaning"
+    },
+    {
+      "idx": 60,
+      "true_label": "closed",
+      "p_closed": 0.09818463772535324,
+      "predicted": "open",
+      "error_type": "FN",
+      "category": "supermarket"
+    },
+    {
+      "idx": 61,
+      "true_label": "closed",
+      "p_closed": 0.23477715253829956,
+      "predicted": "open",
+      "error_type": "FN",
+      "category": "campground"
+    },
+    {
+      "idx": 62,
+      "true_label": "open",
+      "p_closed": 0.3858090937137604,
+      "predicted": "open",
+      "error_type": "TN",
+      "category": "professional_services"
+    },
+    {
+      "idx": 63,
+      "true_label": "open",
+      "p_closed": 0.07056333124637604,
+      "predicted": "open",
+      "error_type": "TN",
+      "category": "funeral_services_and_cemeteries"
+    },
+    {
+      "idx": 64,
+      "true_label": "open",
+      "p_closed": 0.04941396787762642,
+      "predicted": "open",
+      "error_type": "TN",
+      "category": "event_planning"
+    },
+    {
+      "idx": 65,
+      "true_label": "open",
+      "p_closed": 0.03263750299811363,
+      "predicted": "open",
+      "error_type": "TN",
+      "category": "event_planning"
+    },
+    {
+      "idx": 66,
+      "true_label": "open",
+      "p_closed": 0.22136425971984863,
+      "predicted": "open",
+      "error_type": "TN",
+      "category": "grocery_store"
+    },
+    {
+      "idx": 67,
+      "true_label": "open",
+      "p_closed": 0.23097053170204163,
+      "predicted": "open",
+      "error_type": "TN",
+      "category": "mexican_restaurant"
+    },
+    {
+      "idx": 68,
+      "true_label": "open",
+      "p_closed": 0.23097053170204163,
+      "predicted": "open",
+      "error_type": "TN",
+      "category": "mexican_restaurant"
+    },
+    {
+      "idx": 69,
+      "true_label": "open",
+      "p_closed": 0.31546714901924133,
+      "predicted": "open",
+      "error_type": "TN",
+      "category": "shopping"
+    },
+    {
+      "idx": 70,
+      "true_label": "open",
+      "p_closed": 0.3240906000137329,
+      "predicted": "open",
+      "error_type": "TN",
+      "category": "shopping"
+    },
+    {
+      "idx": 71,
+      "true_label": "closed",
+      "p_closed": 0.39887940883636475,
+      "predicted": "open",
+      "error_type": "FN",
+      "category": "accommodation"
+    },
+    {
+      "idx": 72,
+      "true_label": "open",
+      "p_closed": 0.14047138392925262,
+      "predicted": "open",
+      "error_type": "TN",
+      "category": "sandwich_shop"
+    },
+    {
+      "idx": 73,
+      "true_label": "open",
+      "p_closed": 0.6065354943275452,
+      "predicted": "closed",
+      "error_type": "FP",
+      "category": "fast_food_restaurant"
+    },
+    {
+      "idx": 74,
+      "true_label": "open",
+      "p_closed": 0.45334118604660034,
+      "predicted": "open",
+      "error_type": "TN",
+      "category": "resort"
+    },
+    {
+      "idx": 75,
+      "true_label": "open",
+      "p_closed": 0.763481080532074,
+      "predicted": "closed",
+      "error_type": "FP",
+      "category": "brewery"
+    },
+    {
+      "idx": 76,
+      "true_label": "open",
+      "p_closed": 0.46041032671928406,
+      "predicted": "open",
+      "error_type": "TN",
+      "category": "self_storage_facility"
+    },
+    {
+      "idx": 77,
+      "true_label": "open",
+      "p_closed": 0.36043310165405273,
+      "predicted": "open",
+      "error_type": "TN",
+      "category": "venue_and_event_space"
+    },
+    {
+      "idx": 78,
+      "true_label": "closed",
+      "p_closed": 0.443773478269577,
+      "predicted": "open",
+      "error_type": "FN",
+      "category": "coffee_shop"
+    },
+    {
+      "idx": 79,
+      "true_label": "open",
+      "p_closed": 0.38664743304252625,
+      "predicted": "open",
+      "error_type": "TN",
+      "category": "drugstore"
+    },
+    {
+      "idx": 80,
+      "true_label": "open",
+      "p_closed": 0.279622882604599,
+      "predicted": "open",
+      "error_type": "TN",
+      "category": "restaurant"
+    },
+    {
+      "idx": 81,
+      "true_label": "open",
+      "p_closed": 0.06607125699520111,
+      "predicted": "open",
+      "error_type": "TN",
+      "category": "hotel"
+    },
+    {
+      "idx": 82,
+      "true_label": "open",
+      "p_closed": 0.2064700424671173,
+      "predicted": "open",
+      "error_type": "TN",
+      "category": "lawyer"
+    },
+    {
+      "idx": 83,
+      "true_label": "closed",
+      "p_closed": 0.14569292962551117,
+      "predicted": "open",
+      "error_type": "FN",
+      "category": "furniture_store"
+    },
+    {
+      "idx": 84,
+      "true_label": "open",
+      "p_closed": 0.06802871823310852,
+      "predicted": "open",
+      "error_type": "TN",
+      "category": "hotel"
+    },
+    {
+      "idx": 85,
+      "true_label": "open",
+      "p_closed": 0.15156060457229614,
+      "predicted": "open",
+      "error_type": "TN",
+      "category": "clothing_store"
+    },
+    {
+      "idx": 86,
+      "true_label": "open",
+      "p_closed": 0.2592504024505615,
+      "predicted": "open",
+      "error_type": "TN",
+      "category": "day_care_preschool"
+    },
+    {
+      "idx": 87,
+      "true_label": "open",
+      "p_closed": 0.2672611176967621,
+      "predicted": "open",
+      "error_type": "TN",
+      "category": "pizza_restaurant"
+    },
+    {
+      "idx": 88,
+      "true_label": "open",
+      "p_closed": 0.11220593750476837,
+      "predicted": "open",
+      "error_type": "TN",
+      "category": "campground"
+    },
+    {
+      "idx": 89,
+      "true_label": "open",
+      "p_closed": 0.15921734273433685,
+      "predicted": "open",
+      "error_type": "TN",
+      "category": "shipping_center"
+    },
+    {
+      "idx": 90,
+      "true_label": "closed",
+      "p_closed": 0.2287549525499344,
+      "predicted": "open",
+      "error_type": "FN",
+      "category": "chicken_restaurant"
+    },
+    {
+      "idx": 91,
+      "true_label": "open",
+      "p_closed": 0.4471050500869751,
+      "predicted": "open",
+      "error_type": "TN",
+      "category": "hotel"
+    },
+    {
+      "idx": 92,
+      "true_label": "open",
+      "p_closed": 0.33432722091674805,
+      "predicted": "open",
+      "error_type": "TN",
+      "category": "noodles_restaurant"
+    },
+    {
+      "idx": 93,
+      "true_label": "open",
+      "p_closed": 0.2157522290945053,
+      "predicted": "open",
+      "error_type": "TN",
+      "category": "resort"
+    },
+    {
+      "idx": 94,
+      "true_label": "open",
+      "p_closed": 0.2655205726623535,
+      "predicted": "open",
+      "error_type": "TN",
+      "category": "shopping"
+    },
+    {
+      "idx": 95,
+      "true_label": "open",
+      "p_closed": 0.020168067887425423,
+      "predicted": "open",
+      "error_type": "TN",
+      "category": "hotel"
+    },
+    {
+      "idx": 96,
+      "true_label": "open",
+      "p_closed": 0.5457527041435242,
+      "predicted": "closed",
+      "error_type": "FP",
+      "category": "event_planning"
+    },
+    {
+      "idx": 97,
+      "true_label": "open",
+      "p_closed": 0.3705657422542572,
+      "predicted": "open",
+      "error_type": "TN",
+      "category": "pizza_restaurant"
+    },
+    {
+      "idx": 98,
+      "true_label": "open",
+      "p_closed": 0.20829088985919952,
+      "predicted": "open",
+      "error_type": "TN",
+      "category": "flowers_and_gifts_shop"
+    },
+    {
+      "idx": 99,
+      "true_label": "open",
+      "p_closed": 0.046594150364398956,
+      "predicted": "open",
+      "error_type": "TN",
+      "category": "bar"
+    },
+    {
+      "idx": 100,
+      "true_label": "open",
+      "p_closed": 0.5870620012283325,
+      "predicted": "closed",
+      "error_type": "FP",
+      "category": "hotel"
+    },
+    {
+      "idx": 101,
+      "true_label": "open",
+      "p_closed": 0.14286041259765625,
+      "predicted": "open",
+      "error_type": "TN",
+      "category": "e_commerce_service"
+    },
+    {
+      "idx": 102,
+      "true_label": "open",
+      "p_closed": 0.21027490496635437,
+      "predicted": "open",
+      "error_type": "TN",
+      "category": "chicken_restaurant"
+    },
+    {
+      "idx": 103,
+      "true_label": "open",
+      "p_closed": 0.13807228207588196,
+      "predicted": "open",
+      "error_type": "TN",
+      "category": "graphic_designer"
+    },
+    {
+      "idx": 104,
+      "true_label": "open",
+      "p_closed": 0.8208518028259277,
+      "predicted": "closed",
+      "error_type": "FP",
+      "category": "rental_kiosks"
+    },
+    {
+      "idx": 105,
+      "true_label": "open",
+      "p_closed": 0.20489728450775146,
+      "predicted": "open",
+      "error_type": "TN",
+      "category": "grocery_store"
+    },
+    {
+      "idx": 106,
+      "true_label": "closed",
+      "p_closed": 0.840086042881012,
+      "predicted": "closed",
+      "error_type": "TP",
+      "category": "pizza_restaurant"
+    },
+    {
+      "idx": 107,
+      "true_label": "open",
+      "p_closed": 0.2549040913581848,
+      "predicted": "open",
+      "error_type": "TN",
+      "category": "pizza_restaurant"
+    },
+    {
+      "idx": 108,
+      "true_label": "open",
+      "p_closed": 0.22874478995800018,
+      "predicted": "open",
+      "error_type": "TN",
+      "category": "chicken_restaurant"
+    },
+    {
+      "idx": 109,
+      "true_label": "open",
+      "p_closed": 0.024854207411408424,
+      "predicted": "open",
+      "error_type": "TN",
+      "category": "musical_instrument_store"
+    },
+    {
+      "idx": 110,
+      "true_label": "open",
+      "p_closed": 0.15598101913928986,
+      "predicted": "open",
+      "error_type": "TN",
+      "category": "campground"
+    },
+    {
+      "idx": 111,
+      "true_label": "open",
+      "p_closed": 0.37605056166648865,
+      "predicted": "open",
+      "error_type": "TN",
+      "category": "grocery_store"
+    },
+    {
+      "idx": 112,
+      "true_label": "open",
+      "p_closed": 0.16399960219860077,
+      "predicted": "open",
+      "error_type": "TN",
+      "category": "building_supply_store"
+    },
+    {
+      "idx": 113,
+      "true_label": "open",
+      "p_closed": 0.35270869731903076,
+      "predicted": "open",
+      "error_type": "TN",
+      "category": "food_delivery_service"
+    },
+    {
+      "idx": 114,
+      "true_label": "open",
+      "p_closed": 0.2113804966211319,
+      "predicted": "open",
+      "error_type": "TN",
+      "category": "caterer"
+    },
+    {
+      "idx": 115,
+      "true_label": "open",
+      "p_closed": 0.14192426204681396,
+      "predicted": "open",
+      "error_type": "TN",
+      "category": "courier_and_delivery_services"
+    },
+    {
+      "idx": 116,
+      "true_label": "open",
+      "p_closed": 0.07551828026771545,
+      "predicted": "open",
+      "error_type": "TN",
+      "category": "engineering_services"
+    },
+    {
+      "idx": 117,
+      "true_label": "open",
+      "p_closed": 0.40703749656677246,
+      "predicted": "open",
+      "error_type": "TN",
+      "category": "rv_park"
+    },
+    {
+      "idx": 118,
+      "true_label": "open",
+      "p_closed": 0.12521199882030487,
+      "predicted": "open",
+      "error_type": "TN",
+      "category": "sporting_goods"
+    },
+    {
+      "idx": 119,
+      "true_label": "open",
+      "p_closed": 0.1315523236989975,
+      "predicted": "open",
+      "error_type": "TN",
+      "category": "self_storage_facility"
+    },
+    {
+      "idx": 120,
+      "true_label": "open",
+      "p_closed": 0.1006055697798729,
+      "predicted": "open",
+      "error_type": "TN",
+      "category": "caterer"
+    },
+    {
+      "idx": 121,
+      "true_label": "open",
+      "p_closed": 0.4275306463241577,
+      "predicted": "open",
+      "error_type": "TN",
+      "category": "home_goods_store"
+    },
+    {
+      "idx": 122,
+      "true_label": "open",
+      "p_closed": 0.17075681686401367,
+      "predicted": "open",
+      "error_type": "TN",
+      "category": "engineering_services"
+    },
+    {
+      "idx": 123,
+      "true_label": "closed",
+      "p_closed": 0.04331933334469795,
+      "predicted": "open",
+      "error_type": "FN",
+      "category": "event_planning"
+    },
+    {
+      "idx": 124,
+      "true_label": "open",
+      "p_closed": 0.08017610758543015,
+      "predicted": "open",
+      "error_type": "TN",
+      "category": "barbecue_restaurant"
+    },
+    {
+      "idx": 125,
+      "true_label": "closed",
+      "p_closed": 0.07305595278739929,
+      "predicted": "open",
+      "error_type": "FN",
+      "category": "middle_eastern_restaurant"
+    },
+    {
+      "idx": 126,
+      "true_label": "closed",
+      "p_closed": 0.3706834018230438,
+      "predicted": "open",
+      "error_type": "FN",
+      "category": "convenience_store"
+    },
+    {
+      "idx": 127,
+      "true_label": "open",
+      "p_closed": 0.23777613043785095,
+      "predicted": "open",
+      "error_type": "TN",
+      "category": "campground"
+    },
+    {
+      "idx": 128,
+      "true_label": "open",
+      "p_closed": 0.5425595641136169,
+      "predicted": "closed",
+      "error_type": "FP",
+      "category": "pharmacy"
+    },
+    {
+      "idx": 129,
+      "true_label": "open",
+      "p_closed": 0.3206474781036377,
+      "predicted": "open",
+      "error_type": "TN",
+      "category": "cafe"
+    },
+    {
+      "idx": 130,
+      "true_label": "open",
+      "p_closed": 0.3715910315513611,
+      "predicted": "open",
+      "error_type": "TN",
+      "category": "chinese_restaurant"
+    },
+    {
+      "idx": 131,
+      "true_label": "open",
+      "p_closed": 0.27926138043403625,
+      "predicted": "open",
+      "error_type": "TN",
+      "category": "medical_supply"
+    },
+    {
+      "idx": 132,
+      "true_label": "open",
+      "p_closed": 0.2518024444580078,
+      "predicted": "open",
+      "error_type": "TN",
+      "category": "thai_restaurant"
+    },
+    {
+      "idx": 133,
+      "true_label": "open",
+      "p_closed": 0.1814056932926178,
+      "predicted": "open",
+      "error_type": "TN",
+      "category": "outdoor_gear"
+    },
+    {
+      "idx": 134,
+      "true_label": "open",
+      "p_closed": 0.09011278301477432,
+      "predicted": "open",
+      "error_type": "TN",
+      "category": "japanese_restaurant"
+    },
+    {
+      "idx": 135,
+      "true_label": "closed",
+      "p_closed": 0.6911705136299133,
+      "predicted": "closed",
+      "error_type": "TP",
+      "category": "clothing_rental"
+    },
+    {
+      "idx": 136,
+      "true_label": "open",
+      "p_closed": 0.10679643601179123,
+      "predicted": "open",
+      "error_type": "TN",
+      "category": "bagel_shop"
+    },
+    {
+      "idx": 137,
+      "true_label": "open",
+      "p_closed": 0.07105733454227448,
+      "predicted": "open",
+      "error_type": "TN",
+      "category": "fast_food_restaurant"
+    },
+    {
+      "idx": 138,
+      "true_label": "open",
+      "p_closed": 0.352979451417923,
+      "predicted": "open",
+      "error_type": "TN",
+      "category": "day_care_preschool"
+    },
+    {
+      "idx": 139,
+      "true_label": "open",
+      "p_closed": 0.14893922209739685,
+      "predicted": "open",
+      "error_type": "TN",
+      "category": "liquor_store"
+    },
+    {
+      "idx": 140,
+      "true_label": "open",
+      "p_closed": 0.06802871823310852,
+      "predicted": "open",
+      "error_type": "TN",
+      "category": "hotel"
+    },
+    {
+      "idx": 141,
+      "true_label": "open",
+      "p_closed": 0.1575346142053604,
+      "predicted": "open",
+      "error_type": "TN",
+      "category": "campground"
+    },
+    {
+      "idx": 142,
+      "true_label": "open",
+      "p_closed": 0.493499219417572,
+      "predicted": "open",
+      "error_type": "TN",
+      "category": "professional_services"
+    },
+    {
+      "idx": 143,
+      "true_label": "open",
+      "p_closed": 0.15226247906684875,
+      "predicted": "open",
+      "error_type": "TN",
+      "category": "breakfast_and_brunch_restaurant"
+    },
+    {
+      "idx": 144,
+      "true_label": "open",
+      "p_closed": 0.07457711547613144,
+      "predicted": "open",
+      "error_type": "TN",
+      "category": "bicycle_shop"
+    },
+    {
+      "idx": 145,
+      "true_label": "open",
+      "p_closed": 0.04941396787762642,
+      "predicted": "open",
+      "error_type": "TN",
+      "category": "event_planning"
+    },
+    {
+      "idx": 146,
+      "true_label": "open",
+      "p_closed": 0.15819315612316132,
+      "predicted": "open",
+      "error_type": "TN",
+      "category": "hotel"
+    },
+    {
+      "idx": 147,
+      "true_label": "open",
+      "p_closed": 0.02151581645011902,
+      "predicted": "open",
+      "error_type": "TN",
+      "category": "hotel"
+    },
+    {
+      "idx": 148,
+      "true_label": "open",
+      "p_closed": 0.15589764714241028,
+      "predicted": "open",
+      "error_type": "TN",
+      "category": "campground"
+    },
+    {
+      "idx": 149,
+      "true_label": "open",
+      "p_closed": 0.5333436727523804,
+      "predicted": "closed",
+      "error_type": "FP",
+      "category": "wills_trusts_and_probate"
+    },
+    {
+      "idx": 150,
+      "true_label": "open",
+      "p_closed": 0.47212785482406616,
+      "predicted": "open",
+      "error_type": "TN",
+      "category": "accommodation"
+    },
+    {
+      "idx": 151,
+      "true_label": "open",
+      "p_closed": 0.1431359201669693,
+      "predicted": "open",
+      "error_type": "TN",
+      "category": "hotel"
+    },
+    {
+      "idx": 152,
+      "true_label": "open",
+      "p_closed": 0.13980916142463684,
+      "predicted": "open",
+      "error_type": "TN",
+      "category": "antique_store"
+    },
+    {
+      "idx": 153,
+      "true_label": "open",
+      "p_closed": 0.05191299319267273,
+      "predicted": "open",
+      "error_type": "TN",
+      "category": "hardware_store"
+    },
+    {
+      "idx": 154,
+      "true_label": "open",
+      "p_closed": 0.1354384571313858,
+      "predicted": "open",
+      "error_type": "TN",
+      "category": "event_planning"
+    },
+    {
+      "idx": 155,
+      "true_label": "open",
+      "p_closed": 0.4528110921382904,
+      "predicted": "open",
+      "error_type": "TN",
+      "category": "coffee_shop"
+    },
+    {
+      "idx": 156,
+      "true_label": "open",
+      "p_closed": 0.14070537686347961,
+      "predicted": "open",
+      "error_type": "TN",
+      "category": "sandwich_shop"
+    },
+    {
+      "idx": 157,
+      "true_label": "open",
+      "p_closed": 0.18836498260498047,
+      "predicted": "open",
+      "error_type": "TN",
+      "category": "medical_supply"
+    },
+    {
+      "idx": 158,
+      "true_label": "open",
+      "p_closed": 0.27375027537345886,
+      "predicted": "open",
+      "error_type": "TN",
+      "category": "professional_services"
+    },
+    {
+      "idx": 159,
+      "true_label": "open",
+      "p_closed": 0.12264539301395416,
+      "predicted": "open",
+      "error_type": "TN",
+      "category": "OOV"
+    },
+    {
+      "idx": 160,
+      "true_label": "open",
+      "p_closed": 0.3433015048503876,
+      "predicted": "open",
+      "error_type": "TN",
+      "category": "holiday_rental_home"
+    },
+    {
+      "idx": 161,
+      "true_label": "open",
+      "p_closed": 0.7848553657531738,
+      "predicted": "closed",
+      "error_type": "FP",
+      "category": "professional_services"
+    },
+    {
+      "idx": 162,
+      "true_label": "open",
+      "p_closed": 0.18768157064914703,
+      "predicted": "open",
+      "error_type": "TN",
+      "category": "rv_park"
+    },
+    {
+      "idx": 163,
+      "true_label": "open",
+      "p_closed": 0.07309940457344055,
+      "predicted": "open",
+      "error_type": "TN",
+      "category": "italian_restaurant"
+    },
+    {
+      "idx": 164,
+      "true_label": "open",
+      "p_closed": 0.09458480030298233,
+      "predicted": "open",
+      "error_type": "TN",
+      "category": "laundromat"
+    },
+    {
+      "idx": 165,
+      "true_label": "closed",
+      "p_closed": 0.40583673119544983,
+      "predicted": "open",
+      "error_type": "FN",
+      "category": "resort"
+    },
+    {
+      "idx": 166,
+      "true_label": "open",
+      "p_closed": 0.053108491003513336,
+      "predicted": "open",
+      "error_type": "TN",
+      "category": "supermarket"
+    },
+    {
+      "idx": 167,
+      "true_label": "open",
+      "p_closed": 0.14985910058021545,
+      "predicted": "open",
+      "error_type": "TN",
+      "category": "taxidermist"
+    },
+    {
+      "idx": 168,
+      "true_label": "open",
+      "p_closed": 0.06802871823310852,
+      "predicted": "open",
+      "error_type": "TN",
+      "category": "hotel"
+    },
+    {
+      "idx": 169,
+      "true_label": "open",
+      "p_closed": 0.7947777509689331,
+      "predicted": "closed",
+      "error_type": "FP",
+      "category": "professional_services"
+    },
+    {
+      "idx": 170,
+      "true_label": "open",
+      "p_closed": 0.09361213445663452,
+      "predicted": "open",
+      "error_type": "TN",
+      "category": "furniture_store"
+    },
+    {
+      "idx": 171,
+      "true_label": "open",
+      "p_closed": 0.08995327353477478,
+      "predicted": "open",
+      "error_type": "TN",
+      "category": "powder_coating_service"
+    },
+    {
+      "idx": 172,
+      "true_label": "open",
+      "p_closed": 0.3180750608444214,
+      "predicted": "open",
+      "error_type": "TN",
+      "category": "mobile_phone_store"
+    },
+    {
+      "idx": 173,
+      "true_label": "open",
+      "p_closed": 0.01727469265460968,
+      "predicted": "open",
+      "error_type": "TN",
+      "category": "professional_services"
+    },
+    {
+      "idx": 174,
+      "true_label": "closed",
+      "p_closed": 0.3586437404155731,
+      "predicted": "open",
+      "error_type": "FN",
+      "category": "professional_services"
+    },
+    {
+      "idx": 175,
+      "true_label": "open",
+      "p_closed": 0.09304516017436981,
+      "predicted": "open",
+      "error_type": "TN",
+      "category": "shoe_store"
+    },
+    {
+      "idx": 176,
+      "true_label": "open",
+      "p_closed": 0.5065098404884338,
+      "predicted": "closed",
+      "error_type": "FP",
+      "category": "OOV"
+    },
+    {
+      "idx": 177,
+      "true_label": "closed",
+      "p_closed": 0.229811891913414,
+      "predicted": "open",
+      "error_type": "FN",
+      "category": "OOV"
+    },
+    {
+      "idx": 178,
+      "true_label": "open",
+      "p_closed": 0.13288331031799316,
+      "predicted": "open",
+      "error_type": "TN",
+      "category": "flowers_and_gifts_shop"
+    },
+    {
+      "idx": 179,
+      "true_label": "open",
+      "p_closed": 0.17558680474758148,
+      "predicted": "open",
+      "error_type": "TN",
+      "category": "clothing_store"
+    },
+    {
+      "idx": 180,
+      "true_label": "open",
+      "p_closed": 0.2747980058193207,
+      "predicted": "open",
+      "error_type": "TN",
+      "category": "shopping"
+    },
+    {
+      "idx": 181,
+      "true_label": "open",
+      "p_closed": 0.20671819150447845,
+      "predicted": "open",
+      "error_type": "TN",
+      "category": "professional_services"
+    },
+    {
+      "idx": 182,
+      "true_label": "open",
+      "p_closed": 0.5743215084075928,
+      "predicted": "closed",
+      "error_type": "FP",
+      "category": "mobile_phone_accessories"
+    },
+    {
+      "idx": 183,
+      "true_label": "open",
+      "p_closed": 0.16491466760635376,
+      "predicted": "open",
+      "error_type": "TN",
+      "category": "campground"
+    },
+    {
+      "idx": 184,
+      "true_label": "open",
+      "p_closed": 0.5489668250083923,
+      "predicted": "closed",
+      "error_type": "FP",
+      "category": "pharmacy"
+    },
+    {
+      "idx": 185,
+      "true_label": "open",
+      "p_closed": 0.138185515999794,
+      "predicted": "open",
+      "error_type": "TN",
+      "category": "mattress_store"
+    },
+    {
+      "idx": 186,
+      "true_label": "open",
+      "p_closed": 0.3398655951023102,
+      "predicted": "open",
+      "error_type": "TN",
+      "category": "flowers_and_gifts_shop"
+    },
+    {
+      "idx": 187,
+      "true_label": "open",
+      "p_closed": 0.11137568205595016,
+      "predicted": "open",
+      "error_type": "TN",
+      "category": "architectural_designer"
+    },
+    {
+      "idx": 188,
+      "true_label": "open",
+      "p_closed": 0.040162306278944016,
+      "predicted": "open",
+      "error_type": "TN",
+      "category": "breakfast_and_brunch_restaurant"
+    },
+    {
+      "idx": 189,
+      "true_label": "open",
+      "p_closed": 0.18456560373306274,
+      "predicted": "open",
+      "error_type": "TN",
+      "category": "lawyer"
+    },
+    {
+      "idx": 190,
+      "true_label": "open",
+      "p_closed": 0.21964985132217407,
+      "predicted": "open",
+      "error_type": "TN",
+      "category": "life_coach"
+    },
+    {
+      "idx": 191,
+      "true_label": "open",
+      "p_closed": 0.14124804735183716,
+      "predicted": "open",
+      "error_type": "TN",
+      "category": "home_improvement_store"
+    },
+    {
+      "idx": 192,
+      "true_label": "open",
+      "p_closed": 0.4895373284816742,
+      "predicted": "open",
+      "error_type": "TN",
+      "category": "restaurant"
+    },
+    {
+      "idx": 193,
+      "true_label": "open",
+      "p_closed": 0.1628418266773224,
+      "predicted": "open",
+      "error_type": "TN",
+      "category": "marketing_agency"
+    },
+    {
+      "idx": 194,
+      "true_label": "open",
+      "p_closed": 0.03300867974758148,
+      "predicted": "open",
+      "error_type": "TN",
+      "category": "professional_services"
+    },
+    {
+      "idx": 195,
+      "true_label": "closed",
+      "p_closed": 0.502852201461792,
+      "predicted": "closed",
+      "error_type": "TP",
+      "category": "mexican_restaurant"
+    },
+    {
+      "idx": 196,
+      "true_label": "open",
+      "p_closed": 0.07908845692873001,
+      "predicted": "open",
+      "error_type": "TN",
+      "category": "indian_restaurant"
+    },
+    {
+      "idx": 197,
+      "true_label": "open",
+      "p_closed": 0.14119894802570343,
+      "predicted": "open",
+      "error_type": "TN",
+      "category": "courier_and_delivery_services"
+    },
+    {
+      "idx": 198,
+      "true_label": "open",
+      "p_closed": 0.3712711036205292,
+      "predicted": "open",
+      "error_type": "TN",
+      "category": "pizza_restaurant"
+    },
+    {
+      "idx": 199,
+      "true_label": "open",
+      "p_closed": 0.33152496814727783,
+      "predicted": "open",
+      "error_type": "TN",
+      "category": "cafe"
+    },
+    {
+      "idx": 200,
+      "true_label": "open",
+      "p_closed": 0.3326939046382904,
+      "predicted": "open",
+      "error_type": "TN",
+      "category": "pub"
+    },
+    {
+      "idx": 201,
+      "true_label": "open",
+      "p_closed": 0.2505176365375519,
+      "predicted": "open",
+      "error_type": "TN",
+      "category": "campground"
+    },
+    {
+      "idx": 202,
+      "true_label": "closed",
+      "p_closed": 0.23361369967460632,
+      "predicted": "open",
+      "error_type": "FN",
+      "category": "campground"
+    },
+    {
+      "idx": 203,
+      "true_label": "open",
+      "p_closed": 0.17358696460723877,
+      "predicted": "open",
+      "error_type": "TN",
+      "category": "pest_control_service"
+    },
+    {
+      "idx": 204,
+      "true_label": "open",
+      "p_closed": 0.40976735949516296,
+      "predicted": "open",
+      "error_type": "TN",
+      "category": "employment_agencies"
+    },
+    {
+      "idx": 205,
+      "true_label": "open",
+      "p_closed": 0.077243372797966,
+      "predicted": "open",
+      "error_type": "TN",
+      "category": "sign_making"
+    },
+    {
+      "idx": 206,
+      "true_label": "open",
+      "p_closed": 0.37818023562431335,
+      "predicted": "open",
+      "error_type": "TN",
+      "category": "pizza_restaurant"
+    },
+    {
+      "idx": 207,
+      "true_label": "open",
+      "p_closed": 0.2236398160457611,
+      "predicted": "open",
+      "error_type": "TN",
+      "category": "day_care_preschool"
+    },
+    {
+      "idx": 208,
+      "true_label": "open",
+      "p_closed": 0.14402049779891968,
+      "predicted": "open",
+      "error_type": "TN",
+      "category": "bail_bonds_service"
+    },
+    {
+      "idx": 209,
+      "true_label": "open",
+      "p_closed": 0.19593080878257751,
+      "predicted": "open",
+      "error_type": "TN",
+      "category": "personal_injury_law"
+    },
+    {
+      "idx": 210,
+      "true_label": "open",
+      "p_closed": 0.29286661744117737,
+      "predicted": "open",
+      "error_type": "TN",
+      "category": "eyewear_and_optician"
+    },
+    {
+      "idx": 211,
+      "true_label": "open",
+      "p_closed": 0.3828223645687103,
+      "predicted": "open",
+      "error_type": "TN",
+      "category": "gift_shop"
+    },
+    {
+      "idx": 212,
+      "true_label": "open",
+      "p_closed": 0.04544065147638321,
+      "predicted": "open",
+      "error_type": "TN",
+      "category": "hotel"
+    },
+    {
+      "idx": 213,
+      "true_label": "open",
+      "p_closed": 0.09458480030298233,
+      "predicted": "open",
+      "error_type": "TN",
+      "category": "laundromat"
+    },
+    {
+      "idx": 214,
+      "true_label": "open",
+      "p_closed": 0.1584022045135498,
+      "predicted": "open",
+      "error_type": "TN",
+      "category": "wedding_planning"
+    },
+    {
+      "idx": 215,
+      "true_label": "open",
+      "p_closed": 0.030108919367194176,
+      "predicted": "open",
+      "error_type": "TN",
+      "category": "fast_food_restaurant"
+    },
+    {
+      "idx": 216,
+      "true_label": "open",
+      "p_closed": 0.14072799682617188,
+      "predicted": "open",
+      "error_type": "TN",
+      "category": "sandwich_shop"
+    },
+    {
+      "idx": 217,
+      "true_label": "open",
+      "p_closed": 0.44444528222084045,
+      "predicted": "open",
+      "error_type": "TN",
+      "category": "professional_services"
+    },
+    {
+      "idx": 218,
+      "true_label": "open",
+      "p_closed": 0.06515690684318542,
+      "predicted": "open",
+      "error_type": "TN",
+      "category": "pub"
+    },
+    {
+      "idx": 219,
+      "true_label": "open",
+      "p_closed": 0.1136494055390358,
+      "predicted": "open",
+      "error_type": "TN",
+      "category": "burger_restaurant"
+    },
+    {
+      "idx": 220,
+      "true_label": "open",
+      "p_closed": 0.1884547919034958,
+      "predicted": "open",
+      "error_type": "TN",
+      "category": "shoe_store"
+    },
+    {
+      "idx": 221,
+      "true_label": "open",
+      "p_closed": 0.43990838527679443,
+      "predicted": "open",
+      "error_type": "TN",
+      "category": "divorce_and_family_law"
+    },
+    {
+      "idx": 222,
+      "true_label": "open",
+      "p_closed": 0.4471050500869751,
+      "predicted": "open",
+      "error_type": "TN",
+      "category": "hotel"
+    },
+    {
+      "idx": 223,
+      "true_label": "open",
+      "p_closed": 0.09521794319152832,
+      "predicted": "open",
+      "error_type": "TN",
+      "category": "OOV"
+    },
+    {
+      "idx": 224,
+      "true_label": "open",
+      "p_closed": 0.17730502784252167,
+      "predicted": "open",
+      "error_type": "TN",
+      "category": "mexican_restaurant"
+    },
+    {
+      "idx": 225,
+      "true_label": "open",
+      "p_closed": 0.05384112894535065,
+      "predicted": "open",
+      "error_type": "TN",
+      "category": "event_planning"
+    },
+    {
+      "idx": 226,
+      "true_label": "open",
+      "p_closed": 0.0763334184885025,
+      "predicted": "open",
+      "error_type": "TN",
+      "category": "advertising_agency"
+    },
+    {
+      "idx": 227,
+      "true_label": "open",
+      "p_closed": 0.3630233407020569,
+      "predicted": "open",
+      "error_type": "TN",
+      "category": "chinese_restaurant"
+    },
+    {
+      "idx": 228,
+      "true_label": "open",
+      "p_closed": 0.3206474781036377,
+      "predicted": "open",
+      "error_type": "TN",
+      "category": "cafe"
+    },
+    {
+      "idx": 229,
+      "true_label": "open",
+      "p_closed": 0.09008630365133286,
+      "predicted": "open",
+      "error_type": "TN",
+      "category": "furniture_store"
+    },
+    {
+      "idx": 230,
+      "true_label": "open",
+      "p_closed": 0.2236398160457611,
+      "predicted": "open",
+      "error_type": "TN",
+      "category": "day_care_preschool"
+    },
+    {
+      "idx": 231,
+      "true_label": "open",
+      "p_closed": 0.022973543033003807,
+      "predicted": "open",
+      "error_type": "TN",
+      "category": "hotel"
+    },
+    {
+      "idx": 232,
+      "true_label": "open",
+      "p_closed": 0.5287923216819763,
+      "predicted": "closed",
+      "error_type": "FP",
+      "category": "hawaiian_restaurant"
+    },
+    {
+      "idx": 233,
+      "true_label": "open",
+      "p_closed": 0.21820227801799774,
+      "predicted": "open",
+      "error_type": "TN",
+      "category": "construction_services"
+    },
+    {
+      "idx": 234,
+      "true_label": "open",
+      "p_closed": 0.1457548886537552,
+      "predicted": "open",
+      "error_type": "TN",
+      "category": "american_restaurant"
+    },
+    {
+      "idx": 235,
+      "true_label": "closed",
+      "p_closed": 0.24318063259124756,
+      "predicted": "open",
+      "error_type": "FN",
+      "category": "lawyer"
+    },
+    {
+      "idx": 236,
+      "true_label": "open",
+      "p_closed": 0.22020383179187775,
+      "predicted": "open",
+      "error_type": "TN",
+      "category": "chicken_restaurant"
+    },
+    {
+      "idx": 237,
+      "true_label": "open",
+      "p_closed": 0.15436579287052155,
+      "predicted": "open",
+      "error_type": "TN",
+      "category": "machine_and_tool_rentals"
+    },
+    {
+      "idx": 238,
+      "true_label": "open",
+      "p_closed": 0.14160440862178802,
+      "predicted": "open",
+      "error_type": "TN",
+      "category": "business_law"
+    },
+    {
+      "idx": 239,
+      "true_label": "open",
+      "p_closed": 0.1599556803703308,
+      "predicted": "open",
+      "error_type": "TN",
+      "category": "taxidermist"
+    },
+    {
+      "idx": 240,
+      "true_label": "open",
+      "p_closed": 0.11605920642614365,
+      "predicted": "open",
+      "error_type": "TN",
+      "category": "liquor_store"
+    },
+    {
+      "idx": 241,
+      "true_label": "open",
+      "p_closed": 0.32427796721458435,
+      "predicted": "open",
+      "error_type": "TN",
+      "category": "accommodation"
+    },
+    {
+      "idx": 242,
+      "true_label": "open",
+      "p_closed": 0.4279315769672394,
+      "predicted": "open",
+      "error_type": "TN",
+      "category": "self_storage_facility"
+    },
+    {
+      "idx": 243,
+      "true_label": "open",
+      "p_closed": 0.3133140206336975,
+      "predicted": "open",
+      "error_type": "TN",
+      "category": "construction_services"
+    },
+    {
+      "idx": 244,
+      "true_label": "open",
+      "p_closed": 0.279622882604599,
+      "predicted": "open",
+      "error_type": "TN",
+      "category": "restaurant"
+    },
+    {
+      "idx": 245,
+      "true_label": "open",
+      "p_closed": 0.07426104694604874,
+      "predicted": "open",
+      "error_type": "TN",
+      "category": "desserts"
+    },
+    {
+      "idx": 246,
+      "true_label": "open",
+      "p_closed": 0.10344769060611725,
+      "predicted": "open",
+      "error_type": "TN",
+      "category": "architectural_designer"
+    },
+    {
+      "idx": 247,
+      "true_label": "open",
+      "p_closed": 0.2546108365058899,
+      "predicted": "open",
+      "error_type": "TN",
+      "category": "hearing_aids"
+    },
+    {
+      "idx": 248,
+      "true_label": "open",
+      "p_closed": 0.3092149496078491,
+      "predicted": "open",
+      "error_type": "TN",
+      "category": "OOV"
+    },
+    {
+      "idx": 249,
+      "true_label": "open",
+      "p_closed": 0.6597791910171509,
+      "predicted": "closed",
+      "error_type": "FP",
+      "category": "storage_facility"
+    },
+    {
+      "idx": 250,
+      "true_label": "open",
+      "p_closed": 0.17828938364982605,
+      "predicted": "open",
+      "error_type": "TN",
+      "category": "discount_store"
+    },
+    {
+      "idx": 251,
+      "true_label": "open",
+      "p_closed": 0.3645518720149994,
+      "predicted": "open",
+      "error_type": "TN",
+      "category": "musical_instrument_store"
+    },
+    {
+      "idx": 252,
+      "true_label": "open",
+      "p_closed": 0.07700205594301224,
+      "predicted": "open",
+      "error_type": "TN",
+      "category": "irish_pub"
+    },
+    {
+      "idx": 253,
+      "true_label": "open",
+      "p_closed": 0.4526284337043762,
+      "predicted": "open",
+      "error_type": "TN",
+      "category": "coffee_shop"
+    },
+    {
+      "idx": 254,
+      "true_label": "open",
+      "p_closed": 0.4594605267047882,
+      "predicted": "open",
+      "error_type": "TN",
+      "category": "pizza_restaurant"
+    },
+    {
+      "idx": 255,
+      "true_label": "open",
+      "p_closed": 0.02553567662835121,
+      "predicted": "open",
+      "error_type": "TN",
+      "category": "bankruptcy_law"
+    },
+    {
+      "idx": 256,
+      "true_label": "open",
+      "p_closed": 0.15938545763492584,
+      "predicted": "open",
+      "error_type": "TN",
+      "category": "auction_house"
+    },
+    {
+      "idx": 257,
+      "true_label": "open",
+      "p_closed": 0.04315781965851784,
+      "predicted": "open",
+      "error_type": "TN",
+      "category": "wholesale_store"
+    },
+    {
+      "idx": 258,
+      "true_label": "open",
+      "p_closed": 0.3586437404155731,
+      "predicted": "open",
+      "error_type": "TN",
+      "category": "professional_services"
+    },
+    {
+      "idx": 259,
+      "true_label": "closed",
+      "p_closed": 0.22872434556484222,
+      "predicted": "open",
+      "error_type": "FN",
+      "category": "chicken_restaurant"
+    },
+    {
+      "idx": 260,
+      "true_label": "open",
+      "p_closed": 0.15098591148853302,
+      "predicted": "open",
+      "error_type": "TN",
+      "category": "advertising_agency"
+    },
+    {
+      "idx": 261,
+      "true_label": "open",
+      "p_closed": 0.7556344866752625,
+      "predicted": "closed",
+      "error_type": "FP",
+      "category": "video_and_video_game_rentals"
+    },
+    {
+      "idx": 262,
+      "true_label": "open",
+      "p_closed": 0.0712069571018219,
+      "predicted": "open",
+      "error_type": "TN",
+      "category": "antique_store"
+    },
+    {
+      "idx": 263,
+      "true_label": "open",
+      "p_closed": 0.25588032603263855,
+      "predicted": "open",
+      "error_type": "TN",
+      "category": "sporting_goods"
+    },
+    {
+      "idx": 264,
+      "true_label": "open",
+      "p_closed": 0.5850934982299805,
+      "predicted": "closed",
+      "error_type": "FP",
+      "category": "hotel"
+    },
+    {
+      "idx": 265,
+      "true_label": "open",
+      "p_closed": 0.23111583292484283,
+      "predicted": "open",
+      "error_type": "TN",
+      "category": "rv_park"
+    },
+    {
+      "idx": 266,
+      "true_label": "open",
+      "p_closed": 0.38321730494499207,
+      "predicted": "open",
+      "error_type": "TN",
+      "category": "antique_store"
+    },
+    {
+      "idx": 267,
+      "true_label": "open",
+      "p_closed": 0.027673207223415375,
+      "predicted": "open",
+      "error_type": "TN",
+      "category": "hotel"
+    },
+    {
+      "idx": 268,
+      "true_label": "open",
+      "p_closed": 0.6025082468986511,
+      "predicted": "closed",
+      "error_type": "FP",
+      "category": "grocery_store"
+    },
+    {
+      "idx": 269,
+      "true_label": "open",
+      "p_closed": 0.03872286155819893,
+      "predicted": "open",
+      "error_type": "TN",
+      "category": "employment_agencies"
+    },
+    {
+      "idx": 270,
+      "true_label": "open",
+      "p_closed": 0.02145073004066944,
+      "predicted": "open",
+      "error_type": "TN",
+      "category": "hotel"
+    },
+    {
+      "idx": 271,
+      "true_label": "open",
+      "p_closed": 0.837626576423645,
+      "predicted": "closed",
+      "error_type": "FP",
+      "category": "shopping_center"
+    },
+    {
+      "idx": 272,
+      "true_label": "open",
+      "p_closed": 0.3858090937137604,
+      "predicted": "open",
+      "error_type": "TN",
+      "category": "professional_services"
+    },
+    {
+      "idx": 273,
+      "true_label": "open",
+      "p_closed": 0.03748030215501785,
+      "predicted": "open",
+      "error_type": "TN",
+      "category": "arts_and_crafts"
+    },
+    {
+      "idx": 274,
+      "true_label": "open",
+      "p_closed": 0.27375027537345886,
+      "predicted": "open",
+      "error_type": "TN",
+      "category": "professional_services"
+    },
+    {
+      "idx": 275,
+      "true_label": "closed",
+      "p_closed": 0.5533065795898438,
+      "predicted": "closed",
+      "error_type": "TP",
+      "category": "tire_shop"
+    },
+    {
+      "idx": 276,
+      "true_label": "open",
+      "p_closed": 0.046594150364398956,
+      "predicted": "open",
+      "error_type": "TN",
+      "category": "bar"
+    },
+    {
+      "idx": 277,
+      "true_label": "open",
+      "p_closed": 0.07096295058727264,
+      "predicted": "open",
+      "error_type": "TN",
+      "category": "hobby_shop"
+    },
+    {
+      "idx": 278,
+      "true_label": "open",
+      "p_closed": 0.11785541474819183,
+      "predicted": "open",
+      "error_type": "TN",
+      "category": "japanese_restaurant"
+    },
+    {
+      "idx": 279,
+      "true_label": "open",
+      "p_closed": 0.5313391089439392,
+      "predicted": "closed",
+      "error_type": "FP",
+      "category": "bar"
+    },
+    {
+      "idx": 280,
+      "true_label": "open",
+      "p_closed": 0.3860996663570404,
+      "predicted": "open",
+      "error_type": "TN",
+      "category": "OOV"
+    },
+    {
+      "idx": 281,
+      "true_label": "open",
+      "p_closed": 0.3360803425312042,
+      "predicted": "open",
+      "error_type": "TN",
+      "category": "construction_services"
+    },
+    {
+      "idx": 282,
+      "true_label": "open",
+      "p_closed": 0.2703264355659485,
+      "predicted": "open",
+      "error_type": "TN",
+      "category": "diner"
+    },
+    {
+      "idx": 283,
+      "true_label": "open",
+      "p_closed": 0.1970221847295761,
+      "predicted": "open",
+      "error_type": "TN",
+      "category": "mobile_phone_store"
+    },
+    {
+      "idx": 284,
+      "true_label": "open",
+      "p_closed": 0.1938650906085968,
+      "predicted": "open",
+      "error_type": "TN",
+      "category": "day_care_preschool"
+    },
+    {
+      "idx": 285,
+      "true_label": "open",
+      "p_closed": 0.19437937438488007,
+      "predicted": "open",
+      "error_type": "TN",
+      "category": "appliance_store"
+    },
+    {
+      "idx": 286,
+      "true_label": "open",
+      "p_closed": 0.227176234126091,
+      "predicted": "open",
+      "error_type": "TN",
+      "category": "hobby_shop"
+    },
+    {
+      "idx": 287,
+      "true_label": "open",
+      "p_closed": 0.2359301596879959,
+      "predicted": "open",
+      "error_type": "TN",
+      "category": "liquor_store"
+    },
+    {
+      "idx": 288,
+      "true_label": "open",
+      "p_closed": 0.5270280241966248,
+      "predicted": "closed",
+      "error_type": "FP",
+      "category": "fabric_store"
+    },
+    {
+      "idx": 289,
+      "true_label": "open",
+      "p_closed": 0.0653536394238472,
+      "predicted": "open",
+      "error_type": "TN",
+      "category": "texmex_restaurant"
+    },
+    {
+      "idx": 290,
+      "true_label": "open",
+      "p_closed": 0.0649498924612999,
+      "predicted": "open",
+      "error_type": "TN",
+      "category": "arts_and_crafts"
+    },
+    {
+      "idx": 291,
+      "true_label": "open",
+      "p_closed": 0.689821720123291,
+      "predicted": "closed",
+      "error_type": "FP",
+      "category": "shopping"
+    },
+    {
+      "idx": 292,
+      "true_label": "open",
+      "p_closed": 0.03165937960147858,
+      "predicted": "open",
+      "error_type": "TN",
+      "category": "funeral_services_and_cemeteries"
+    },
+    {
+      "idx": 293,
+      "true_label": "closed",
+      "p_closed": 0.3331441581249237,
+      "predicted": "open",
+      "error_type": "FN",
+      "category": "professional_services"
+    },
+    {
+      "idx": 294,
+      "true_label": "open",
+      "p_closed": 0.22872434556484222,
+      "predicted": "open",
+      "error_type": "TN",
+      "category": "chicken_restaurant"
+    },
+    {
+      "idx": 295,
+      "true_label": "open",
+      "p_closed": 0.1126842349767685,
+      "predicted": "open",
+      "error_type": "TN",
+      "category": "courier_and_delivery_services"
+    },
+    {
+      "idx": 296,
+      "true_label": "open",
+      "p_closed": 0.04351929575204849,
+      "predicted": "open",
+      "error_type": "TN",
+      "category": "hotel"
+    },
+    {
+      "idx": 297,
+      "true_label": "open",
+      "p_closed": 0.13878288865089417,
+      "predicted": "open",
+      "error_type": "TN",
+      "category": "sandwich_shop"
+    },
+    {
+      "idx": 298,
+      "true_label": "open",
+      "p_closed": 0.1262930929660797,
+      "predicted": "open",
+      "error_type": "TN",
+      "category": "construction_services"
+    },
+    {
+      "idx": 299,
+      "true_label": "open",
+      "p_closed": 0.27926138043403625,
+      "predicted": "open",
+      "error_type": "TN",
+      "category": "medical_supply"
+    },
+    {
+      "idx": 300,
+      "true_label": "closed",
+      "p_closed": 0.7387529611587524,
+      "predicted": "closed",
+      "error_type": "TP",
+      "category": "campground"
+    },
+    {
+      "idx": 301,
+      "true_label": "open",
+      "p_closed": 0.05207516625523567,
+      "predicted": "open",
+      "error_type": "TN",
+      "category": "vitamins_and_supplements"
+    },
+    {
+      "idx": 302,
+      "true_label": "open",
+      "p_closed": 0.14670062065124512,
+      "predicted": "open",
+      "error_type": "TN",
+      "category": "campground"
+    },
+    {
+      "idx": 303,
+      "true_label": "open",
+      "p_closed": 0.031084973365068436,
+      "predicted": "open",
+      "error_type": "TN",
+      "category": "fast_food_restaurant"
+    },
+    {
+      "idx": 304,
+      "true_label": "open",
+      "p_closed": 0.31888294219970703,
+      "predicted": "open",
+      "error_type": "TN",
+      "category": "pizza_restaurant"
+    },
+    {
+      "idx": 305,
+      "true_label": "open",
+      "p_closed": 0.20754943788051605,
+      "predicted": "open",
+      "error_type": "TN",
+      "category": "campground"
+    },
+    {
+      "idx": 306,
+      "true_label": "open",
+      "p_closed": 0.660920262336731,
+      "predicted": "closed",
+      "error_type": "FP",
+      "category": "hotel"
+    },
+    {
+      "idx": 307,
+      "true_label": "open",
+      "p_closed": 0.4689008891582489,
+      "predicted": "open",
+      "error_type": "TN",
+      "category": "caterer"
+    },
+    {
+      "idx": 308,
+      "true_label": "open",
+      "p_closed": 0.32427796721458435,
+      "predicted": "open",
+      "error_type": "TN",
+      "category": "accommodation"
+    },
+    {
+      "idx": 309,
+      "true_label": "open",
+      "p_closed": 0.15921734273433685,
+      "predicted": "open",
+      "error_type": "TN",
+      "category": "shipping_center"
+    },
+    {
+      "idx": 310,
+      "true_label": "closed",
+      "p_closed": 0.13730905950069427,
+      "predicted": "open",
+      "error_type": "FN",
+      "category": "florist"
+    },
+    {
+      "idx": 311,
+      "true_label": "open",
+      "p_closed": 0.13678811490535736,
+      "predicted": "open",
+      "error_type": "TN",
+      "category": "OOV"
+    },
+    {
+      "idx": 312,
+      "true_label": "open",
+      "p_closed": 0.27106398344039917,
+      "predicted": "open",
+      "error_type": "TN",
+      "category": "convenience_store"
+    },
+    {
+      "idx": 313,
+      "true_label": "open",
+      "p_closed": 0.18939144909381866,
+      "predicted": "open",
+      "error_type": "TN",
+      "category": "it_service_and_computer_repair"
+    },
+    {
+      "idx": 314,
+      "true_label": "open",
+      "p_closed": 0.31750330328941345,
+      "predicted": "open",
+      "error_type": "TN",
+      "category": "fast_food_restaurant"
+    },
+    {
+      "idx": 315,
+      "true_label": "open",
+      "p_closed": 0.3967413306236267,
+      "predicted": "open",
+      "error_type": "TN",
+      "category": "professional_services"
+    },
+    {
+      "idx": 316,
+      "true_label": "open",
+      "p_closed": 0.18651844561100006,
+      "predicted": "open",
+      "error_type": "TN",
+      "category": "delicatessen"
+    },
+    {
+      "idx": 317,
+      "true_label": "open",
+      "p_closed": 0.0982326790690422,
+      "predicted": "open",
+      "error_type": "TN",
+      "category": "delicatessen"
+    },
+    {
+      "idx": 318,
+      "true_label": "open",
+      "p_closed": 0.56052565574646,
+      "predicted": "closed",
+      "error_type": "FP",
+      "category": "used_vintage_and_consignment"
+    },
+    {
+      "idx": 319,
+      "true_label": "open",
+      "p_closed": 0.21736836433410645,
+      "predicted": "open",
+      "error_type": "TN",
+      "category": "bed_and_breakfast"
+    },
+    {
+      "idx": 320,
+      "true_label": "open",
+      "p_closed": 0.28461092710494995,
+      "predicted": "open",
+      "error_type": "TN",
+      "category": "storage_facility"
+    },
+    {
+      "idx": 321,
+      "true_label": "open",
+      "p_closed": 0.06698298454284668,
+      "predicted": "open",
+      "error_type": "TN",
+      "category": "fast_food_restaurant"
+    },
+    {
+      "idx": 322,
+      "true_label": "open",
+      "p_closed": 0.10132112354040146,
+      "predicted": "open",
+      "error_type": "TN",
+      "category": "liquor_store"
+    },
+    {
+      "idx": 323,
+      "true_label": "open",
+      "p_closed": 0.16670289635658264,
+      "predicted": "open",
+      "error_type": "TN",
+      "category": "hotel"
+    },
+    {
+      "idx": 324,
+      "true_label": "open",
+      "p_closed": 0.21870243549346924,
+      "predicted": "open",
+      "error_type": "TN",
+      "category": "lingerie_store"
+    },
+    {
+      "idx": 325,
+      "true_label": "open",
+      "p_closed": 0.16472811996936798,
+      "predicted": "open",
+      "error_type": "TN",
+      "category": "it_service_and_computer_repair"
+    },
+    {
+      "idx": 326,
+      "true_label": "open",
+      "p_closed": 0.2979896068572998,
+      "predicted": "open",
+      "error_type": "TN",
+      "category": "flowers_and_gifts_shop"
+    },
+    {
+      "idx": 327,
+      "true_label": "closed",
+      "p_closed": 0.8044137358665466,
+      "predicted": "closed",
+      "error_type": "TP",
+      "category": "professional_services"
+    },
+    {
+      "idx": 328,
+      "true_label": "open",
+      "p_closed": 0.08191383630037308,
+      "predicted": "open",
+      "error_type": "TN",
+      "category": "sandwich_shop"
+    },
+    {
+      "idx": 329,
+      "true_label": "closed",
+      "p_closed": 0.2842409312725067,
+      "predicted": "open",
+      "error_type": "FN",
+      "category": "music_and_dvd_store"
+    },
+    {
+      "idx": 330,
+      "true_label": "open",
+      "p_closed": 0.4910464882850647,
+      "predicted": "open",
+      "error_type": "TN",
+      "category": "wills_trusts_and_probate"
+    },
+    {
+      "idx": 331,
+      "true_label": "open",
+      "p_closed": 0.14274893701076508,
+      "predicted": "open",
+      "error_type": "TN",
+      "category": "hotel"
+    },
+    {
+      "idx": 332,
+      "true_label": "open",
+      "p_closed": 0.40640386939048767,
+      "predicted": "open",
+      "error_type": "TN",
+      "category": "day_care_preschool"
+    },
+    {
+      "idx": 333,
+      "true_label": "closed",
+      "p_closed": 0.15306329727172852,
+      "predicted": "open",
+      "error_type": "FN",
+      "category": "pharmacy"
+    },
+    {
+      "idx": 334,
+      "true_label": "open",
+      "p_closed": 0.0982326790690422,
+      "predicted": "open",
+      "error_type": "TN",
+      "category": "delicatessen"
+    },
+    {
+      "idx": 335,
+      "true_label": "open",
+      "p_closed": 0.05843840166926384,
+      "predicted": "open",
+      "error_type": "TN",
+      "category": "auction_house"
+    },
+    {
+      "idx": 336,
+      "true_label": "open",
+      "p_closed": 0.3580380380153656,
+      "predicted": "open",
+      "error_type": "TN",
+      "category": "professional_services"
+    },
+    {
+      "idx": 337,
+      "true_label": "closed",
+      "p_closed": 0.26792576909065247,
+      "predicted": "open",
+      "error_type": "FN",
+      "category": "professional_services"
+    },
+    {
+      "idx": 338,
+      "true_label": "open",
+      "p_closed": 0.32596462965011597,
+      "predicted": "open",
+      "error_type": "TN",
+      "category": "professional_services"
+    },
+    {
+      "idx": 339,
+      "true_label": "open",
+      "p_closed": 0.3206474781036377,
+      "predicted": "open",
+      "error_type": "TN",
+      "category": "cafe"
+    },
+    {
+      "idx": 340,
+      "true_label": "closed",
+      "p_closed": 0.6927151679992676,
+      "predicted": "closed",
+      "error_type": "TP",
+      "category": "restaurant"
+    },
+    {
+      "idx": 341,
+      "true_label": "open",
+      "p_closed": 0.07955088466405869,
+      "predicted": "open",
+      "error_type": "TN",
+      "category": "hotel"
+    },
+    {
+      "idx": 342,
+      "true_label": "open",
+      "p_closed": 0.4880519509315491,
+      "predicted": "open",
+      "error_type": "TN",
+      "category": "accommodation"
+    },
+    {
+      "idx": 343,
+      "true_label": "open",
+      "p_closed": 0.3165782690048218,
+      "predicted": "open",
+      "error_type": "TN",
+      "category": "fast_food_restaurant"
+    },
+    {
+      "idx": 344,
+      "true_label": "open",
+      "p_closed": 0.2032778561115265,
+      "predicted": "open",
+      "error_type": "TN",
+      "category": "wine_bar"
+    },
+    {
+      "idx": 345,
+      "true_label": "open",
+      "p_closed": 0.13872464001178741,
+      "predicted": "open",
+      "error_type": "TN",
+      "category": "laboratory"
+    },
+    {
+      "idx": 346,
+      "true_label": "open",
+      "p_closed": 0.4413803517818451,
+      "predicted": "open",
+      "error_type": "TN",
+      "category": "carpet_store"
+    },
+    {
+      "idx": 347,
+      "true_label": "open",
+      "p_closed": 0.6066164970397949,
+      "predicted": "closed",
+      "error_type": "FP",
+      "category": "professional_services"
+    },
+    {
+      "idx": 348,
+      "true_label": "open",
+      "p_closed": 0.276896595954895,
+      "predicted": "open",
+      "error_type": "TN",
+      "category": "accommodation"
+    },
+    {
+      "idx": 349,
+      "true_label": "open",
+      "p_closed": 0.4757225513458252,
+      "predicted": "open",
+      "error_type": "TN",
+      "category": "convenience_store"
+    },
+    {
+      "idx": 350,
+      "true_label": "closed",
+      "p_closed": 0.815100908279419,
+      "predicted": "closed",
+      "error_type": "TP",
+      "category": "hotel"
+    },
+    {
+      "idx": 351,
+      "true_label": "closed",
+      "p_closed": 0.27968981862068176,
+      "predicted": "open",
+      "error_type": "FN",
+      "category": "music_and_dvd_store"
+    },
+    {
+      "idx": 352,
+      "true_label": "open",
+      "p_closed": 0.4905654191970825,
+      "predicted": "open",
+      "error_type": "TN",
+      "category": "pharmacy"
+    },
+    {
+      "idx": 353,
+      "true_label": "open",
+      "p_closed": 0.055476799607276917,
+      "predicted": "open",
+      "error_type": "TN",
+      "category": "arts_and_crafts"
+    },
+    {
+      "idx": 354,
+      "true_label": "open",
+      "p_closed": 0.25188302993774414,
+      "predicted": "open",
+      "error_type": "TN",
+      "category": "e_cigarette_store"
+    },
+    {
+      "idx": 355,
+      "true_label": "open",
+      "p_closed": 0.12448232620954514,
+      "predicted": "open",
+      "error_type": "TN",
+      "category": "pet_store"
+    },
+    {
+      "idx": 356,
+      "true_label": "open",
+      "p_closed": 0.2539215683937073,
+      "predicted": "open",
+      "error_type": "TN",
+      "category": "used_vintage_and_consignment"
+    },
+    {
+      "idx": 357,
+      "true_label": "open",
+      "p_closed": 0.09059146791696548,
+      "predicted": "open",
+      "error_type": "TN",
+      "category": "divorce_and_family_law"
+    },
+    {
+      "idx": 358,
+      "true_label": "open",
+      "p_closed": 0.3610575795173645,
+      "predicted": "open",
+      "error_type": "TN",
+      "category": "shopping"
+    },
+    {
+      "idx": 359,
+      "true_label": "open",
+      "p_closed": 0.0814148411154747,
+      "predicted": "open",
+      "error_type": "TN",
+      "category": "hotel"
+    },
+    {
+      "idx": 360,
+      "true_label": "open",
+      "p_closed": 0.3526342213153839,
+      "predicted": "open",
+      "error_type": "TN",
+      "category": "professional_services"
+    },
+    {
+      "idx": 361,
+      "true_label": "open",
+      "p_closed": 0.07723525166511536,
+      "predicted": "open",
+      "error_type": "TN",
+      "category": "bookstore"
+    },
+    {
+      "idx": 362,
+      "true_label": "open",
+      "p_closed": 0.6043665409088135,
+      "predicted": "closed",
+      "error_type": "FP",
+      "category": "hotel"
+    },
+    {
+      "idx": 363,
+      "true_label": "open",
+      "p_closed": 0.07286056131124496,
+      "predicted": "open",
+      "error_type": "TN",
+      "category": "fast_food_restaurant"
+    },
+    {
+      "idx": 364,
+      "true_label": "closed",
+      "p_closed": 0.5314570665359497,
+      "predicted": "closed",
+      "error_type": "TP",
+      "category": "professional_services"
+    },
+    {
+      "idx": 365,
+      "true_label": "open",
+      "p_closed": 0.29969197511672974,
+      "predicted": "open",
+      "error_type": "TN",
+      "category": "holiday_rental_home"
+    },
+    {
+      "idx": 366,
+      "true_label": "open",
+      "p_closed": 0.22496594488620758,
+      "predicted": "open",
+      "error_type": "TN",
+      "category": "american_restaurant"
+    },
+    {
+      "idx": 367,
+      "true_label": "open",
+      "p_closed": 0.23097053170204163,
+      "predicted": "open",
+      "error_type": "TN",
+      "category": "mexican_restaurant"
+    },
+    {
+      "idx": 368,
+      "true_label": "open",
+      "p_closed": 0.016058776527643204,
+      "predicted": "open",
+      "error_type": "TN",
+      "category": "hardware_store"
+    },
+    {
+      "idx": 369,
+      "true_label": "open",
+      "p_closed": 0.12273062765598297,
+      "predicted": "open",
+      "error_type": "TN",
+      "category": "graphic_designer"
+    },
+    {
+      "idx": 370,
+      "true_label": "open",
+      "p_closed": 0.14068268239498138,
+      "predicted": "open",
+      "error_type": "TN",
+      "category": "sandwich_shop"
+    },
+    {
+      "idx": 371,
+      "true_label": "open",
+      "p_closed": 0.31024420261383057,
+      "predicted": "open",
+      "error_type": "TN",
+      "category": "flowers_and_gifts_shop"
+    },
+    {
+      "idx": 372,
+      "true_label": "open",
+      "p_closed": 0.2759334444999695,
+      "predicted": "open",
+      "error_type": "TN",
+      "category": "salad_bar"
+    },
+    {
+      "idx": 373,
+      "true_label": "closed",
+      "p_closed": 0.827110230922699,
+      "predicted": "closed",
+      "error_type": "TP",
+      "category": "rental_kiosks"
+    },
+    {
+      "idx": 374,
+      "true_label": "open",
+      "p_closed": 0.32112711668014526,
+      "predicted": "open",
+      "error_type": "TN",
+      "category": "printing_services"
+    },
+    {
+      "idx": 375,
+      "true_label": "closed",
+      "p_closed": 0.3484336733818054,
+      "predicted": "open",
+      "error_type": "FN",
+      "category": "bakery"
+    },
+    {
+      "idx": 376,
+      "true_label": "closed",
+      "p_closed": 0.37018993496894836,
+      "predicted": "open",
+      "error_type": "FN",
+      "category": "pizza_restaurant"
+    },
+    {
+      "idx": 377,
+      "true_label": "closed",
+      "p_closed": 0.7556344866752625,
+      "predicted": "closed",
+      "error_type": "TP",
+      "category": "video_and_video_game_rentals"
+    },
+    {
+      "idx": 378,
+      "true_label": "open",
+      "p_closed": 0.023829888552427292,
+      "predicted": "open",
+      "error_type": "TN",
+      "category": "funeral_services_and_cemeteries"
+    },
+    {
+      "idx": 379,
+      "true_label": "open",
+      "p_closed": 0.9255750775337219,
+      "predicted": "closed",
+      "error_type": "FP",
+      "category": "professional_services"
+    },
+    {
+      "idx": 380,
+      "true_label": "open",
+      "p_closed": 0.2244586944580078,
+      "predicted": "open",
+      "error_type": "TN",
+      "category": "rv_park"
+    },
+    {
+      "idx": 381,
+      "true_label": "open",
+      "p_closed": 0.09403333067893982,
+      "predicted": "open",
+      "error_type": "TN",
+      "category": "resort"
+    },
+    {
+      "idx": 382,
+      "true_label": "open",
+      "p_closed": 0.16562271118164062,
+      "predicted": "open",
+      "error_type": "TN",
+      "category": "supermarket"
+    },
+    {
+      "idx": 383,
+      "true_label": "open",
+      "p_closed": 0.14620321989059448,
+      "predicted": "open",
+      "error_type": "TN",
+      "category": "dry_cleaning"
+    },
+    {
+      "idx": 384,
+      "true_label": "open",
+      "p_closed": 0.15819315612316132,
+      "predicted": "open",
+      "error_type": "TN",
+      "category": "hotel"
+    },
+    {
+      "idx": 385,
+      "true_label": "open",
+      "p_closed": 0.20445159077644348,
+      "predicted": "open",
+      "error_type": "TN",
+      "category": "professional_services"
+    },
+    {
+      "idx": 386,
+      "true_label": "open",
+      "p_closed": 0.36522790789604187,
+      "predicted": "open",
+      "error_type": "TN",
+      "category": "online_shop"
+    },
+    {
+      "idx": 387,
+      "true_label": "open",
+      "p_closed": 0.11701307445764542,
+      "predicted": "open",
+      "error_type": "TN",
+      "category": "event_photography"
+    },
+    {
+      "idx": 388,
+      "true_label": "open",
+      "p_closed": 0.38971054553985596,
+      "predicted": "open",
+      "error_type": "TN",
+      "category": "convenience_store"
+    },
+    {
+      "idx": 389,
+      "true_label": "closed",
+      "p_closed": 0.4842308461666107,
+      "predicted": "open",
+      "error_type": "FN",
+      "category": "holiday_rental_home"
+    },
+    {
+      "idx": 390,
+      "true_label": "open",
+      "p_closed": 0.1589546501636505,
+      "predicted": "open",
+      "error_type": "TN",
+      "category": "lawyer"
+    },
+    {
+      "idx": 391,
+      "true_label": "open",
+      "p_closed": 0.21412000060081482,
+      "predicted": "open",
+      "error_type": "TN",
+      "category": "self_storage_facility"
+    },
+    {
+      "idx": 392,
+      "true_label": "open",
+      "p_closed": 0.3928509056568146,
+      "predicted": "open",
+      "error_type": "TN",
+      "category": "discount_store"
+    },
+    {
+      "idx": 393,
+      "true_label": "open",
+      "p_closed": 0.06802871823310852,
+      "predicted": "open",
+      "error_type": "TN",
+      "category": "hotel"
+    },
+    {
+      "idx": 394,
+      "true_label": "open",
+      "p_closed": 0.4192894399166107,
+      "predicted": "open",
+      "error_type": "TN",
+      "category": "funeral_services_and_cemeteries"
+    },
+    {
+      "idx": 395,
+      "true_label": "open",
+      "p_closed": 0.41551876068115234,
+      "predicted": "open",
+      "error_type": "TN",
+      "category": "shopping"
+    },
+    {
+      "idx": 396,
+      "true_label": "open",
+      "p_closed": 0.10188266634941101,
+      "predicted": "open",
+      "error_type": "TN",
+      "category": "printing_services"
+    },
+    {
+      "idx": 397,
+      "true_label": "open",
+      "p_closed": 0.3269561529159546,
+      "predicted": "open",
+      "error_type": "TN",
+      "category": "self_storage_facility"
+    },
+    {
+      "idx": 398,
+      "true_label": "open",
+      "p_closed": 0.4083525240421295,
+      "predicted": "open",
+      "error_type": "TN",
+      "category": "mobile_phone_store"
+    },
+    {
+      "idx": 399,
+      "true_label": "open",
+      "p_closed": 0.1878325492143631,
+      "predicted": "open",
+      "error_type": "TN",
+      "category": "lumber_store"
+    },
+    {
+      "idx": 400,
+      "true_label": "open",
+      "p_closed": 0.2095051258802414,
+      "predicted": "open",
+      "error_type": "TN",
+      "category": "fabric_store"
+    },
+    {
+      "idx": 401,
+      "true_label": "closed",
+      "p_closed": 0.20728656649589539,
+      "predicted": "open",
+      "error_type": "FN",
+      "category": "graphic_designer"
+    },
+    {
+      "idx": 402,
+      "true_label": "open",
+      "p_closed": 0.139534592628479,
+      "predicted": "open",
+      "error_type": "TN",
+      "category": "brewery"
+    },
+    {
+      "idx": 403,
+      "true_label": "closed",
+      "p_closed": 0.16670289635658264,
+      "predicted": "open",
+      "error_type": "FN",
+      "category": "hotel"
+    },
+    {
+      "idx": 404,
+      "true_label": "open",
+      "p_closed": 0.14324142038822174,
+      "predicted": "open",
+      "error_type": "TN",
+      "category": "marketing_agency"
+    },
+    {
+      "idx": 405,
+      "true_label": "open",
+      "p_closed": 0.0316317118704319,
+      "predicted": "open",
+      "error_type": "TN",
+      "category": "hotel"
+    },
+    {
+      "idx": 406,
+      "true_label": "open",
+      "p_closed": 0.15098591148853302,
+      "predicted": "open",
+      "error_type": "TN",
+      "category": "advertising_agency"
+    },
+    {
+      "idx": 407,
+      "true_label": "open",
+      "p_closed": 0.21470098197460175,
+      "predicted": "open",
+      "error_type": "TN",
+      "category": "machine_shop"
+    },
+    {
+      "idx": 408,
+      "true_label": "closed",
+      "p_closed": 0.3149537742137909,
+      "predicted": "open",
+      "error_type": "FN",
+      "category": "employment_agencies"
+    },
+    {
+      "idx": 409,
+      "true_label": "open",
+      "p_closed": 0.33154380321502686,
+      "predicted": "open",
+      "error_type": "TN",
+      "category": "printing_services"
+    },
+    {
+      "idx": 410,
+      "true_label": "open",
+      "p_closed": 0.10344769060611725,
+      "predicted": "open",
+      "error_type": "TN",
+      "category": "architectural_designer"
+    },
+    {
+      "idx": 411,
+      "true_label": "open",
+      "p_closed": 0.27570977807044983,
+      "predicted": "open",
+      "error_type": "TN",
+      "category": "resort"
+    },
+    {
+      "idx": 412,
+      "true_label": "open",
+      "p_closed": 0.07376022636890411,
+      "predicted": "open",
+      "error_type": "TN",
+      "category": "fast_food_restaurant"
+    },
+    {
+      "idx": 413,
+      "true_label": "open",
+      "p_closed": 0.4471050500869751,
+      "predicted": "open",
+      "error_type": "TN",
+      "category": "hotel"
+    },
+    {
+      "idx": 414,
+      "true_label": "open",
+      "p_closed": 0.08833298087120056,
+      "predicted": "open",
+      "error_type": "TN",
+      "category": "fabric_store"
+    },
+    {
+      "idx": 415,
+      "true_label": "open",
+      "p_closed": 0.2650408148765564,
+      "predicted": "open",
+      "error_type": "TN",
+      "category": "jewelry_store"
+    },
+    {
+      "idx": 416,
+      "true_label": "open",
+      "p_closed": 0.14620321989059448,
+      "predicted": "open",
+      "error_type": "TN",
+      "category": "dry_cleaning"
+    },
+    {
+      "idx": 417,
+      "true_label": "open",
+      "p_closed": 0.229811891913414,
+      "predicted": "open",
+      "error_type": "TN",
+      "category": "OOV"
+    },
+    {
+      "idx": 418,
+      "true_label": "open",
+      "p_closed": 0.2648535668849945,
+      "predicted": "open",
+      "error_type": "TN",
+      "category": "paint_store"
+    },
+    {
+      "idx": 419,
+      "true_label": "open",
+      "p_closed": 0.3484336733818054,
+      "predicted": "open",
+      "error_type": "TN",
+      "category": "bakery"
+    },
+    {
+      "idx": 420,
+      "true_label": "open",
+      "p_closed": 0.15607106685638428,
+      "predicted": "open",
+      "error_type": "TN",
+      "category": "pharmacy"
+    },
+    {
+      "idx": 421,
+      "true_label": "open",
+      "p_closed": 0.13562792539596558,
+      "predicted": "open",
+      "error_type": "TN",
+      "category": "pet_store"
+    },
+    {
+      "idx": 422,
+      "true_label": "closed",
+      "p_closed": 0.07957284897565842,
+      "predicted": "open",
+      "error_type": "FN",
+      "category": "hotel"
+    },
+    {
+      "idx": 423,
+      "true_label": "open",
+      "p_closed": 0.31407812237739563,
+      "predicted": "open",
+      "error_type": "TN",
+      "category": "mobile_phone_store"
+    },
+    {
+      "idx": 424,
+      "true_label": "open",
+      "p_closed": 0.2323879450559616,
+      "predicted": "open",
+      "error_type": "TN",
+      "category": "mexican_restaurant"
+    },
+    {
+      "idx": 425,
+      "true_label": "open",
+      "p_closed": 0.03370530158281326,
+      "predicted": "open",
+      "error_type": "TN",
+      "category": "hotel"
+    },
+    {
+      "idx": 426,
+      "true_label": "open",
+      "p_closed": 0.34502163529396057,
+      "predicted": "open",
+      "error_type": "TN",
+      "category": "OOV"
+    },
+    {
+      "idx": 427,
+      "true_label": "open",
+      "p_closed": 0.13661444187164307,
+      "predicted": "open",
+      "error_type": "TN",
+      "category": "lawyer"
+    },
+    {
+      "idx": 428,
+      "true_label": "open",
+      "p_closed": 0.03235575929284096,
+      "predicted": "open",
+      "error_type": "TN",
+      "category": "sushi_restaurant"
+    },
+    {
+      "idx": 429,
+      "true_label": "open",
+      "p_closed": 0.1354929804801941,
+      "predicted": "open",
+      "error_type": "TN",
+      "category": "cabin"
+    },
+    {
+      "idx": 430,
+      "true_label": "closed",
+      "p_closed": 0.24444538354873657,
+      "predicted": "open",
+      "error_type": "FN",
+      "category": "web_designer"
+    },
+    {
+      "idx": 431,
+      "true_label": "open",
+      "p_closed": 0.40424275398254395,
+      "predicted": "open",
+      "error_type": "TN",
+      "category": "cafe"
+    },
+    {
+      "idx": 432,
+      "true_label": "open",
+      "p_closed": 0.1931145042181015,
+      "predicted": "open",
+      "error_type": "TN",
+      "category": "furniture_store"
+    },
+    {
+      "idx": 433,
+      "true_label": "open",
+      "p_closed": 0.2672611176967621,
+      "predicted": "open",
+      "error_type": "TN",
+      "category": "pizza_restaurant"
+    },
+    {
+      "idx": 434,
+      "true_label": "open",
+      "p_closed": 0.19920098781585693,
+      "predicted": "open",
+      "error_type": "TN",
+      "category": "engineering_services"
+    },
+    {
+      "idx": 435,
+      "true_label": "open",
+      "p_closed": 0.21746420860290527,
+      "predicted": "open",
+      "error_type": "TN",
+      "category": "lighting_store"
+    },
+    {
+      "idx": 436,
+      "true_label": "closed",
+      "p_closed": 0.8208518028259277,
+      "predicted": "closed",
+      "error_type": "TP",
+      "category": "rental_kiosks"
+    },
+    {
+      "idx": 437,
+      "true_label": "open",
+      "p_closed": 0.5278040170669556,
+      "predicted": "closed",
+      "error_type": "FP",
+      "category": "convenience_store"
+    },
+    {
+      "idx": 438,
+      "true_label": "open",
+      "p_closed": 0.15921734273433685,
+      "predicted": "open",
+      "error_type": "TN",
+      "category": "shipping_center"
+    },
+    {
+      "idx": 439,
+      "true_label": "open",
+      "p_closed": 0.29392609000205994,
+      "predicted": "open",
+      "error_type": "TN",
+      "category": "wills_trusts_and_probate"
+    },
+    {
+      "idx": 440,
+      "true_label": "open",
+      "p_closed": 0.21133840084075928,
+      "predicted": "open",
+      "error_type": "TN",
+      "category": "sporting_goods"
+    },
+    {
+      "idx": 441,
+      "true_label": "open",
+      "p_closed": 0.1503400206565857,
+      "predicted": "open",
+      "error_type": "TN",
+      "category": "marketing_agency"
+    },
+    {
+      "idx": 442,
+      "true_label": "open",
+      "p_closed": 0.3246613144874573,
+      "predicted": "open",
+      "error_type": "TN",
+      "category": "machine_shop"
+    },
+    {
+      "idx": 443,
+      "true_label": "open",
+      "p_closed": 0.22998109459877014,
+      "predicted": "open",
+      "error_type": "TN",
+      "category": "professional_services"
+    },
+    {
+      "idx": 444,
+      "true_label": "open",
+      "p_closed": 0.3227827847003937,
+      "predicted": "open",
+      "error_type": "TN",
+      "category": "liquor_store"
+    },
+    {
+      "idx": 445,
+      "true_label": "open",
+      "p_closed": 0.6468368768692017,
+      "predicted": "closed",
+      "error_type": "FP",
+      "category": "laundromat"
+    },
+    {
+      "idx": 446,
+      "true_label": "open",
+      "p_closed": 0.0739583745598793,
+      "predicted": "open",
+      "error_type": "TN",
+      "category": "fast_food_restaurant"
+    },
+    {
+      "idx": 447,
+      "true_label": "open",
+      "p_closed": 0.4730600416660309,
+      "predicted": "open",
+      "error_type": "TN",
+      "category": "discount_store"
+    },
+    {
+      "idx": 448,
+      "true_label": "open",
+      "p_closed": 0.3592865765094757,
+      "predicted": "open",
+      "error_type": "TN",
+      "category": "bakery"
+    },
+    {
+      "idx": 449,
+      "true_label": "open",
+      "p_closed": 0.1431359201669693,
+      "predicted": "open",
+      "error_type": "TN",
+      "category": "hotel"
+    },
+    {
+      "idx": 450,
+      "true_label": "open",
+      "p_closed": 0.23097053170204163,
+      "predicted": "open",
+      "error_type": "TN",
+      "category": "mexican_restaurant"
+    },
+    {
+      "idx": 451,
+      "true_label": "open",
+      "p_closed": 0.1622697114944458,
+      "predicted": "open",
+      "error_type": "TN",
+      "category": "clothing_store"
+    },
+    {
+      "idx": 452,
+      "true_label": "open",
+      "p_closed": 0.10678242892026901,
+      "predicted": "open",
+      "error_type": "TN",
+      "category": "auction_house"
+    },
+    {
+      "idx": 453,
+      "true_label": "open",
+      "p_closed": 0.352979451417923,
+      "predicted": "open",
+      "error_type": "TN",
+      "category": "day_care_preschool"
+    },
+    {
+      "idx": 454,
+      "true_label": "open",
+      "p_closed": 0.1623810976743698,
+      "predicted": "open",
+      "error_type": "TN",
+      "category": "marketing_agency"
+    },
+    {
+      "idx": 455,
+      "true_label": "open",
+      "p_closed": 0.17558300495147705,
+      "predicted": "open",
+      "error_type": "TN",
+      "category": "self_storage_facility"
+    },
+    {
+      "idx": 456,
+      "true_label": "open",
+      "p_closed": 0.17292772233486176,
+      "predicted": "open",
+      "error_type": "TN",
+      "category": "barbecue_restaurant"
+    },
+    {
+      "idx": 457,
+      "true_label": "open",
+      "p_closed": 0.08103518933057785,
+      "predicted": "open",
+      "error_type": "TN",
+      "category": "appraisal_services"
+    },
+    {
+      "idx": 458,
+      "true_label": "open",
+      "p_closed": 0.4920487701892853,
+      "predicted": "open",
+      "error_type": "TN",
+      "category": "coffee_shop"
+    },
+    {
+      "idx": 459,
+      "true_label": "open",
+      "p_closed": 0.31243860721588135,
+      "predicted": "open",
+      "error_type": "TN",
+      "category": "japanese_restaurant"
+    },
+    {
+      "idx": 460,
+      "true_label": "open",
+      "p_closed": 0.10932575911283493,
+      "predicted": "open",
+      "error_type": "TN",
+      "category": "lawyer"
+    },
+    {
+      "idx": 461,
+      "true_label": "open",
+      "p_closed": 0.02553567662835121,
+      "predicted": "open",
+      "error_type": "TN",
+      "category": "bankruptcy_law"
+    },
+    {
+      "idx": 462,
+      "true_label": "open",
+      "p_closed": 0.6266121864318848,
+      "predicted": "closed",
+      "error_type": "FP",
+      "category": "professional_services"
+    },
+    {
+      "idx": 463,
+      "true_label": "open",
+      "p_closed": 0.32596462965011597,
+      "predicted": "open",
+      "error_type": "TN",
+      "category": "professional_services"
+    },
+    {
+      "idx": 464,
+      "true_label": "open",
+      "p_closed": 0.11220593750476837,
+      "predicted": "open",
+      "error_type": "TN",
+      "category": "campground"
+    },
+    {
+      "idx": 465,
+      "true_label": "open",
+      "p_closed": 0.4010786712169647,
+      "predicted": "open",
+      "error_type": "TN",
+      "category": "thrift_store"
+    },
+    {
+      "idx": 466,
+      "true_label": "open",
+      "p_closed": 0.07911285758018494,
+      "predicted": "open",
+      "error_type": "TN",
+      "category": "hotel"
+    },
+    {
+      "idx": 467,
+      "true_label": "open",
+      "p_closed": 0.06967422366142273,
+      "predicted": "open",
+      "error_type": "TN",
+      "category": "OOV"
+    },
+    {
+      "idx": 468,
+      "true_label": "open",
+      "p_closed": 0.3586437404155731,
+      "predicted": "open",
+      "error_type": "TN",
+      "category": "professional_services"
+    },
+    {
+      "idx": 469,
+      "true_label": "closed",
+      "p_closed": 0.31791433691978455,
+      "predicted": "open",
+      "error_type": "FN",
+      "category": "sporting_goods"
+    },
+    {
+      "idx": 470,
+      "true_label": "open",
+      "p_closed": 0.0739583745598793,
+      "predicted": "open",
+      "error_type": "TN",
+      "category": "fast_food_restaurant"
+    },
+    {
+      "idx": 471,
+      "true_label": "open",
+      "p_closed": 0.05653940886259079,
+      "predicted": "open",
+      "error_type": "TN",
+      "category": "marketing_agency"
+    },
+    {
+      "idx": 472,
+      "true_label": "open",
+      "p_closed": 0.299712598323822,
+      "predicted": "open",
+      "error_type": "TN",
+      "category": "convenience_store"
+    },
+    {
+      "idx": 473,
+      "true_label": "open",
+      "p_closed": 0.1957734376192093,
+      "predicted": "open",
+      "error_type": "TN",
+      "category": "german_restaurant"
+    },
+    {
+      "idx": 474,
+      "true_label": "open",
+      "p_closed": 0.09841061383485794,
+      "predicted": "open",
+      "error_type": "TN",
+      "category": "hunting_and_fishing_supplies"
+    },
+    {
+      "idx": 475,
+      "true_label": "open",
+      "p_closed": 0.07887542992830276,
+      "predicted": "open",
+      "error_type": "TN",
+      "category": "garbage_collection_service"
+    },
+    {
+      "idx": 476,
+      "true_label": "open",
+      "p_closed": 0.08207576721906662,
+      "predicted": "open",
+      "error_type": "TN",
+      "category": "hotel"
+    },
+    {
+      "idx": 477,
+      "true_label": "open",
+      "p_closed": 0.16570380330085754,
+      "predicted": "open",
+      "error_type": "TN",
+      "category": "OOV"
+    },
+    {
+      "idx": 478,
+      "true_label": "open",
+      "p_closed": 0.07856260985136032,
+      "predicted": "open",
+      "error_type": "TN",
+      "category": "hardware_store"
+    },
+    {
+      "idx": 479,
+      "true_label": "open",
+      "p_closed": 0.40856248140335083,
+      "predicted": "open",
+      "error_type": "TN",
+      "category": "OOV"
+    },
+    {
+      "idx": 480,
+      "true_label": "open",
+      "p_closed": 0.05797671899199486,
+      "predicted": "open",
+      "error_type": "TN",
+      "category": "septic_services"
+    },
+    {
+      "idx": 481,
+      "true_label": "open",
+      "p_closed": 0.13279254734516144,
+      "predicted": "open",
+      "error_type": "TN",
+      "category": "italian_restaurant"
+    },
+    {
+      "idx": 482,
+      "true_label": "open",
+      "p_closed": 0.2657621502876282,
+      "predicted": "open",
+      "error_type": "TN",
+      "category": "accommodation"
+    },
+    {
+      "idx": 483,
+      "true_label": "open",
+      "p_closed": 0.052008192986249924,
+      "predicted": "open",
+      "error_type": "TN",
+      "category": "donuts"
+    },
+    {
+      "idx": 484,
+      "true_label": "closed",
+      "p_closed": 0.33244967460632324,
+      "predicted": "open",
+      "error_type": "FN",
+      "category": "restaurant"
+    },
+    {
+      "idx": 485,
+      "true_label": "open",
+      "p_closed": 0.4681728482246399,
+      "predicted": "open",
+      "error_type": "TN",
+      "category": "coffee_shop"
+    },
+    {
+      "idx": 486,
+      "true_label": "open",
+      "p_closed": 0.4051562249660492,
+      "predicted": "open",
+      "error_type": "TN",
+      "category": "restaurant"
+    },
+    {
+      "idx": 487,
+      "true_label": "open",
+      "p_closed": 0.5031825304031372,
+      "predicted": "closed",
+      "error_type": "FP",
+      "category": "winery"
+    },
+    {
+      "idx": 488,
+      "true_label": "open",
+      "p_closed": 0.11807793378829956,
+      "predicted": "open",
+      "error_type": "TN",
+      "category": "notary_public"
+    },
+    {
+      "idx": 489,
+      "true_label": "open",
+      "p_closed": 0.37693488597869873,
+      "predicted": "open",
+      "error_type": "TN",
+      "category": "electronics"
+    },
+    {
+      "idx": 490,
+      "true_label": "open",
+      "p_closed": 0.21410295367240906,
+      "predicted": "open",
+      "error_type": "TN",
+      "category": "taxidermist"
+    },
+    {
+      "idx": 491,
+      "true_label": "open",
+      "p_closed": 0.09219695627689362,
+      "predicted": "open",
+      "error_type": "TN",
+      "category": "pawn_shop"
+    },
+    {
+      "idx": 492,
+      "true_label": "open",
+      "p_closed": 0.09365329891443253,
+      "predicted": "open",
+      "error_type": "TN",
+      "category": "bed_and_breakfast"
+    },
+    {
+      "idx": 493,
+      "true_label": "open",
+      "p_closed": 0.22215479612350464,
+      "predicted": "open",
+      "error_type": "TN",
+      "category": "campground"
+    },
+    {
+      "idx": 494,
+      "true_label": "open",
+      "p_closed": 0.0492570586502552,
+      "predicted": "open",
+      "error_type": "TN",
+      "category": "ice_cream_shop"
+    },
+    {
+      "idx": 495,
+      "true_label": "open",
+      "p_closed": 0.12554652988910675,
+      "predicted": "open",
+      "error_type": "TN",
+      "category": "liquor_store"
+    },
+    {
+      "idx": 496,
+      "true_label": "open",
+      "p_closed": 0.06898955255746841,
+      "predicted": "open",
+      "error_type": "TN",
+      "category": "advertising_agency"
+    },
+    {
+      "idx": 497,
+      "true_label": "open",
+      "p_closed": 0.5934956669807434,
+      "predicted": "closed",
+      "error_type": "FP",
+      "category": "cabin"
+    },
+    {
+      "idx": 498,
+      "true_label": "closed",
+      "p_closed": 0.5368462204933167,
+      "predicted": "closed",
+      "error_type": "TP",
+      "category": "engineering_services"
+    },
+    {
+      "idx": 499,
+      "true_label": "open",
+      "p_closed": 0.04941396787762642,
+      "predicted": "open",
+      "error_type": "TN",
+      "category": "event_planning"
+    },
+    {
+      "idx": 500,
+      "true_label": "open",
+      "p_closed": 0.8810028433799744,
+      "predicted": "closed",
+      "error_type": "FP",
+      "category": "seafood_restaurant"
+    },
+    {
+      "idx": 501,
+      "true_label": "open",
+      "p_closed": 0.046594150364398956,
+      "predicted": "open",
+      "error_type": "TN",
+      "category": "bar"
+    },
+    {
+      "idx": 502,
+      "true_label": "open",
+      "p_closed": 0.151767760515213,
+      "predicted": "open",
+      "error_type": "TN",
+      "category": "OOV"
+    },
+    {
+      "idx": 503,
+      "true_label": "open",
+      "p_closed": 0.13789275288581848,
+      "predicted": "open",
+      "error_type": "TN",
+      "category": "employment_agencies"
+    },
+    {
+      "idx": 504,
+      "true_label": "open",
+      "p_closed": 0.36297181248664856,
+      "predicted": "open",
+      "error_type": "TN",
+      "category": "professional_services"
+    },
+    {
+      "idx": 505,
+      "true_label": "open",
+      "p_closed": 0.14670062065124512,
+      "predicted": "open",
+      "error_type": "TN",
+      "category": "campground"
+    },
+    {
+      "idx": 506,
+      "true_label": "open",
+      "p_closed": 0.19628840684890747,
+      "predicted": "open",
+      "error_type": "TN",
+      "category": "department_store"
+    },
+    {
+      "idx": 507,
+      "true_label": "open",
+      "p_closed": 0.17197178304195404,
+      "predicted": "open",
+      "error_type": "TN",
+      "category": "employment_agencies"
+    },
+    {
+      "idx": 508,
+      "true_label": "open",
+      "p_closed": 0.09487801790237427,
+      "predicted": "open",
+      "error_type": "TN",
+      "category": "furniture_store"
+    },
+    {
+      "idx": 509,
+      "true_label": "open",
+      "p_closed": 0.1457548886537552,
+      "predicted": "open",
+      "error_type": "TN",
+      "category": "american_restaurant"
+    },
+    {
+      "idx": 510,
+      "true_label": "open",
+      "p_closed": 0.1037302017211914,
+      "predicted": "open",
+      "error_type": "TN",
+      "category": "carpet_store"
+    },
+    {
+      "idx": 511,
+      "true_label": "open",
+      "p_closed": 0.12659907341003418,
+      "predicted": "open",
+      "error_type": "TN",
+      "category": "storage_facility"
+    },
+    {
+      "idx": 512,
+      "true_label": "open",
+      "p_closed": 0.06853476166725159,
+      "predicted": "open",
+      "error_type": "TN",
+      "category": "printing_services"
+    },
+    {
+      "idx": 513,
+      "true_label": "open",
+      "p_closed": 0.19264332950115204,
+      "predicted": "open",
+      "error_type": "TN",
+      "category": "restaurant"
+    },
+    {
+      "idx": 514,
+      "true_label": "open",
+      "p_closed": 0.14252974092960358,
+      "predicted": "open",
+      "error_type": "TN",
+      "category": "printing_services"
+    },
+    {
+      "idx": 515,
+      "true_label": "open",
+      "p_closed": 0.4939124882221222,
+      "predicted": "open",
+      "error_type": "TN",
+      "category": "professional_services"
+    },
+    {
+      "idx": 516,
+      "true_label": "open",
+      "p_closed": 0.2671792805194855,
+      "predicted": "open",
+      "error_type": "TN",
+      "category": "day_care_preschool"
+    },
+    {
+      "idx": 517,
+      "true_label": "open",
+      "p_closed": 0.24512198567390442,
+      "predicted": "open",
+      "error_type": "TN",
+      "category": "grocery_store"
+    },
+    {
+      "idx": 518,
+      "true_label": "open",
+      "p_closed": 0.15467649698257446,
+      "predicted": "open",
+      "error_type": "TN",
+      "category": "flowers_and_gifts_shop"
+    },
+    {
+      "idx": 519,
+      "true_label": "open",
+      "p_closed": 0.25386008620262146,
+      "predicted": "open",
+      "error_type": "TN",
+      "category": "pharmacy"
+    },
+    {
+      "idx": 520,
+      "true_label": "open",
+      "p_closed": 0.05384112894535065,
+      "predicted": "open",
+      "error_type": "TN",
+      "category": "event_planning"
+    },
+    {
+      "idx": 521,
+      "true_label": "open",
+      "p_closed": 0.371757835149765,
+      "predicted": "open",
+      "error_type": "TN",
+      "category": "pizza_restaurant"
+    },
+    {
+      "idx": 522,
+      "true_label": "open",
+      "p_closed": 0.5337847471237183,
+      "predicted": "closed",
+      "error_type": "FP",
+      "category": "professional_services"
+    },
+    {
+      "idx": 523,
+      "true_label": "open",
+      "p_closed": 0.3591366708278656,
+      "predicted": "open",
+      "error_type": "TN",
+      "category": "septic_services"
+    },
+    {
+      "idx": 524,
+      "true_label": "open",
+      "p_closed": 0.15663455426692963,
+      "predicted": "open",
+      "error_type": "TN",
+      "category": "e_cigarette_store"
+    },
+    {
+      "idx": 525,
+      "true_label": "open",
+      "p_closed": 0.36205050349235535,
+      "predicted": "open",
+      "error_type": "TN",
+      "category": "pub"
+    },
+    {
+      "idx": 526,
+      "true_label": "open",
+      "p_closed": 0.24764540791511536,
+      "predicted": "open",
+      "error_type": "TN",
+      "category": "american_restaurant"
+    },
+    {
+      "idx": 527,
+      "true_label": "open",
+      "p_closed": 0.24762336909770966,
+      "predicted": "open",
+      "error_type": "TN",
+      "category": "american_restaurant"
+    },
+    {
+      "idx": 528,
+      "true_label": "open",
+      "p_closed": 0.03459114953875542,
+      "predicted": "open",
+      "error_type": "TN",
+      "category": "fast_food_restaurant"
+    },
+    {
+      "idx": 529,
+      "true_label": "open",
+      "p_closed": 0.27856531739234924,
+      "predicted": "open",
+      "error_type": "TN",
+      "category": "convenience_store"
+    },
+    {
+      "idx": 530,
+      "true_label": "closed",
+      "p_closed": 0.09615744650363922,
+      "predicted": "open",
+      "error_type": "FN",
+      "category": "antique_store"
+    },
+    {
+      "idx": 531,
+      "true_label": "open",
+      "p_closed": 0.06802871823310852,
+      "predicted": "open",
+      "error_type": "TN",
+      "category": "hotel"
+    },
+    {
+      "idx": 532,
+      "true_label": "open",
+      "p_closed": 0.1880679428577423,
+      "predicted": "open",
+      "error_type": "TN",
+      "category": "cabin"
+    },
+    {
+      "idx": 533,
+      "true_label": "open",
+      "p_closed": 0.37171244621276855,
+      "predicted": "open",
+      "error_type": "TN",
+      "category": "restaurant"
+    },
+    {
+      "idx": 534,
+      "true_label": "open",
+      "p_closed": 0.15512219071388245,
+      "predicted": "open",
+      "error_type": "TN",
+      "category": "auto_parts_and_supply_store"
+    },
+    {
+      "idx": 535,
+      "true_label": "open",
+      "p_closed": 0.3754403591156006,
+      "predicted": "open",
+      "error_type": "TN",
+      "category": "cabin"
+    },
+    {
+      "idx": 536,
+      "true_label": "open",
+      "p_closed": 0.3717815577983856,
+      "predicted": "open",
+      "error_type": "TN",
+      "category": "tobacco_shop"
+    },
+    {
+      "idx": 537,
+      "true_label": "open",
+      "p_closed": 0.45725688338279724,
+      "predicted": "open",
+      "error_type": "TN",
+      "category": "coffee_shop"
+    },
+    {
+      "idx": 538,
+      "true_label": "open",
+      "p_closed": 0.18247486650943756,
+      "predicted": "open",
+      "error_type": "TN",
+      "category": "employment_agencies"
+    },
+    {
+      "idx": 539,
+      "true_label": "open",
+      "p_closed": 0.04351929575204849,
+      "predicted": "open",
+      "error_type": "TN",
+      "category": "hotel"
+    },
+    {
+      "idx": 540,
+      "true_label": "open",
+      "p_closed": 0.16404719650745392,
+      "predicted": "open",
+      "error_type": "TN",
+      "category": "venue_and_event_space"
+    },
+    {
+      "idx": 541,
+      "true_label": "closed",
+      "p_closed": 0.20393507182598114,
+      "predicted": "open",
+      "error_type": "FN",
+      "category": "internet_service_provider"
+    },
+    {
+      "idx": 542,
+      "true_label": "open",
+      "p_closed": 0.3586437404155731,
+      "predicted": "open",
+      "error_type": "TN",
+      "category": "professional_services"
+    },
+    {
+      "idx": 543,
+      "true_label": "open",
+      "p_closed": 0.6392319798469543,
+      "predicted": "closed",
+      "error_type": "FP",
+      "category": "mobile_phone_accessories"
+    },
+    {
+      "idx": 544,
+      "true_label": "open",
+      "p_closed": 0.175775408744812,
+      "predicted": "open",
+      "error_type": "TN",
+      "category": "self_storage_facility"
+    },
+    {
+      "idx": 545,
+      "true_label": "open",
+      "p_closed": 0.1829734593629837,
+      "predicted": "open",
+      "error_type": "TN",
+      "category": "pet_store"
+    },
+    {
+      "idx": 546,
+      "true_label": "open",
+      "p_closed": 0.27864646911621094,
+      "predicted": "open",
+      "error_type": "TN",
+      "category": "restaurant"
+    },
+    {
+      "idx": 547,
+      "true_label": "open",
+      "p_closed": 0.39824244379997253,
+      "predicted": "open",
+      "error_type": "TN",
+      "category": "professional_services"
+    },
+    {
+      "idx": 548,
+      "true_label": "open",
+      "p_closed": 0.11753832548856735,
+      "predicted": "open",
+      "error_type": "TN",
+      "category": "gun_and_ammo"
+    },
+    {
+      "idx": 549,
+      "true_label": "open",
+      "p_closed": 0.1526639759540558,
+      "predicted": "open",
+      "error_type": "TN",
+      "category": "music_and_dvd_store"
+    },
+    {
+      "idx": 550,
+      "true_label": "open",
+      "p_closed": 0.17206086218357086,
+      "predicted": "open",
+      "error_type": "TN",
+      "category": "bakery"
+    },
+    {
+      "idx": 551,
+      "true_label": "open",
+      "p_closed": 0.040466539561748505,
+      "predicted": "open",
+      "error_type": "TN",
+      "category": "funeral_services_and_cemeteries"
+    },
+    {
+      "idx": 552,
+      "true_label": "open",
+      "p_closed": 0.07551828026771545,
+      "predicted": "open",
+      "error_type": "TN",
+      "category": "engineering_services"
+    },
+    {
+      "idx": 553,
+      "true_label": "open",
+      "p_closed": 0.07280468940734863,
+      "predicted": "open",
+      "error_type": "TN",
+      "category": "fast_food_restaurant"
+    },
+    {
+      "idx": 554,
+      "true_label": "open",
+      "p_closed": 0.1691463142633438,
+      "predicted": "open",
+      "error_type": "TN",
+      "category": "hardware_store"
+    },
+    {
+      "idx": 555,
+      "true_label": "open",
+      "p_closed": 0.22578226029872894,
+      "predicted": "open",
+      "error_type": "TN",
+      "category": "caterer"
+    },
+    {
+      "idx": 556,
+      "true_label": "open",
+      "p_closed": 0.40361151099205017,
+      "predicted": "open",
+      "error_type": "TN",
+      "category": "self_storage_facility"
+    },
+    {
+      "idx": 557,
+      "true_label": "open",
+      "p_closed": 0.3976857364177704,
+      "predicted": "open",
+      "error_type": "TN",
+      "category": "resort"
+    },
+    {
+      "idx": 558,
+      "true_label": "open",
+      "p_closed": 0.3580380380153656,
+      "predicted": "open",
+      "error_type": "TN",
+      "category": "professional_services"
+    },
+    {
+      "idx": 559,
+      "true_label": "open",
+      "p_closed": 0.1677057147026062,
+      "predicted": "open",
+      "error_type": "TN",
+      "category": "dry_cleaning"
+    },
+    {
+      "idx": 560,
+      "true_label": "open",
+      "p_closed": 0.0571068711578846,
+      "predicted": "open",
+      "error_type": "TN",
+      "category": "employment_agencies"
+    },
+    {
+      "idx": 561,
+      "true_label": "closed",
+      "p_closed": 0.7845751047134399,
+      "predicted": "closed",
+      "error_type": "TP",
+      "category": "fashion"
+    },
+    {
+      "idx": 562,
+      "true_label": "open",
+      "p_closed": 0.4018385112285614,
+      "predicted": "open",
+      "error_type": "TN",
+      "category": "discount_store"
+    },
+    {
+      "idx": 563,
+      "true_label": "open",
+      "p_closed": 0.2787838578224182,
+      "predicted": "open",
+      "error_type": "TN",
+      "category": "mobile_phone_repair"
+    },
+    {
+      "idx": 564,
+      "true_label": "open",
+      "p_closed": 0.46959829330444336,
+      "predicted": "open",
+      "error_type": "TN",
+      "category": "beer_bar"
+    },
+    {
+      "idx": 565,
+      "true_label": "open",
+      "p_closed": 0.08691738545894623,
+      "predicted": "open",
+      "error_type": "TN",
+      "category": "OOV"
+    },
+    {
+      "idx": 566,
+      "true_label": "closed",
+      "p_closed": 0.514863908290863,
+      "predicted": "closed",
+      "error_type": "TP",
+      "category": "tea_room"
+    },
+    {
+      "idx": 567,
+      "true_label": "closed",
+      "p_closed": 0.10818839818239212,
+      "predicted": "open",
+      "error_type": "FN",
+      "category": "appraisal_services"
+    },
+    {
+      "idx": 568,
+      "true_label": "open",
+      "p_closed": 0.1471337080001831,
+      "predicted": "open",
+      "error_type": "TN",
+      "category": "courier_and_delivery_services"
+    },
+    {
+      "idx": 569,
+      "true_label": "open",
+      "p_closed": 0.16614262759685516,
+      "predicted": "open",
+      "error_type": "TN",
+      "category": "OOV"
+    },
+    {
+      "idx": 570,
+      "true_label": "open",
+      "p_closed": 0.07503929734230042,
+      "predicted": "open",
+      "error_type": "TN",
+      "category": "hotel"
+    },
+    {
+      "idx": 571,
+      "true_label": "open",
+      "p_closed": 0.24764056503772736,
+      "predicted": "open",
+      "error_type": "TN",
+      "category": "campground"
+    },
+    {
+      "idx": 572,
+      "true_label": "open",
+      "p_closed": 0.17757923901081085,
+      "predicted": "open",
+      "error_type": "TN",
+      "category": "food_truck"
+    },
+    {
+      "idx": 573,
+      "true_label": "open",
+      "p_closed": 0.3477279543876648,
+      "predicted": "open",
+      "error_type": "TN",
+      "category": "gift_shop"
+    },
+    {
+      "idx": 574,
+      "true_label": "open",
+      "p_closed": 0.22802314162254333,
+      "predicted": "open",
+      "error_type": "TN",
+      "category": "professional_services"
+    },
+    {
+      "idx": 575,
+      "true_label": "open",
+      "p_closed": 0.2236398160457611,
+      "predicted": "open",
+      "error_type": "TN",
+      "category": "day_care_preschool"
+    },
+    {
+      "idx": 576,
+      "true_label": "open",
+      "p_closed": 0.23097053170204163,
+      "predicted": "open",
+      "error_type": "TN",
+      "category": "mexican_restaurant"
+    },
+    {
+      "idx": 577,
+      "true_label": "open",
+      "p_closed": 0.07453574240207672,
+      "predicted": "open",
+      "error_type": "TN",
+      "category": "supermarket"
+    },
+    {
+      "idx": 578,
+      "true_label": "closed",
+      "p_closed": 0.05285494402050972,
+      "predicted": "open",
+      "error_type": "FN",
+      "category": "hardware_store"
+    },
+    {
+      "idx": 579,
+      "true_label": "open",
+      "p_closed": 0.46768051385879517,
+      "predicted": "open",
+      "error_type": "TN",
+      "category": "mobile_phone_store"
+    },
+    {
+      "idx": 580,
+      "true_label": "open",
+      "p_closed": 0.22020383179187775,
+      "predicted": "open",
+      "error_type": "TN",
+      "category": "chicken_restaurant"
+    },
+    {
+      "idx": 581,
+      "true_label": "open",
+      "p_closed": 0.06802871823310852,
+      "predicted": "open",
+      "error_type": "TN",
+      "category": "hotel"
+    },
+    {
+      "idx": 582,
+      "true_label": "open",
+      "p_closed": 0.5066564679145813,
+      "predicted": "closed",
+      "error_type": "FP",
+      "category": "professional_services"
+    },
+    {
+      "idx": 583,
+      "true_label": "open",
+      "p_closed": 0.03763683885335922,
+      "predicted": "open",
+      "error_type": "TN",
+      "category": "divorce_and_family_law"
+    },
+    {
+      "idx": 584,
+      "true_label": "open",
+      "p_closed": 0.18470217287540436,
+      "predicted": "open",
+      "error_type": "TN",
+      "category": "software_development"
+    },
+    {
+      "idx": 585,
+      "true_label": "open",
+      "p_closed": 0.31413257122039795,
+      "predicted": "open",
+      "error_type": "TN",
+      "category": "sign_making"
+    },
+    {
+      "idx": 586,
+      "true_label": "open",
+      "p_closed": 0.19491462409496307,
+      "predicted": "open",
+      "error_type": "TN",
+      "category": "retail"
+    },
+    {
+      "idx": 587,
+      "true_label": "open",
+      "p_closed": 0.34272050857543945,
+      "predicted": "open",
+      "error_type": "TN",
+      "category": "sewing_and_alterations"
+    },
+    {
+      "idx": 588,
+      "true_label": "open",
+      "p_closed": 0.1589546501636505,
+      "predicted": "open",
+      "error_type": "TN",
+      "category": "lawyer"
+    },
+    {
+      "idx": 589,
+      "true_label": "open",
+      "p_closed": 0.23954564332962036,
+      "predicted": "open",
+      "error_type": "TN",
+      "category": "professional_services"
+    },
+    {
+      "idx": 590,
+      "true_label": "open",
+      "p_closed": 0.18739810585975647,
+      "predicted": "open",
+      "error_type": "TN",
+      "category": "auto_parts_and_supply_store"
+    },
+    {
+      "idx": 591,
+      "true_label": "open",
+      "p_closed": 0.48221272230148315,
+      "predicted": "open",
+      "error_type": "TN",
+      "category": "e_cigarette_store"
+    },
+    {
+      "idx": 592,
+      "true_label": "open",
+      "p_closed": 0.4435594081878662,
+      "predicted": "open",
+      "error_type": "TN",
+      "category": "coffee_shop"
+    },
+    {
+      "idx": 593,
+      "true_label": "open",
+      "p_closed": 0.3896219730377197,
+      "predicted": "open",
+      "error_type": "TN",
+      "category": "bakery"
+    },
+    {
+      "idx": 594,
+      "true_label": "open",
+      "p_closed": 0.5872983336448669,
+      "predicted": "closed",
+      "error_type": "FP",
+      "category": "hotel"
+    },
+    {
+      "idx": 595,
+      "true_label": "closed",
+      "p_closed": 0.371630996465683,
+      "predicted": "open",
+      "error_type": "FN",
+      "category": "chicken_restaurant"
+    },
+    {
+      "idx": 596,
+      "true_label": "open",
+      "p_closed": 0.05353200063109398,
+      "predicted": "open",
+      "error_type": "TN",
+      "category": "professional_services"
+    },
+    {
+      "idx": 597,
+      "true_label": "open",
+      "p_closed": 0.47326546907424927,
+      "predicted": "open",
+      "error_type": "TN",
+      "category": "coffee_shop"
+    },
+    {
+      "idx": 598,
+      "true_label": "open",
+      "p_closed": 0.044778741896152496,
+      "predicted": "open",
+      "error_type": "TN",
+      "category": "hot_tubs_and_pools"
+    },
+    {
+      "idx": 599,
+      "true_label": "open",
+      "p_closed": 0.12629778683185577,
+      "predicted": "open",
+      "error_type": "TN",
+      "category": "printing_services"
+    },
+    {
+      "idx": 600,
+      "true_label": "open",
+      "p_closed": 0.1619701385498047,
+      "predicted": "open",
+      "error_type": "TN",
+      "category": "accommodation"
+    },
+    {
+      "idx": 601,
+      "true_label": "closed",
+      "p_closed": 0.1813017725944519,
+      "predicted": "open",
+      "error_type": "FN",
+      "category": "pub"
+    },
+    {
+      "idx": 602,
+      "true_label": "open",
+      "p_closed": 0.2088678777217865,
+      "predicted": "open",
+      "error_type": "TN",
+      "category": "supermarket"
+    },
+    {
+      "idx": 603,
+      "true_label": "open",
+      "p_closed": 0.15171194076538086,
+      "predicted": "open",
+      "error_type": "TN",
+      "category": "marketing_agency"
+    },
+    {
+      "idx": 604,
+      "true_label": "open",
+      "p_closed": 0.2064700424671173,
+      "predicted": "open",
+      "error_type": "TN",
+      "category": "lawyer"
+    },
+    {
+      "idx": 605,
+      "true_label": "open",
+      "p_closed": 0.6474868059158325,
+      "predicted": "closed",
+      "error_type": "FP",
+      "category": "fashion_accessories_store"
+    },
+    {
+      "idx": 606,
+      "true_label": "closed",
+      "p_closed": 0.5281729698181152,
+      "predicted": "closed",
+      "error_type": "TP",
+      "category": "rv_park"
+    },
+    {
+      "idx": 607,
+      "true_label": "open",
+      "p_closed": 0.293934166431427,
+      "predicted": "open",
+      "error_type": "TN",
+      "category": "chinese_restaurant"
+    },
+    {
+      "idx": 608,
+      "true_label": "open",
+      "p_closed": 0.03225918486714363,
+      "predicted": "open",
+      "error_type": "TN",
+      "category": "hotel"
+    },
+    {
+      "idx": 609,
+      "true_label": "open",
+      "p_closed": 0.12344441562891006,
+      "predicted": "open",
+      "error_type": "TN",
+      "category": "steakhouse"
+    },
+    {
+      "idx": 610,
+      "true_label": "open",
+      "p_closed": 0.10484825819730759,
+      "predicted": "open",
+      "error_type": "TN",
+      "category": "professional_services"
+    },
+    {
+      "idx": 611,
+      "true_label": "open",
+      "p_closed": 0.11557652056217194,
+      "predicted": "open",
+      "error_type": "TN",
+      "category": "american_restaurant"
+    },
+    {
+      "idx": 612,
+      "true_label": "open",
+      "p_closed": 0.279622882604599,
+      "predicted": "open",
+      "error_type": "TN",
+      "category": "restaurant"
+    },
+    {
+      "idx": 613,
+      "true_label": "closed",
+      "p_closed": 0.3331441581249237,
+      "predicted": "open",
+      "error_type": "FN",
+      "category": "professional_services"
+    },
+    {
+      "idx": 614,
+      "true_label": "open",
+      "p_closed": 0.24135738611221313,
+      "predicted": "open",
+      "error_type": "TN",
+      "category": "retail"
+    },
+    {
+      "idx": 615,
+      "true_label": "open",
+      "p_closed": 0.036872971802949905,
+      "predicted": "open",
+      "error_type": "TN",
+      "category": "hotel"
+    },
+    {
+      "idx": 616,
+      "true_label": "open",
+      "p_closed": 0.11220593750476837,
+      "predicted": "open",
+      "error_type": "TN",
+      "category": "campground"
+    },
+    {
+      "idx": 617,
+      "true_label": "open",
+      "p_closed": 0.07938272505998611,
+      "predicted": "open",
+      "error_type": "TN",
+      "category": "auction_house"
+    },
+    {
+      "idx": 618,
+      "true_label": "open",
+      "p_closed": 0.2999137341976166,
+      "predicted": "open",
+      "error_type": "TN",
+      "category": "convenience_store"
+    },
+    {
+      "idx": 619,
+      "true_label": "open",
+      "p_closed": 0.14620321989059448,
+      "predicted": "open",
+      "error_type": "TN",
+      "category": "dry_cleaning"
+    },
+    {
+      "idx": 620,
+      "true_label": "open",
+      "p_closed": 0.09433799237012863,
+      "predicted": "open",
+      "error_type": "TN",
+      "category": "printing_services"
+    },
+    {
+      "idx": 621,
+      "true_label": "open",
+      "p_closed": 0.14822210371494293,
+      "predicted": "open",
+      "error_type": "TN",
+      "category": "screen_printing_t_shirt_printing"
+    },
+    {
+      "idx": 622,
+      "true_label": "open",
+      "p_closed": 0.07504338771104813,
+      "predicted": "open",
+      "error_type": "TN",
+      "category": "italian_restaurant"
+    },
+    {
+      "idx": 623,
+      "true_label": "open",
+      "p_closed": 0.030108356848359108,
+      "predicted": "open",
+      "error_type": "TN",
+      "category": "fast_food_restaurant"
+    },
+    {
+      "idx": 624,
+      "true_label": "open",
+      "p_closed": 0.3177192807197571,
+      "predicted": "open",
+      "error_type": "TN",
+      "category": "pizza_restaurant"
+    },
+    {
+      "idx": 625,
+      "true_label": "open",
+      "p_closed": 0.24455097317695618,
+      "predicted": "open",
+      "error_type": "TN",
+      "category": "OOV"
+    },
+    {
+      "idx": 626,
+      "true_label": "open",
+      "p_closed": 0.14793965220451355,
+      "predicted": "open",
+      "error_type": "TN",
+      "category": "employment_agencies"
+    },
+    {
+      "idx": 627,
+      "true_label": "open",
+      "p_closed": 0.5668214559555054,
+      "predicted": "closed",
+      "error_type": "FP",
+      "category": "american_restaurant"
+    },
+    {
+      "idx": 628,
+      "true_label": "open",
+      "p_closed": 0.17157185077667236,
+      "predicted": "open",
+      "error_type": "TN",
+      "category": "self_storage_facility"
+    },
+    {
+      "idx": 629,
+      "true_label": "open",
+      "p_closed": 0.07047783583402634,
+      "predicted": "open",
+      "error_type": "TN",
+      "category": "sign_making"
+    },
+    {
+      "idx": 630,
+      "true_label": "open",
+      "p_closed": 0.48352742195129395,
+      "predicted": "open",
+      "error_type": "TN",
+      "category": "professional_services"
+    },
+    {
+      "idx": 631,
+      "true_label": "open",
+      "p_closed": 0.3975481390953064,
+      "predicted": "open",
+      "error_type": "TN",
+      "category": "resort"
+    },
+    {
+      "idx": 632,
+      "true_label": "open",
+      "p_closed": 0.07094650715589523,
+      "predicted": "open",
+      "error_type": "TN",
+      "category": "fast_food_restaurant"
+    },
+    {
+      "idx": 633,
+      "true_label": "open",
+      "p_closed": 0.2207014560699463,
+      "predicted": "open",
+      "error_type": "TN",
+      "category": "pharmacy"
+    },
+    {
+      "idx": 634,
+      "true_label": "open",
+      "p_closed": 0.4784911274909973,
+      "predicted": "open",
+      "error_type": "TN",
+      "category": "accommodation"
+    },
+    {
+      "idx": 635,
+      "true_label": "open",
+      "p_closed": 0.19335605204105377,
+      "predicted": "open",
+      "error_type": "TN",
+      "category": "criminal_defense_law"
+    },
+    {
+      "idx": 636,
+      "true_label": "closed",
+      "p_closed": 0.5830690264701843,
+      "predicted": "closed",
+      "error_type": "TP",
+      "category": "self_storage_facility"
+    },
+    {
+      "idx": 637,
+      "true_label": "open",
+      "p_closed": 0.2840574383735657,
+      "predicted": "open",
+      "error_type": "TN",
+      "category": "flowers_and_gifts_shop"
+    },
+    {
+      "idx": 638,
+      "true_label": "open",
+      "p_closed": 0.5429430603981018,
+      "predicted": "closed",
+      "error_type": "FP",
+      "category": "holiday_rental_home"
+    },
+    {
+      "idx": 639,
+      "true_label": "open",
+      "p_closed": 0.046594150364398956,
+      "predicted": "open",
+      "error_type": "TN",
+      "category": "bar"
+    },
+    {
+      "idx": 640,
+      "true_label": "open",
+      "p_closed": 0.1774217188358307,
+      "predicted": "open",
+      "error_type": "TN",
+      "category": "discount_store"
+    },
+    {
+      "idx": 641,
+      "true_label": "open",
+      "p_closed": 0.2586067318916321,
+      "predicted": "open",
+      "error_type": "TN",
+      "category": "OOV"
+    },
+    {
+      "idx": 642,
+      "true_label": "open",
+      "p_closed": 0.4207293391227722,
+      "predicted": "open",
+      "error_type": "TN",
+      "category": "coffee_shop"
+    },
+    {
+      "idx": 643,
+      "true_label": "open",
+      "p_closed": 0.2236398160457611,
+      "predicted": "open",
+      "error_type": "TN",
+      "category": "day_care_preschool"
+    },
+    {
+      "idx": 644,
+      "true_label": "open",
+      "p_closed": 0.1929270178079605,
+      "predicted": "open",
+      "error_type": "TN",
+      "category": "retail"
+    },
+    {
+      "idx": 645,
+      "true_label": "open",
+      "p_closed": 0.26482829451560974,
+      "predicted": "open",
+      "error_type": "TN",
+      "category": "screen_printing_t_shirt_printing"
+    },
+    {
+      "idx": 646,
+      "true_label": "open",
+      "p_closed": 0.27950814366340637,
+      "predicted": "open",
+      "error_type": "TN",
+      "category": "eyewear_and_optician"
+    },
+    {
+      "idx": 647,
+      "true_label": "open",
+      "p_closed": 0.07312210649251938,
+      "predicted": "open",
+      "error_type": "TN",
+      "category": "furniture_store"
+    },
+    {
+      "idx": 648,
+      "true_label": "open",
+      "p_closed": 0.2127441018819809,
+      "predicted": "open",
+      "error_type": "TN",
+      "category": "convenience_store"
+    },
+    {
+      "idx": 649,
+      "true_label": "open",
+      "p_closed": 0.1702890396118164,
+      "predicted": "open",
+      "error_type": "TN",
+      "category": "marketing_agency"
+    },
+    {
+      "idx": 650,
+      "true_label": "open",
+      "p_closed": 0.13556881248950958,
+      "predicted": "open",
+      "error_type": "TN",
+      "category": "fabric_store"
+    },
+    {
+      "idx": 651,
+      "true_label": "open",
+      "p_closed": 0.29406118392944336,
+      "predicted": "open",
+      "error_type": "TN",
+      "category": "accommodation"
+    },
+    {
+      "idx": 652,
+      "true_label": "open",
+      "p_closed": 0.31155118346214294,
+      "predicted": "open",
+      "error_type": "TN",
+      "category": "convenience_store"
+    },
+    {
+      "idx": 653,
+      "true_label": "open",
+      "p_closed": 0.04750159755349159,
+      "predicted": "open",
+      "error_type": "TN",
+      "category": "funeral_services_and_cemeteries"
+    },
+    {
+      "idx": 654,
+      "true_label": "open",
+      "p_closed": 0.1726161241531372,
+      "predicted": "open",
+      "error_type": "TN",
+      "category": "convenience_store"
+    },
+    {
+      "idx": 655,
+      "true_label": "open",
+      "p_closed": 0.1726161241531372,
+      "predicted": "open",
+      "error_type": "TN",
+      "category": "convenience_store"
+    },
+    {
+      "idx": 656,
+      "true_label": "open",
+      "p_closed": 0.19362176954746246,
+      "predicted": "open",
+      "error_type": "TN",
+      "category": "convenience_store"
+    },
+    {
+      "idx": 657,
+      "true_label": "open",
+      "p_closed": 0.18076123297214508,
+      "predicted": "open",
+      "error_type": "TN",
+      "category": "software_development"
+    },
+    {
+      "idx": 658,
+      "true_label": "closed",
+      "p_closed": 0.020171578973531723,
+      "predicted": "open",
+      "error_type": "FN",
+      "category": "burger_restaurant"
+    },
+    {
+      "idx": 659,
+      "true_label": "open",
+      "p_closed": 0.2729763090610504,
+      "predicted": "open",
+      "error_type": "TN",
+      "category": "OOV"
+    },
+    {
+      "idx": 660,
+      "true_label": "open",
+      "p_closed": 0.5720371007919312,
+      "predicted": "closed",
+      "error_type": "FP",
+      "category": "shopping"
+    },
+    {
+      "idx": 661,
+      "true_label": "open",
+      "p_closed": 0.09997573494911194,
+      "predicted": "open",
+      "error_type": "TN",
+      "category": "software_development"
+    },
+    {
+      "idx": 662,
+      "true_label": "open",
+      "p_closed": 0.2672611176967621,
+      "predicted": "open",
+      "error_type": "TN",
+      "category": "pizza_restaurant"
+    },
+    {
+      "idx": 663,
+      "true_label": "open",
+      "p_closed": 0.16262397170066833,
+      "predicted": "open",
+      "error_type": "TN",
+      "category": "event_planning"
+    },
+    {
+      "idx": 664,
+      "true_label": "open",
+      "p_closed": 0.08995327353477478,
+      "predicted": "open",
+      "error_type": "TN",
+      "category": "powder_coating_service"
+    },
+    {
+      "idx": 665,
+      "true_label": "open",
+      "p_closed": 0.4039270281791687,
+      "predicted": "open",
+      "error_type": "TN",
+      "category": "tapas_bar"
+    },
+    {
+      "idx": 666,
+      "true_label": "open",
+      "p_closed": 0.07453466951847076,
+      "predicted": "open",
+      "error_type": "TN",
+      "category": "supermarket"
+    },
+    {
+      "idx": 667,
+      "true_label": "open",
+      "p_closed": 0.31407812237739563,
+      "predicted": "open",
+      "error_type": "TN",
+      "category": "mobile_phone_store"
+    },
+    {
+      "idx": 668,
+      "true_label": "open",
+      "p_closed": 0.34997785091400146,
+      "predicted": "open",
+      "error_type": "TN",
+      "category": "bakery"
+    },
+    {
+      "idx": 669,
+      "true_label": "open",
+      "p_closed": 0.03585553541779518,
+      "predicted": "open",
+      "error_type": "TN",
+      "category": "hotel"
+    },
+    {
+      "idx": 670,
+      "true_label": "open",
+      "p_closed": 0.2975436747074127,
+      "predicted": "open",
+      "error_type": "TN",
+      "category": "convenience_store"
+    },
+    {
+      "idx": 671,
+      "true_label": "open",
+      "p_closed": 0.10212289541959763,
+      "predicted": "open",
+      "error_type": "TN",
+      "category": "ice_cream_shop"
+    },
+    {
+      "idx": 672,
+      "true_label": "open",
+      "p_closed": 0.16608509421348572,
+      "predicted": "open",
+      "error_type": "TN",
+      "category": "resort"
+    },
+    {
+      "idx": 673,
+      "true_label": "open",
+      "p_closed": 0.1542796492576599,
+      "predicted": "open",
+      "error_type": "TN",
+      "category": "immigration_law"
+    },
+    {
+      "idx": 674,
+      "true_label": "open",
+      "p_closed": 0.541999340057373,
+      "predicted": "closed",
+      "error_type": "FP",
+      "category": "hotel"
+    },
+    {
+      "idx": 675,
+      "true_label": "open",
+      "p_closed": 0.1582644134759903,
+      "predicted": "open",
+      "error_type": "TN",
+      "category": "medical_supply"
+    },
+    {
+      "idx": 676,
+      "true_label": "closed",
+      "p_closed": 0.5428846478462219,
+      "predicted": "closed",
+      "error_type": "TP",
+      "category": "home_improvement_store"
+    },
+    {
+      "idx": 677,
+      "true_label": "open",
+      "p_closed": 0.15801143646240234,
+      "predicted": "open",
+      "error_type": "TN",
+      "category": "machine_shop"
+    },
+    {
+      "idx": 678,
+      "true_label": "open",
+      "p_closed": 0.07262163609266281,
+      "predicted": "open",
+      "error_type": "TN",
+      "category": "furniture_store"
+    },
+    {
+      "idx": 679,
+      "true_label": "open",
+      "p_closed": 0.293934166431427,
+      "predicted": "open",
+      "error_type": "TN",
+      "category": "chinese_restaurant"
+    },
+    {
+      "idx": 680,
+      "true_label": "open",
+      "p_closed": 0.03610466420650482,
+      "predicted": "open",
+      "error_type": "TN",
+      "category": "hotel"
+    },
+    {
+      "idx": 681,
+      "true_label": "open",
+      "p_closed": 0.20341333746910095,
+      "predicted": "open",
+      "error_type": "TN",
+      "category": "construction_services"
+    },
+    {
+      "idx": 682,
+      "true_label": "open",
+      "p_closed": 0.23480796813964844,
+      "predicted": "open",
+      "error_type": "TN",
+      "category": "italian_restaurant"
+    },
+    {
+      "idx": 683,
+      "true_label": "open",
+      "p_closed": 0.37611448764801025,
+      "predicted": "open",
+      "error_type": "TN",
+      "category": "hotel"
+    },
+    {
+      "idx": 684,
+      "true_label": "open",
+      "p_closed": 0.29340919852256775,
+      "predicted": "open",
+      "error_type": "TN",
+      "category": "accommodation"
+    }
+  ]
+}

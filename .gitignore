@@ -1,7 +1,10 @@
 # dev
 .venv
+.claude
+__pycache__
 
 # data files
 /data
+*/evals
 .parquet
 *.geojson

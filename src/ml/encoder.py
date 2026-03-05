@@ -4,9 +4,9 @@ encoder.py
 MLP encoder for Overture place features.
 
 Architecture:
-    19 numeric features → BatchNorm1d
+    n_numeric features  → BatchNorm1d
     1 category int      → Embedding(cat_vocab_size+1, 8)
-    concat(27)          → Linear(64) → BN → ReLU → Dropout(0.3)
+    concat              → Linear(64) → BN → ReLU → Dropout(0.3)
                         → Linear(32) → BN → ReLU   ← 32-dim embedding (z)
     z                   → Linear(2)                 ← classification head (training only)
 
@@ -14,8 +14,11 @@ The encoder produces a 32-dim embedding used downstream by NCM/SLDA.
 At inference time, call encoder.encode(x_num, x_cat) to get embeddings.
 
 Input convention (matches split.py output):
-    X[:, :19]  — float32 numeric features (indices 0–18)
-    X[:, 19]   — int64 category index (index 19, last column)
+    X[:, :-1]  — float32 numeric features
+    X[:, -1]   — int64 category index (last column)
+
+n_numeric is inferred automatically from X.shape[1] - 1 (PlaceDataset) and
+must be passed explicitly to PlaceEncoder (saved in encoder_config.json).
 """
 
 from __future__ import annotations
@@ -29,8 +32,6 @@ import torch.nn as nn
 import torch.nn.functional as F
 from torch.utils.data import Dataset
 
-# Number of numeric features (all columns except last category column)
-N_NUMERIC = 19
 EMBED_DIM = 8       # category embedding dimension
 HIDDEN1 = 64
 HIDDEN2 = 32        # output embedding dimension
@@ -45,13 +46,14 @@ class PlaceDataset(Dataset):
     """PyTorch Dataset wrapping the numpy arrays produced by split.py.
 
     Args:
-        X: float32 array of shape (N, 20). Last column is category index.
+        X: float32 array of shape (N, F). Last column is category index.
         y: int64 array of shape (N,). Labels: 1=open, 0=closed.
     """
 
     def __init__(self, X: np.ndarray, y: np.ndarray) -> None:
-        self.x_num = torch.from_numpy(X[:, :N_NUMERIC].astype(np.float32))
-        self.x_cat = torch.from_numpy(X[:, N_NUMERIC].astype(np.int64))
+        n_numeric = X.shape[1] - 1  # last column is always category
+        self.x_num = torch.from_numpy(X[:, :n_numeric].astype(np.float32))
+        self.x_cat = torch.from_numpy(X[:, n_numeric].astype(np.int64))
         self.y = torch.from_numpy(y.astype(np.int64))
 
     def __len__(self) -> int:
@@ -74,14 +76,15 @@ class PlaceEncoder(nn.Module):
         embed_dim:      Dimension of the category embedding (default 8).
     """
 
-    def __init__(self, cat_vocab_size: int, embed_dim: int = EMBED_DIM) -> None:
+    def __init__(self, cat_vocab_size: int, n_numeric: int, embed_dim: int = EMBED_DIM) -> None:
         super().__init__()
 
+        self.n_numeric = n_numeric
         self.cat_embedding = nn.Embedding(cat_vocab_size + 1, embed_dim)  # +1 = OOV
 
-        input_dim = N_NUMERIC + embed_dim  # 19 + 8 = 27
+        input_dim = n_numeric + embed_dim
 
-        self.bn_input = nn.BatchNorm1d(N_NUMERIC)
+        self.bn_input = nn.BatchNorm1d(n_numeric)
 
         self.fc1 = nn.Linear(input_dim, HIDDEN1)
         self.bn1 = nn.BatchNorm1d(HIDDEN1)
@@ -181,7 +184,7 @@ if __name__ == "__main__":
         cat_vocab_size = len(enc.classes_)
 
         device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-        model = PlaceEncoder(cat_vocab_size=cat_vocab_size).to(device)
+        model = PlaceEncoder(cat_vocab_size=cat_vocab_size, n_numeric=X_train.shape[1]-1).to(device)
 
         print(f"PlaceEncoder")
         print(f"  cat_vocab_size : {cat_vocab_size} (+1 OOV)")

@@ -68,7 +68,81 @@ SELECT 'feb' as release, operating_status, COUNT(*) as cnt FROM feb.place GROUP 
 
 -- How many IDs match between releases?
 SELECT COUNT(*) AS matched_ids FROM jan.place j JOIN feb.place f ON j.id = f.id;
-*/ 
+
 -- Count of Feb entries with operating_status = closed
 SELECT COUNT(*) AS feb_closed_count FROM feb.place WHERE operating_status = 'closed';
+
+-- Describe schema to check for a region column
+DESCRIBE feb.place;
+
+-- Sample coordinates of closed entries to see where they are
+SELECT bbox.xmin AS lon, bbox.ymin AS lat, names.primary AS name, addresses[1].region AS state
+FROM feb.place
+WHERE operating_status = 'closed'
+LIMIT 50;
+
+
+-- Operating status stats per state (Feb)
+SELECT
+  addresses[1].region AS state,
+  COUNT(*) FILTER (WHERE operating_status = 'open') AS open,
+  COUNT(*) FILTER (WHERE operating_status = 'closed') AS closed,
+  COUNT(*) FILTER (WHERE operating_status = 'temporarily_closed') AS temp,
+  COUNT(operating_status) AS total
+FROM feb.place
+GROUP BY state
+ORDER BY total DESC;
+*/
+
+SELECT
+  addresses[1].region AS state,
+  COUNT(*) FILTER (WHERE operating_status = 'temporarily closed') AS temp_closed
+FROM feb.place
+GROUP BY state
+ORDER BY temp_closed DESC;
+
+/*
+-- Closed entries by region with confidence stats
+SELECT
+  addresses[1].region AS region,
+  COUNT(*) AS closed_count,
+  ROUND(AVG(confidence), 4) AS avg_confidence,
+  ROUND(MIN(confidence), 4) AS min_confidence,
+  ROUND(MAX(confidence), 4) AS max_confidence
+FROM feb.place
+WHERE operating_status = 'closed'
+GROUP BY region
+ORDER BY closed_count DESC;
+
+-- 3 sample closed entries from each of the top-10 regions by closed count
+WITH top_regions AS (
+  SELECT addresses[1].region AS region
+  FROM feb.place
+  WHERE operating_status = 'closed'
+  GROUP BY region
+  ORDER BY COUNT(*) DESC
+  LIMIT 10
+),
+ranked AS (
+  SELECT p.*, addresses[1].region AS region,
+         ROW_NUMBER() OVER (PARTITION BY addresses[1].region ORDER BY p.id) AS rn
+  FROM feb.place p
+  WHERE operating_status = 'closed'
+    AND addresses[1].region IN (SELECT region FROM top_regions)
+)
+SELECT * EXCLUDE (rn)
+FROM ranked
+WHERE rn <= 3
+ORDER BY region, rn;
+
+-- Export all closed entries to JSON in native format (matches project_c_samples.json)
+COPY (
+  SELECT
+    id, geometry, bbox, 'place' AS "type", 0 AS version, sources, names, categories,
+    confidence, websites, socials, emails, phones, brand, addresses,
+    CASE WHEN operating_status = 'closed' THEN 0 ELSE 1 END AS open
+  FROM feb.place
+  WHERE operating_status = 'closed'
+) TO 'data/overture-feb-release-closed.json' (FORMAT JSON, ARRAY false);
+*/
 "

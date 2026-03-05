@@ -1,7 +1,7 @@
 """
 parquet_probe.py
 ----------------
-Quick diagnostic before augmenting the training set from the Feb parquet release.
+Quick diagnostic before augmenting the training set from a parquet release.
 
 Checks:
   1. Distinct operating_status values and their counts
@@ -11,34 +11,48 @@ Checks:
 
 Run:
     python src/parquet_probe.py
+    python src/parquet_probe.py data/parquet/2026-02-18.0
+    python src/parquet_probe.py data/parquet/2026-02-18.0 data/project_c_samples.json
 """
 
 from __future__ import annotations
 
 import json
+import sys
 import time
 from pathlib import Path
 
 import duckdb
 
 ROOT         = Path(__file__).parent.parent
-PARQUET_GLOB = str(ROOT / "data" / "parquet" / "2026-02-18.0" / "*.parquet")
-SAMPLES_PATH = ROOT / "data" / "project_c_samples.json"
+DEFAULT_PARQUET = ROOT / "data" / "parquet" / "2026-02-18.0"
+DEFAULT_SAMPLES = ROOT / "data" / "project_c_samples.json"
 
 
 def main() -> None:
+    parquet_dir  = Path(sys.argv[1]) if len(sys.argv) > 1 else DEFAULT_PARQUET
+    samples_path = Path(sys.argv[2]) if len(sys.argv) > 2 else DEFAULT_SAMPLES
+
+    if not parquet_dir.exists():
+        print(f"Error: parquet path not found: {parquet_dir}", file=sys.stderr)
+        sys.exit(1)
+
+    parquet_glob = str(parquet_dir / "*.parquet")
+    print(f"Parquet : {parquet_dir}")
+    print(f"Samples : {samples_path}\n")
+
     con = duckdb.connect(":memory:")
 
     # ------------------------------------------------------------------
     # 1. operating_status distribution in Feb parquet
     # ------------------------------------------------------------------
-    print("Operating status distribution in Feb parquet ...")
+    print("Operating status distribution in parquet ...")
     t0 = time.perf_counter()
     rows = con.execute(f"""
         SELECT
             operating_status,
             COUNT(*) AS cnt
-        FROM read_parquet('{PARQUET_GLOB}')
+        FROM read_parquet('{parquet_glob}')
         GROUP BY operating_status
         ORDER BY cnt DESC
     """).fetchall()
@@ -52,10 +66,10 @@ def main() -> None:
     # ------------------------------------------------------------------
     # 2. Load existing labeled IDs from project_c_samples.json
     # ------------------------------------------------------------------
-    print(f"\nLoading existing IDs from {SAMPLES_PATH.name} ...")
+    print(f"\nLoading existing IDs from {samples_path.name} ...")
     existing_ids: set[str] = set()
     existing_closed_ids: set[str] = set()
-    with open(SAMPLES_PATH, encoding="utf-8") as fh:
+    with open(samples_path, encoding="utf-8") as fh:
         for line in fh:
             line = line.strip()
             if not line:
@@ -74,7 +88,7 @@ def main() -> None:
     closed_ids_parquet = set(
         row[0] for row in con.execute(f"""
             SELECT id
-            FROM read_parquet('{PARQUET_GLOB}')
+            FROM read_parquet('{parquet_glob}')
             WHERE operating_status = 'closed'
         """).fetchall()
     )
@@ -94,7 +108,7 @@ def main() -> None:
     t0 = time.perf_counter()
     open_available = con.execute(f"""
         SELECT COUNT(*)
-        FROM read_parquet('{PARQUET_GLOB}')
+        FROM read_parquet('{parquet_glob}')
         WHERE operating_status = 'open'
           AND id NOT IN (SELECT unnest({list(existing_ids)!r}))
     """).fetchone()[0]

@@ -35,7 +35,6 @@ from sklearn.utils.class_weight import compute_sample_weight
 sys.path.insert(0, str(Path(__file__).parent))
 from encoder import load_splits
 
-CAT_COL = 19       # index of primary_category in feature matrix
 N_CATS  = 295      # 294 label-encoded classes + 1 OOV
 
 
@@ -45,20 +44,22 @@ N_CATS  = 295      # 294 label-encoded classes + 1 OOV
 
 def fit_ohe(X_train: np.ndarray) -> OneHotEncoder:
     """Fit OHE on the category column of X_train."""
+    cat_col = X_train.shape[1] - 1  # last column is always primary_category
     ohe = OneHotEncoder(
         categories=[list(range(N_CATS))],
         sparse_output=False,
         handle_unknown="ignore",   # unseen category → all-zero row
     )
-    ohe.fit(X_train[:, CAT_COL].astype(int).reshape(-1, 1))
+    ohe.fit(X_train[:, cat_col].astype(int).reshape(-1, 1))
     return ohe
 
 
 def apply_ohe(X: np.ndarray, ohe: OneHotEncoder) -> np.ndarray:
     """Replace the integer category column with its one-hot encoding."""
-    X_num = X[:, :CAT_COL]                                      # (N, 19)
-    X_cat = ohe.transform(X[:, CAT_COL].astype(int).reshape(-1, 1))  # (N, 295)
-    return np.hstack([X_num, X_cat]).astype(np.float32)         # (N, 314)
+    cat_col = X.shape[1] - 1  # last column is always primary_category
+    X_num = X[:, :cat_col]
+    X_cat = ohe.transform(X[:, cat_col].astype(int).reshape(-1, 1))
+    return np.hstack([X_num, X_cat]).astype(np.float32)
 
 
 def build_feature_names(numeric_names: list[str]) -> list[str]:
@@ -105,8 +106,9 @@ def train_gbm(
     ohe = fit_ohe(X_train)
     X_train_ohe = apply_ohe(X_train, ohe)
     X_val_ohe   = apply_ohe(X_val,   ohe)
+    n_numeric = X_train.shape[1] - 1
     print(f"  Feature shape after OHE: {X_train_ohe.shape[1]} "
-          f"(19 numeric + {N_CATS} category dummies)")
+          f"({n_numeric} numeric + {N_CATS} category dummies)")
 
     with open(out_dir / "ohe.pkl", "wb") as f:
         pickle.dump(ohe, f)

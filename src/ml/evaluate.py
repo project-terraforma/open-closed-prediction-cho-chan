@@ -8,6 +8,7 @@ Models compared (closed class = positive):
     MLP head     — encoder's own classification head
     MLP + NCM    — encoder embeddings → Nearest Class Mean
     MLP + SLDA   — encoder embeddings → Streaming LDA
+    MLP + QDA    — encoder embeddings → Streaming QDA
 
 Metrics (all for closed, label=0, as positive class):
     AUC-ROC, AUC-PR, F1, Precision, Recall @ optimal F1 threshold
@@ -25,6 +26,7 @@ import json
 import pickle
 import sys
 from pathlib import Path
+from time import time
 
 import numpy as np
 import torch
@@ -39,6 +41,7 @@ from sklearn.metrics import (
 sys.path.insert(0, str(Path(__file__).parent))
 from encoder import PlaceDataset, PlaceEncoder, load_splits
 from ncm import NearestClassMean
+from qda import StreamingQDA
 from slda import StreamingLDA
 
 
@@ -119,11 +122,14 @@ def print_results(results: list[dict]) -> None:
 def main(
     splits_dir: str | Path = "splits",
     models_dir: str | Path = "models",
+    evals_dir: str | Path = "models/evals",
 ) -> None:
     splits_dir = Path(splits_dir)
     models_dir = Path(models_dir)
+    evals_dir = Path(evals_dir)
+    evals_dir.mkdir(exist_ok=True)
 
-    for p in [splits_dir, models_dir / "encoder.pt", models_dir / "ncm.pkl", models_dir / "slda.pkl"]:
+    for p in [splits_dir, models_dir / "encoder.pt", models_dir / "ncm.pkl", models_dir / "slda.pkl", models_dir / "qda.pkl"]:
         if not Path(p).exists():
             sys.exit(f"Missing: {p}  — run split.py then train.py first")
 
@@ -132,6 +138,11 @@ def main(
     print(f"Val set: {len(y_val)} samples  |  closed={(y_val==0).sum()}  open={(y_val==1).sum()}")
 
     results = []
+    val_info = {
+        "val_total":  int(len(y_val)),
+        "val_closed": int((y_val == 0).sum()),
+        "val_open":   int((y_val == 1).sum()),
+    }
 
     # --- Load OHE transformer (needed for GBM / XGBoost inference) ---
     ohe_path = models_dir / "ohe.pkl"
@@ -168,7 +179,7 @@ def main(
     with open(models_dir / "encoder_config.json") as f:
         cfg = json.load(f)
     device = torch.device("cpu")
-    encoder = PlaceEncoder(cat_vocab_size=cfg["cat_vocab_size"]).to(device)
+    encoder = PlaceEncoder(cat_vocab_size=cfg["cat_vocab_size"], n_numeric=cfg.get("n_numeric", 19)).to(device)
     encoder.load_state_dict(torch.load(models_dir / "encoder.pt", map_location=device))
     encoder.eval()
 
@@ -200,6 +211,13 @@ def main(
     p_closed_slda = probs_slda[:, 0]
     results.append(evaluate_scores("MLP + SLDA", y_val, p_closed_slda))
 
+    # --- 6. QDA on embeddings ---
+    with open(models_dir / "qda.pkl", "rb") as f:
+        qda: StreamingQDA = pickle.load(f)
+    probs_qda    = qda.predict_proba(Z_val)
+    p_closed_qda = probs_qda[:, 0]
+    results.append(evaluate_scores("MLP + QDA", y_val, p_closed_qda))
+
     # --- Print table ---
     print_results(results)
 
@@ -216,11 +234,10 @@ def main(
         print(f"  {label}: {val:.4f}  (target {target})  [{status}]")
 
     # --- Save results ---
-    out = models_dir / "eval_results.json"
+    out = evals_dir / f'eval_results_{int(time())}.json'
     with open(out, "w") as f:
-        json.dump(results, f, indent=2)
-    print(f"\nResults saved to {out}")
-
+        json.dump({"val_set": val_info, "models": results}, f, indent=2)
+    print(f"\nResults saved to {out}\n")
 
 if __name__ == "__main__":
     main()

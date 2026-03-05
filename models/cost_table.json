@@ -1,0 +1,67 @@
+[
+  {
+    "name": "GBM",
+    "auc_roc": 0.6863548205991936,
+    "f1": 0.27672955974842767,
+    "infer_ms": 4.978171999937331,
+    "us_per_sample": 7.267404379470556,
+    "scale_min": 12.112340632450925,
+    "model_kb": 651.9560546875,
+    "update_method": "full retrain",
+    "update_ms": NaN,
+    "needs_old_data": true,
+    "incremental": false
+  },
+  {
+    "name": "XGBoost",
+    "auc_roc": 0.7194533762057878,
+    "f1": 0.311284046692607,
+    "infer_ms": 3.1988969994927174,
+    "us_per_sample": 4.669922626996668,
+    "scale_min": 7.783204378327779,
+    "model_kb": 364.2861328125,
+    "update_method": "full retrain",
+    "update_ms": 291.5678110002773,
+    "needs_old_data": true,
+    "incremental": false
+  },
+  {
+    "name": "MLP head",
+    "auc_roc": 0.7235619864237227,
+    "f1": 0.2868525896414343,
+    "infer_ms": 0.5277310001474689,
+    "us_per_sample": 0.7704102191933853,
+    "scale_min": 1.2840170319889752,
+    "model_kb": 33.2421875,
+    "update_method": "full retrain",
+    "update_ms": NaN,
+    "needs_old_data": true,
+    "incremental": false
+  },
+  {
+    "name": "MLP + NCM",
+    "auc_roc": 0.7135073750829377,
+    "f1": 0.3236994219653179,
+    "infer_ms": 6.460736000008183,
+    "us_per_sample": 9.43173138687326,
+    "scale_min": 15.71955231145543,
+    "model_kb": 33.7578125,
+    "update_method": "incremental",
+    "update_ms": 0.18592199921840802,
+    "needs_old_data": false,
+    "incremental": true
+  },
+  {
+    "name": "MLP + SLDA",
+    "auc_roc": 0.7221839432450365,
+    "f1": 0.30612244897959184,
+    "infer_ms": 5.39549299992359,
+    "us_per_sample": 7.876632116676774,
+    "scale_min": 13.12772019446129,
+    "model_kb": 41.8564453125,
+    "update_method": "incremental",
+    "update_ms": 0.4191549996903632,
+    "needs_old_data": false,
+    "incremental": true
+  }
+]
