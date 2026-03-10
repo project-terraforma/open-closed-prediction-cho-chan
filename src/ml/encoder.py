@@ -5,12 +5,16 @@ MLP encoder for Overture place features.
 
 Architecture:
     n_numeric features  → BatchNorm1d
-    1 category int      → Embedding(cat_vocab_size+1, 8)
-    concat              → Linear(64) → BN → ReLU → Dropout(0.3)
-                        → Linear(32) → BN → ReLU   ← 32-dim embedding (z)
-    z                   → Linear(2)                 ← classification head (training only)
+    1 category int      → Embedding(cat_vocab_size+1, embed_dim)
+    concat              → [Linear(h) → BN → ReLU → Dropout] × (L-1)
+                        →  Linear(h) → BN → ReLU              ← embed (z)
+    z                   → Linear(2)                            ← head (training only)
 
-The encoder produces a 32-dim embedding used downstream by NCM/SLDA.
+hidden_dims controls layer sizes; last element is the embedding dimension.
+Default: [128, 64, 32]  (3 layers, 32-dim output — compatible with NCM/SLDA/QDA)
+Small/original:   [64, 32]
+
+The encoder produces a hidden_dims[-1]-dim embedding used downstream by NCM/SLDA.
 At inference time, call encoder.encode(x_num, x_cat) to get embeddings.
 
 Input convention (matches split.py output):
@@ -24,18 +28,19 @@ must be passed explicitly to PlaceEncoder (saved in encoder_config.json).
 from __future__ import annotations
 
 from pathlib import Path
-from typing import Optional
-
 import numpy as np
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
 from torch.utils.data import Dataset
 
-EMBED_DIM = 8       # category embedding dimension
-HIDDEN1 = 64
-HIDDEN2 = 32        # output embedding dimension
-DROPOUT = 0.3
+# Default model config — mirrors config/train.yaml model section.
+# Used as fallback when no cfg is passed (e.g. smoke test).
+DEFAULT_MODEL_CFG: dict = {
+    "hidden_dims": [128, 64, 32],  # last = embedding dim; original 2-layer: [64, 32]
+    "embed_dim": 8,
+    "dropout": 0.3,
+}
 
 
 # ---------------------------------------------------------------------------
@@ -68,61 +73,51 @@ class PlaceDataset(Dataset):
 # ---------------------------------------------------------------------------
 
 class PlaceEncoder(nn.Module):
-    """MLP encoder producing 32-dim place embeddings.
+    """MLP encoder producing hidden_dims[-1]-dim place embeddings.
 
     Args:
         cat_vocab_size: Number of unique training categories (from LabelEncoder).
                         An extra OOV slot is added automatically (+1).
-        embed_dim:      Dimension of the category embedding (default 8).
+        n_numeric:      Number of numeric input features.
+        cfg:            Model config dict — keys: hidden_dims, embed_dim, dropout.
+                        Defaults to DEFAULT_MODEL_CFG if None.
+                        Typically the ``model`` section from config/train.yaml.
     """
 
-    def __init__(self, cat_vocab_size: int, n_numeric: int, embed_dim: int = EMBED_DIM) -> None:
+    def __init__(self, cat_vocab_size: int, n_numeric: int, cfg: dict | None = None) -> None:
         super().__init__()
+        if cfg is None:
+            cfg = DEFAULT_MODEL_CFG
+        hidden_dims = list(cfg["hidden_dims"])
+        embed_dim   = cfg.get("embed_dim", 8)
+        dropout     = cfg.get("dropout", 0.3)
 
+        self.hidden_dims = hidden_dims
         self.n_numeric = n_numeric
         self.cat_embedding = nn.Embedding(cat_vocab_size + 1, embed_dim)  # +1 = OOV
 
-        input_dim = n_numeric + embed_dim
-
         self.bn_input = nn.BatchNorm1d(n_numeric)
 
-        self.fc1 = nn.Linear(input_dim, HIDDEN1)
-        self.bn1 = nn.BatchNorm1d(HIDDEN1)
-        self.drop1 = nn.Dropout(DROPOUT)
+        # Build layers dynamically from hidden_dims
+        dims = [n_numeric + embed_dim] + hidden_dims
+        self.fcs   = nn.ModuleList([nn.Linear(dims[i], dims[i+1]) for i in range(len(hidden_dims))])
+        self.bns   = nn.ModuleList([nn.BatchNorm1d(d) for d in hidden_dims])
+        self.drops = nn.ModuleList([nn.Dropout(dropout) for _ in range(len(hidden_dims) - 1)])
 
-        self.fc2 = nn.Linear(HIDDEN1, HIDDEN2)
-        self.bn2 = nn.BatchNorm1d(HIDDEN2)
-
-        self.head = nn.Linear(HIDDEN2, 2)
+        self.head = nn.Linear(hidden_dims[-1], 2)
 
     def encode(self, x_num: torch.Tensor, x_cat: torch.Tensor) -> torch.Tensor:
-        """Return 32-dim embeddings (no classification head).
+        """Return hidden_dims[-1]-dim embeddings (no classification head)."""
+        x = torch.cat([self.bn_input(x_num), self.cat_embedding(x_cat)], dim=1)
 
-        Args:
-            x_num: float32 tensor (B, 19)
-            x_cat: int64 tensor  (B,)
-
-        Returns:
-            z: float32 tensor (B, 32)
-        """
-        x_num = self.bn_input(x_num)
-        cat_emb = self.cat_embedding(x_cat)          # (B, 8)
-        x = torch.cat([x_num, cat_emb], dim=1)       # (B, 27)
-
-        x = self.drop1(F.relu(self.bn1(self.fc1(x))))  # (B, 64)
-        z = F.relu(self.bn2(self.fc2(x)))               # (B, 32)
-        return z
+        for i, (fc, bn) in enumerate(zip(self.fcs, self.bns)):
+            x = F.relu(bn(fc(x)))
+            if i < len(self.drops):          # dropout after every layer except last
+                x = self.drops[i](x)
+        return x
 
     def forward(self, x_num: torch.Tensor, x_cat: torch.Tensor) -> torch.Tensor:
-        """Return class logits for training.
-
-        Args:
-            x_num: float32 tensor (B, 19)
-            x_cat: int64 tensor  (B,)
-
-        Returns:
-            logits: float32 tensor (B, 2)
-        """
+        """Return class logits for training."""
         return self.head(self.encode(x_num, x_cat))
 
     def param_count(self) -> int:

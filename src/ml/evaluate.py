@@ -177,9 +177,13 @@ def main(
 
     # --- 2. Load encoder ---
     with open(models_dir / "encoder_config.json") as f:
-        cfg = json.load(f)
+        ecfg = json.load(f)
     device = torch.device("cpu")
-    encoder = PlaceEncoder(cat_vocab_size=cfg["cat_vocab_size"], n_numeric=cfg.get("n_numeric", 19)).to(device)
+    encoder = PlaceEncoder(
+        cat_vocab_size=ecfg["cat_vocab_size"],
+        n_numeric=ecfg["n_numeric"],
+        cfg=ecfg["model"],
+    ).to(device)
     encoder.load_state_dict(torch.load(models_dir / "encoder.pt", map_location=device))
     encoder.eval()
 

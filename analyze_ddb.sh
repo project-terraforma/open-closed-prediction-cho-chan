@@ -102,26 +102,16 @@ GROUP BY state
 ORDER BY temp_closed DESC;
 */
 
--- SF bbox place tally (total / open / closed)
+-- Places stats for ON, MO, TX, FL
 SELECT
+  addresses[1].region AS state,
   COUNT(*) AS total,
-  COUNT(*) FILTER (WHERE operating_status = 'open') AS open_cnt,
-  COUNT(*) FILTER (WHERE operating_status = 'closed') AS closed_cnt
+  COUNT(*) FILTER (WHERE operating_status = 'open') AS open,
+  COUNT(*) FILTER (WHERE operating_status = 'closed') AS closed
 FROM feb.place
-WHERE ST_Within(
-  ST_Point(
-    (bbox.xmin + bbox.xmax) / 2,
-    (bbox.ymin + bbox.ymax) / 2
-  ),
-  ST_GeomFromText(
-    'POLYGON((-122.5169725197 37.7086546752, -122.355084726 37.7086546752, -122.355084726 37.8107793103, -122.5169725197 37.8107793103, -122.5169725197 37.7086546752))'
-  )
-);
-
--- specific place lookup by id
-SELECT id, names.primary AS name, operating_status, addresses[1] AS address,
-FROM feb.place
-WHERE id = '08f268cd1b32a45c03b9137cddcec17b';
+WHERE addresses[1].region IN ('ON', 'MO', 'TX', 'FL')
+GROUP BY state
+ORDER BY total DESC;
 
 -- Closed entries by region with confidence stats
 SELECT

@@ -4,3 +4,5 @@ pyarrow>=20.0.0
 pandas>=2.0.0
 requests>=2.32.5
 python-dotenv>=1.2.2
+pyyaml>=6.0.3
+torch==2.2.2+cu121

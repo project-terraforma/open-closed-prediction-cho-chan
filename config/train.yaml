@@ -1,0 +1,23 @@
+model:
+  hidden_dims: [128, 64, 32]  # optimal; original 2-layer: [64, 32]; tried [256,128,32] — overfits
+  embed_dim: 8
+  dropout: 0.3
+
+training:
+  lr: 0.001
+  batch_size: 64
+  max_epochs: 100
+  patience: 20
+  gamma: 0.0           # focal loss exponent (0 = standard weighted CE, 2 = focal)
+
+features:
+  include_conf: true   # include 5 confidence features (confidence, max/min/mean_source_confidence, confidence_spread)
+  exclude:             # ablation: drop features redundant or near-identical in this dataset
+    - has_only_meta              # subsumed by has_single_source (broader) + has_meta
+    - n_sources_with_update_time # near-identical to has_microsoft in labeled dataset
+    - min_update_age_days        # near-identical to msft_update_age_days in labeled dataset
+    - max_update_age_days        # near-identical to msft_update_age_days in labeled dataset
+
+paths:
+  splits: splits
+  out: models

@@ -61,12 +61,19 @@ def extract_features(record: dict[str, Any]) -> dict[str, Any]:
 
     # Microsoft update_time is a real staleness signal (meta is always batch date)
     msft_update_age_days = _msft_update_age(sources)
+    # Fresh Microsoft data (updated within the last year before release)
+    msft_fresh = int(0.0 <= msft_update_age_days <= 365.0)
 
     # All-source update staleness (meta excluded — always batch date, not real freshness)
     all_src_ages = _all_source_ages(sources)
     n_sources_with_update_time = len(all_src_ages)
     min_update_age_days = min(all_src_ages) if all_src_ages else -1.0
     max_update_age_days = max(all_src_ages) if all_src_ages else -1.0
+
+    # Interaction: confidence × corroboration (captures "high-conf AND multi-source")
+    conf_x_source = mean_src_conf * source_count
+    # Single-source flag (regardless of which source — less corroboration)
+    has_single_source = int(source_count == 1)
 
     # --- Completeness features ---
     websites = record.get("websites") or []
@@ -114,9 +121,12 @@ def extract_features(record: dict[str, Any]) -> dict[str, Any]:
         "mean_source_confidence": mean_src_conf,
         "confidence_spread": confidence_spread,
         "msft_update_age_days": msft_update_age_days,
+        "msft_fresh": msft_fresh,
         "n_sources_with_update_time": n_sources_with_update_time,
         "min_update_age_days": min_update_age_days,
         "max_update_age_days": max_update_age_days,
+        "conf_x_source": conf_x_source,
+        "has_single_source": has_single_source,
         # completeness
         "has_website": has_website,
         "has_phone": has_phone,
@@ -183,6 +193,8 @@ def _msft_update_age(sources: list[dict]) -> float:
             continue
         try:
             dt = datetime.fromisoformat(raw.replace("Z", "+00:00"))
+            if dt.tzinfo is None:
+                dt = dt.replace(tzinfo=timezone.utc)
             times.append(dt)
         except ValueError:
             pass
@@ -208,6 +220,8 @@ def _all_source_ages(sources: list[dict]) -> list[float]:
             continue
         try:
             dt = datetime.fromisoformat(raw.replace("Z", "+00:00"))
+            if dt.tzinfo is None:
+                dt = dt.replace(tzinfo=timezone.utc)
             ages.append(float((_REFERENCE_DATE - dt).days))
         except ValueError:
             pass

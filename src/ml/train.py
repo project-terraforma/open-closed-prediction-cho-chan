@@ -9,11 +9,13 @@ Steps:
     3. Early stopping on validation loss (patience=10)
     4. Extract 32-dim embeddings from best frozen encoder
     5. Fit NearestClassMean, StreamingLDA, and StreamingQDA on training embeddings
-    6. Save all artifacts to models/
+    6. Train GBM + XGBoost on raw features (via gbm.py)
+    7. Save all artifacts to models/
 
 Run:
     python src/split.py data/project_c_samples.json   # once
-    python src/train.py
+    python src/train.py                                # trains MLP + GBM + XGBoost
+    python src/train.py --no-gbm                       # MLP only (faster)
 
 Optional flags:
     --splits  splits   directory with X_train.npy etc  (default: splits)
@@ -22,6 +24,7 @@ Optional flags:
     --lr      1e-3     learning rate                    (default: 1e-3)
     --batch   64       batch size                       (default: 64)
     --patience 10      early-stop patience (val loss)   (default: 10)
+    --no-gbm           skip GBM + XGBoost training
 
 Outputs saved to models/:
     encoder.pt           — best encoder weights (state_dict)
@@ -42,6 +45,8 @@ import pickle
 import sys
 from pathlib import Path
 
+import yaml
+
 import numpy as np
 import torch
 import torch.nn as nn
@@ -53,6 +58,7 @@ from torch.utils.data import DataLoader
 
 sys.path.insert(0, str(Path(__file__).parent))
 from encoder import PlaceDataset, PlaceEncoder, class_weights, load_splits
+from gbm import train_gbm
 from ncm import NearestClassMean
 from qda import StreamingQDA
 from slda import StreamingLDA
@@ -165,19 +171,28 @@ def extract_embeddings(
 # Main pipeline
 # ---------------------------------------------------------------------------
 
-def train(
-    splits_dir: str | Path = "splits",
-    out_dir: str | Path = "models",
-    max_epochs: int = 100,
-    lr: float = 1e-3,
-    batch_size: int = 64,
-    patience: int = 20,
-    gamma: float = 0.0,
-) -> tuple:
+def train(cfg: dict, train_trees: bool = True) -> tuple:
+    """Run end-to-end training from a config dict (loaded from config/train.yaml).
+
+    Args:
+        cfg:         Config dict (loaded from config/train.yaml).
+        train_trees: If True (default), also train GBM + XGBoost after the MLP.
+                     Pass False (or --no-gbm) for MLP-only runs.
+    """
     _seed_everything(42)
 
-    splits_dir = Path(splits_dir)
-    out_dir = Path(out_dir)
+    paths      = cfg.get("paths", {})
+    splits_dir = Path(paths.get("splits", "splits"))
+    out_dir    = Path(paths.get("out", "models"))
+
+    tcfg = cfg["training"]
+    mcfg = cfg["model"]
+
+    max_epochs = tcfg["max_epochs"]
+    lr         = tcfg["lr"]
+    batch_size = tcfg["batch_size"]
+    patience   = tcfg["patience"]
+    gamma      = tcfg.get("gamma", 0.0)
 
     if not splits_dir.exists():
         sys.exit(f"splits/ not found — run: python src/split.py data/project_c_samples.json")
@@ -190,11 +205,17 @@ def train(
         cat_enc = pickle.load(f)
     cat_vocab_size = len(cat_enc.classes_)
 
+    n_numeric = X_train.shape[1] - 1
     print(f"Train: {len(y_train):,}  (closed={( y_train==0).sum()}  open={(y_train==1).sum()})")
     print(f"Val:   {len(y_val):,}  (closed={(y_val==0).sum()}  open={(y_val==1).sum()})")
-    print(f"Cat vocab size: {cat_vocab_size} (+1 OOV)")
+    print(f"n_numeric: {n_numeric}  |  Cat vocab size: {cat_vocab_size} (+1 OOV)")
 
-    device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+    if torch.cuda.is_available():
+        device = torch.device("cuda")
+    elif torch.backends.mps.is_available():
+        device = torch.device("mps")
+    else:
+        device = torch.device("cpu")
     print(f"Device: {device}\n")
 
     # --- Datasets / loaders ---
@@ -204,12 +225,17 @@ def train(
     loader_val   = DataLoader(ds_val,   batch_size=batch_size, shuffle=False)
 
     # --- Model, loss, optimizer, scheduler ---
-    model = PlaceEncoder(cat_vocab_size=cat_vocab_size, n_numeric=X_train.shape[1]-1).to(device)
+    model = PlaceEncoder(
+        cat_vocab_size=cat_vocab_size,
+        n_numeric=n_numeric,
+        cfg=mcfg,
+    ).to(device)
     weights = class_weights(y_train, device)
     criterion = FocalLoss(weight=weights, gamma=gamma)
     optimizer = Adam(model.parameters(), lr=lr, weight_decay=1e-4)
     scheduler = CosineAnnealingLR(optimizer, T_max=max_epochs)
 
+    print(f"Architecture: {mcfg['hidden_dims']}  embed_dim={mcfg.get('embed_dim', 8)}  dropout={mcfg.get('dropout', 0.3)}")
     print(f"Params: {model.param_count():,}  |  "
           f"Class weights: closed={weights[0]:.3f}  open={weights[1]:.3f}")
     print(f"Loss: FocalLoss(gamma={gamma})  {'(= weighted CE)' if gamma == 0 else ''}")
@@ -258,7 +284,11 @@ def train(
 
     # Save encoder config and log
     with open(out_dir / "encoder_config.json", "w") as f:
-        json.dump({"cat_vocab_size": cat_vocab_size, "n_numeric": X_train.shape[1]-1}, f)
+        json.dump({
+            "cat_vocab_size": cat_vocab_size,
+            "n_numeric": X_train.shape[1]-1,
+            "model": mcfg,
+        }, f, indent=2)
     with open(out_dir / "train_log.json", "w") as f:
         json.dump(log, f, indent=2)
 
@@ -297,6 +327,14 @@ def train(
         pickle.dump(qda, f)
 
     print(f"\nAll artifacts saved to {out_dir}/")
+
+    # --- Train GBM + XGBoost ---
+    if train_trees:
+        print("\n" + "=" * 60)
+        print("  Training GBM + XGBoost")
+        print("=" * 60)
+        train_gbm(splits_dir=splits_dir, out_dir=out_dir)
+
     return model, ncm, slda, qda, Z_train, Z_val, y_train, y_val
 
 
@@ -306,22 +344,33 @@ def train(
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Train PlaceEncoder + fit NCM/SLDA/QDA")
-    parser.add_argument("--splits",  default="splits", help="splits/ directory")
-    parser.add_argument("--out",     default="models",  help="output directory")
-    parser.add_argument("--epochs",  type=int,   default=100)
-    parser.add_argument("--lr",      type=float, default=1e-3)
-    parser.add_argument("--batch",   type=int,   default=64)
-    parser.add_argument("--patience",type=int,   default=20)
-    parser.add_argument("--gamma",   type=float, default=0.0,
-                        help="Focal loss gamma (0 = standard weighted CE, 2 = focal;)")
+    parser.add_argument("--config",   default="config/train.yaml",
+                        help="YAML config file (default: config/train.yaml)")
+    # Optional CLI overrides — all default to None so unset args don't clobber config
+    parser.add_argument("--splits",   default=None, help="override paths.splits")
+    parser.add_argument("--out",      default=None, help="override paths.out")
+    parser.add_argument("--epochs",   type=int,   default=None, help="override training.max_epochs")
+    parser.add_argument("--lr",       type=float, default=None, help="override training.lr")
+    parser.add_argument("--batch",    type=int,   default=None, help="override training.batch_size")
+    parser.add_argument("--patience", type=int,   default=None, help="override training.patience")
+    parser.add_argument("--gamma",    type=float, default=None, help="override training.gamma")
+    parser.add_argument("--hidden",   type=int,   nargs="+", default=None,
+                        help="override model.hidden_dims  e.g. --hidden 64 32")
+    parser.add_argument("--no-gbm",  action="store_true",
+                        help="skip GBM + XGBoost training (MLP only)")
     args = parser.parse_args()
 
-    train(
-        splits_dir=args.splits,
-        out_dir=args.out,
-        max_epochs=args.epochs,
-        lr=args.lr,
-        batch_size=args.batch,
-        patience=args.patience,
-        gamma=args.gamma,
-    )
+    with open(args.config) as f:
+        cfg = yaml.safe_load(f)
+
+    # Apply CLI overrides only when explicitly provided
+    if args.splits   is not None: cfg.setdefault("paths", {})["splits"]       = args.splits
+    if args.out      is not None: cfg.setdefault("paths", {})["out"]          = args.out
+    if args.epochs   is not None: cfg["training"]["max_epochs"]               = args.epochs
+    if args.lr       is not None: cfg["training"]["lr"]                       = args.lr
+    if args.batch    is not None: cfg["training"]["batch_size"]               = args.batch
+    if args.patience is not None: cfg["training"]["patience"]                 = args.patience
+    if args.gamma    is not None: cfg["training"]["gamma"]                    = args.gamma
+    if args.hidden   is not None: cfg["model"]["hidden_dims"]                 = args.hidden
+
+    train(cfg, train_trees=not args.no_gbm)

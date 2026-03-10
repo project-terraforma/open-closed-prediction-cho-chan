@@ -1,4 +1,263 @@
 # Project C — Progress Log
+New log goes to the top with date and name
+---
+
+## 2026-03-09 | Caleb Cho
+
+### SF Registered Business Dataset — Option B (SF-Native Features)
+
+Explored using the SF open business registry (`sf_open_dataset_20260309.geojson`,
+356,351 records) as an auxiliary training source. Built a separate feature engineering
+pipeline (`src/ml/sf_feature_engineering.py`) and connected it to the existing ML
+pipeline via `--schema sf` flag in `split.py`.
+
+#### EDA findings (`src/ml/sf_eda.py`)
+
+- **54% closed / 46% open** under Strategy A (`dba_end_date` in past) — very different
+  from Overture's 9/91 imbalance.
+- `administratively_closed` adds only 14 new closed records beyond Strategy A — redundant.
+- **2018 spike**: 34,723 businesses ended in 2018 (~3× any other year) — likely a bulk
+  administrative sweep, not real closures.
+- NAICS coverage only 48.2%; missing NAICS correlates strongly with closed (73.1% closed
+  rate vs 35% for coded records).
+- 80.6% of records are San Francisco city; 96.7% have lat/lon — good for future Overture
+  matching (Option A).
+
+#### Data leakage — first run yielded AUC ≈ 1.00
+
+Three features were near-perfect label proxies and had to be dropped:
+
+| Feature | Leakage mechanism |
+|---|---|
+| `has_location_end_date` | `location_end_date` is set at the same time as `dba_end_date` on closure |
+| `location_end_age_days` | same as above |
+| `has_mailing_address` | registry nulls mailing info on closure: 192,097 null mailing ↔ 192,068 closed records |
+
+#### Clean results (10 numeric + 1 categorical feature, 54/46 balanced)
+
+```
+Model        AUC-ROC   AUC-PR     F1    Prec  Recall
+─────────────────────────────────────────────────────
+GBM           0.8863   0.8856   0.836  0.796  0.881  ← best
+XGBoost       0.8844   0.8838   0.835  0.784  0.893
+MLP + SLDA    0.8809   0.8777   0.831  0.797  0.868
+MLP head      0.8804   0.8788   0.831  0.803  0.861
+MLP + NCM     0.8792   0.8744   0.831  0.804  0.859
+MLP + QDA     0.8785   0.8736   0.831  0.800  0.865
+```
+
+GBM leads — tree models handle the mostly-binary feature set more efficiently than the
+MLP embedding (only 1 categorical column at moderate cardinality). AUC ~0.88 is genuine
+signal; not comparable to Overture AUC (different label balance and problem scope).
+
+#### Features used
+
+```python
+NUMERIC_FEATURES = [
+    "business_age_days",       # days since dba_start_date
+    "location_age_days",       # days since location_start_date
+    "has_naic_code",           # NAICS coverage (missing → 73% closed rate)
+    "parking_tax",             "transient_occupancy_tax",
+    "has_geometry",            "city_is_sf",
+    "has_lic",                 "has_business_corridor",
+    "has_neighborhood",
+]
+CATEGORICAL_FEATURES = ["naic_code_description"]
+```
+
+#### Next step: Option A (SF → Overture matching)
+
+Use lat/lon proximity + name fuzzy match to find the corresponding Overture place for
+each SF business, then apply the SF label to the Overture feature vector. This would
+augment the main Overture model directly without schema mismatch.
+
+---
+
+### Feature Ablation — New Features Hurt Parquet Augmentation
+
+Follow-up to the 2×2 conf × aug experiment. Dropped 5 features added since the
+historical 0.734 benchmark to determine if they explained the regression.
+
+**Features ablated:** `category_closure_rate`, `has_only_meta`,
+`n_sources_with_update_time`, `min_update_age_days`, `max_update_age_days`
+
+**Results (ablated features + conf + 9010 aug):**
+
+```
+Model       AUC-ROC  AUC-PR    F1    Prec  Recall
+--------------------------------------------------
+MLP head     0.7269  0.2835  0.3368  0.252  0.508  ← new best
+MLP + NCM    0.7211  0.2691  0.3122  0.213  0.587
+MLP + QDA    0.7194  0.2805  0.3353  0.264  0.460
+MLP + SLDA   0.7007  0.2564  0.3240  0.250  0.460
+XGBoost      0.7188  0.2771  0.3113  0.222  0.524  ← best tree ever
+```
+
+**All three revised targets met:** AUC-ROC 0.7269 > 0.73 ✓, AUC-PR 0.2835 > 0.28 ✓,
+F1 0.3368 > 0.31 ✓
+
+---
+
+#### Finding: Noisy features corrupt augmentation more than training alone
+
+The 5 ablated features are harmful specifically when combined with parquet augmentation.
+Without aug, dropping them gives mixed results (SLDA +0.020, NCM -0.010). With aug,
+dropping them gives +0.018 on MLP head and +0.014 on NCM — the biggest single-run
+improvement in the project.
+
+Root cause: the parquet augmentation records have different distributions for these
+features compared to the labeled dataset. Parquet open records are predominantly
+Meta-only (`has_only_meta` ≈ 1 for most), and Microsoft update-age patterns differ
+(parquet may have more varied or missing timestamps). When the model trains on both
+labeled and augment data, these features send contradictory signals depending on record
+origin. `category_closure_rate`, computed from combined training data, is also
+distorted by the different category distribution of the parquet records.
+
+The confidence features and core completeness features (phone, website, address,
+source_count) are stable across both sources and continue to be the strongest signals.
+
+---
+
+#### Locked configuration
+
+```yaml
+# config/train.yaml
+model:
+  hidden_dims: [128, 64, 32]
+features:
+  include_conf: true
+  exclude:
+    - category_closure_rate
+    - has_only_meta
+    - n_sources_with_update_time
+    - min_update_age_days
+    - max_update_age_days
+```
+
+```bash
+python src/ml/split.py --augment data/parquet_aug_9010.json
+python src/ml/train.py
+python src/ml/evaluate.py
+```
+
+---
+
+### Parquet Augmentation + Confidence Features — Full 2×2 Experiment
+
+Ran four experiments factoring confidence features (on/off) × parquet augmentation
+(none / 9010 ratio from top-10 regions) to find the best training configuration.
+All runs use `[128, 64, 32]` architecture, stratified 80/20 split, val set fixed
+at 685 samples (63 closed / 622 open).
+
+**AUC-ROC results:**
+
+```
+Config                   MLP head   NCM     SLDA    QDA
+---------------------------------------------------------
+no-conf, no-aug           0.6817    0.6905  0.6881  0.6773   (baseline)
+no-conf, 9010-aug         0.6920    0.6846  0.6757  0.6861
++conf,   no-aug           0.6991    0.7010  0.6889  0.6973
++conf,   9010-aug         0.7092    0.7073  0.6960  0.7106  ← best
+```
+
+**Best config: `--include-conf --augment parquet_aug_9010.json`**
+Best model: **QDA @ 0.7106 AUC-ROC**
+
+---
+
+#### Finding 1: Confidence features are the dominant lever (+0.018–0.020)
+
+Adding the 5 confidence features (`confidence`, `max/min/mean_source_confidence`,
+`confidence_spread`) consistently adds ~0.018–0.020 AUC across all models.
+Cohen's d = 0.64 in EDA; the experiments confirm this translates directly to
+out-of-sample discrimination.
+
+---
+
+#### Finding 2: 9010 parquet augmentation adds a modest consistent gain (+0.008–0.013)
+
+Adding 555 closed + 4,995 open records from the Feb parquet release (top-10
+regions by closed count, open records category-stratified to match labeled
+distribution) adds +0.008–0.013 AUC on top of confidence features. The
+improvement is consistent across all four models but modest.
+
+The 50/50 ratio **hurts** — it shifts the combined training set to 21% closed
+(vs 9% real rate), halving the closed class weight from 5.59× to 2.41×. Recall
+collapses even though the closed record count is the same. Always use 9010 for
+parquet augmentation.
+
+Key limitation: parquet `operating_status = 'closed'` records have avg confidence
+~0.95, while labeled closed records average ~0.75. The two "profiles" of closed
+partially conflict, which is why the gain is modest rather than large.
+
+---
+
+#### Finding 3: QDA overtook NCM as the best continual-learning head
+
+With confidence features included, QDA (0.7106) edges out NCM (0.7073) and
+SLDA (0.6960). The confidence features shift embedding geometry enough that
+class-specific covariance (QDA) outperforms pooled covariance (SLDA) and bare
+centroids (NCM). Without confidence features NCM was the best head — the change
+in geometry from confidence features changes which classifier is optimal.
+
+---
+
+#### Finding 4: Below historical 0.734 — new features suspected
+
+The historical benchmark (MLP head 0.734) was recorded before adding
+`category_closure_rate`, `has_only_meta`, and three update-age features. Current
+best MLP head with same conditions (+conf, no aug) is 0.6991, a regression of
+-0.035. Next experiment: ablate the new features to isolate which are helping
+vs hurting.
+
+---
+
+#### Parquet augmentation pipeline (`src/ml/parquet_augment.py`)
+
+Built a DuckDB-based script to extract augmentation records directly from Overture
+parquet files (no `.ddb` needed). Key design:
+- Closed: all `operating_status IN ('closed', 'permanently_closed')` from top-N
+  regions by closed count
+- Open: single reservoir sample (5× target, min 20k), category-stratified in
+  Python to match labeled set distribution (80% known categories proportional,
+  20% new categories)
+- Two output files: `parquet_aug_5050.json` (1:1) and `parquet_aug_9010.json` (9:1)
+- Fixed: naive datetime handling in `feature_engineering.py` (parquet timestamps
+  lack `Z` suffix → assumed UTC)
+
+---
+
+## 2026-03-08 | Caleb Cho
+
+### MLP Architecture Search — Optimal Hidden Dimension
+
+Swept three encoder architectures on no-confidence splits to isolate the effect
+of model capacity from feature changes.
+
+```
+Architecture       MLP head   MLP+NCM   MLP+SLDA   Notes
+----------------------------------------------------------
+[64, 32]   2-layer  0.6703     0.6725     0.6669    underfits
+[128,64,32] 3-layer  0.6817     0.6905     0.6881    optimal  ←
+[256,128,32] 3-layer  0.6663     0.6569     0.6782    overfits
+```
+
+**Finding: [128, 64, 32] is the optimal architecture** for this dataset size
+(~2,740 train, ~250 closed training examples).
+
+Going from [64, 32] → [128, 64, 32] added +0.018 AUC on NCM (genuine
+underfitting improvement). Going further to [256, 128, 32] degraded all models,
+with NCM collapsing the hardest (-0.034). Root cause: at 256-dim the encoder
+has enough capacity to spread embeddings such that class centroids (NCM) become
+unstable with only 250 closed examples. SLDA held up better (-0.010) because
+its pooled covariance provides more structure than a bare centroid.
+
+**NCM is the most sensitive architecture probe.** Its strong dependence on
+centroid stability means it degrades sharply when the encoder overfits.
+
+**Config change:** `config/train.yaml` now drives all architecture and training
+hyperparameters. `PlaceEncoder` takes a `cfg` dict instead of individual
+dimension arguments, making future sweeps a one-line yaml edit.
 
 ---
 

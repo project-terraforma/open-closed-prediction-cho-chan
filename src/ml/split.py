@@ -40,6 +40,7 @@ from pathlib import Path
 
 import numpy as np
 import pandas as pd
+import yaml
 from sklearn.model_selection import train_test_split
 from sklearn.preprocessing import LabelEncoder
 
@@ -63,10 +64,13 @@ NUMERIC_FEATURES_BASE = [
     "has_meta",
     "has_microsoft",
     "has_only_meta",
+    "has_single_source",
     "msft_update_age_days",
+    "msft_fresh",
     "n_sources_with_update_time",  # potential removal: identical to has_microsoft in this labeled dataset
     "min_update_age_days",         # potential removal: identical to msft_update_age_days in this labeled dataset
     "max_update_age_days",         # potential removal: identical to msft_update_age_days in this labeled dataset
+    "conf_x_source",
     "has_website",
     "has_phone",
     "has_socials",
@@ -86,6 +90,8 @@ def make_splits(
     augment_paths: list[str | Path] | None = None,
     out_dir: str | Path = "splits",
     include_conf: bool = False,
+    exclude: list[str] | None = None,
+    fe=None,
 ) -> dict:
     """Load dataset, encode, split, and save.
 
@@ -94,11 +100,14 @@ def make_splits(
     stratified split), keeping it as a stable hard-case benchmark.
 
     Args:
-        data_path:     Primary JSONL file (e.g. project_c_samples.json).
-        augment_paths: Optional list of supplementary JSONL files whose records
-                       are appended to train only (e.g. yelp_features.jsonl).
+        data_path:     Primary data file (JSONL or GeoJSON depending on schema).
+        augment_paths: Optional list of supplementary files added to train only.
         out_dir:       Directory to write split arrays and encoder.
-        include_conf:  If True, include the 5 confidence features. Default False.
+        include_conf:  If True, include conf features (no-op for non-overture schemas).
+        exclude:       Feature names to drop after all features are assembled.
+        fe:            Alternate feature engineering module (e.g. sf_feature_engineering).
+                       Must export load_dataset, NUMERIC_FEATURES, CATEGORICAL_FEATURES,
+                       and CONF_FEATURES.  None → default Overture feature engineering.
 
     Returns:
         Dict with keys: X_train, X_val, y_train, y_val, encoder.
@@ -106,12 +115,19 @@ def make_splits(
     out_dir = Path(out_dir)
     out_dir.mkdir(exist_ok=True)
 
-    numeric_features = NUMERIC_FEATURES_BASE + (CONF_FEATURES if include_conf else [])
-    all_features = numeric_features + CATEGORICAL_FEATURES
+    # Resolve feature engineering source
+    _load      = fe.load_dataset          if fe else load_dataset
+    _num_base  = getattr(fe, "NUMERIC_FEATURES",    NUMERIC_FEATURES_BASE) if fe else NUMERIC_FEATURES_BASE
+    _cat_feats = getattr(fe, "CATEGORICAL_FEATURES", CATEGORICAL_FEATURES)  if fe else CATEGORICAL_FEATURES
+    _conf      = getattr(fe, "CONF_FEATURES",        CONF_FEATURES)         if fe else CONF_FEATURES
+    cat_col    = _cat_feats[0] if _cat_feats else "primary_category"
+
+    numeric_features = _num_base + (_conf if include_conf else [])
+    all_features = numeric_features + _cat_feats
 
     # --- Load original data and split 80/20 ---
     print(f"Loading {data_path} ...")
-    X_df, y = load_dataset(data_path)
+    X_df, y = _load(data_path)
 
     idx = np.arange(len(y))
     idx_train, idx_val = train_test_split(
@@ -127,34 +143,34 @@ def make_splits(
     if augment_paths:
         for aug_path in augment_paths:
             print(f"Loading augment records from {Path(aug_path).name} ...")
-            X_aug_df, y_aug = load_dataset(aug_path)
+            X_aug_df, y_aug = _load(aug_path)
             X_train_df = pd.concat([X_train_df, X_aug_df], ignore_index=True)
             y_train    = np.concatenate([y_train, y_aug])
             print(f"  +{len(y_aug):,} records  "
                   f"({(y_aug==0).sum():,} closed, {(y_aug==1).sum():,} open)")
 
-    # --- Encode primary_category (fit on combined train only) ---
+    # --- Encode categorical column (fit on combined train only) ---
     enc = LabelEncoder()
-    X_train_df["primary_category"] = enc.fit_transform(X_train_df["primary_category"])
+    X_train_df[cat_col] = enc.fit_transform(X_train_df[cat_col])
     # Val: unseen categories map to a fallback index (len(classes_))
-    val_cats = X_val_df["primary_category"].map(
+    val_cats = X_val_df[cat_col].map(
         {c: i for i, c in enumerate(enc.classes_)}
     ).fillna(len(enc.classes_)).astype(int)
     X_val_df = X_val_df.copy()
-    X_val_df["primary_category"] = val_cats
+    X_val_df[cat_col] = val_cats
 
     # --- category_closure_rate: fraction closed per category, fit on train only ---
     # Use raw string category to avoid confusion with the encoded int above.
     # Unseen categories on val get the global train closure rate as fallback.
-    raw_cat_train = X_df.iloc[idx_train]["primary_category"].reset_index(drop=True)
+    raw_cat_train = X_df.iloc[idx_train][cat_col].reset_index(drop=True)
     if augment_paths:
         # raw_cat_train must match the full X_train_df; augment rows have no raw original
         # so just recompute from the combined df before encoding was done.
-        # We already encoded in place, so fall back: re-extract from X_train_df "primary_category"
+        # We already encoded in place, so fall back: re-extract from X_train_df cat_col
         # which now holds ints — use them to look up enc.classes_ for the string.
         raw_cat_train = pd.Series(
-            enc.classes_[X_train_df["primary_category"].clip(upper=len(enc.classes_)-1).astype(int)],
-            name="primary_category",
+            enc.classes_[X_train_df[cat_col].clip(upper=len(enc.classes_)-1).astype(int)],
+            name=cat_col,
         )
     closure_map = (
         pd.DataFrame({"cat": raw_cat_train, "closed": (y_train == 0).astype(float)})
@@ -165,7 +181,7 @@ def make_splits(
     X_train_df["category_closure_rate"] = raw_cat_train.map(closure_map).fillna(global_rate).values
     # Val: map using the same dict; fallback to global train rate for unseen categories
     X_val_df["category_closure_rate"] = (
-        X_df.iloc[idx_val]["primary_category"].reset_index(drop=True)
+        X_df.iloc[idx_val][cat_col].reset_index(drop=True)
         .map(closure_map).fillna(global_rate).values
     )
     # Save closure map for inference
@@ -173,7 +189,16 @@ def make_splits(
         pickle.dump({"map": closure_map, "global_rate": global_rate}, f)
 
     numeric_features = numeric_features + ["category_closure_rate"]
-    all_features     = numeric_features + CATEGORICAL_FEATURES
+
+    # --- Apply feature exclusions ---
+    if exclude:
+        exclude_set = set(exclude)
+        dropped = [f for f in numeric_features if f in exclude_set]
+        numeric_features = [f for f in numeric_features if f not in exclude_set]
+        if dropped:
+            print(f"  Excluded features: {dropped}")
+
+    all_features = numeric_features + _cat_feats
 
     # --- Convert to float32 arrays in canonical order ---
     X_train = X_train_df[all_features].to_numpy(dtype=np.float32)
@@ -213,13 +238,55 @@ if __name__ == "__main__":
     parser.add_argument("data", type=Path, nargs="?",
                         default=Path("data/project_c_samples.json"))
     parser.add_argument(
-        "--augment", type=Path, nargs="+", default=None,
-        help="One or more JSONL files added to train only "
-             "(e.g. --augment data/yelp_features.jsonl data/parquet_augment.json)",
+        "--schema", choices=["overture", "sf"], default="overture",
+        help="Feature engineering schema: 'overture' (default) or 'sf' for the "
+             "SF registered business GeoJSON dataset",
     )
     parser.add_argument(
-        "--include-conf", action="store_true", default=False,
-        help="Include the 5 confidence features (excluded by default)",
+        "--config", type=Path, default=Path("config/train.yaml"),
+        help="YAML config file — reads features.include_conf and features.exclude "
+             "(default: config/train.yaml)",
+    )
+    parser.add_argument(
+        "--augment", type=Path, nargs="+", default=None,
+        help="One or more files added to train only",
+    )
+    parser.add_argument(
+        "--include-conf", action="store_true", default=None,
+        help="Include the 5 confidence features (overrides config; no-op for --schema sf)",
+    )
+    parser.add_argument(
+        "--exclude", nargs="+", default=None,
+        help="Feature names to drop (additive with config features.exclude)",
     )
     args = parser.parse_args()
-    make_splits(args.data, augment_paths=args.augment, include_conf=args.include_conf)
+
+    # Load config defaults
+    cfg_features: dict = {}
+    if args.config.exists():
+        with open(args.config) as f:
+            cfg_features = yaml.safe_load(f).get("features", {})
+
+    include_conf = cfg_features.get("include_conf", False)
+    if args.include_conf is not None:   # CLI flag overrides config
+        include_conf = args.include_conf
+
+    exclude: list[str] = list(cfg_features.get("exclude") or [])
+    if args.exclude:                    # CLI --exclude is additive
+        exclude += args.exclude
+
+    # Load alternate feature engineering module if requested
+    import importlib
+    fe_module = None
+    if args.schema == "sf":
+        fe_module = importlib.import_module("sf_feature_engineering")
+        print(f"Schema: sf  ({len(fe_module.NUMERIC_FEATURES)} numeric + "
+              f"{len(fe_module.CATEGORICAL_FEATURES)} categorical features)")
+
+    make_splits(
+        args.data,
+        augment_paths=args.augment,
+        include_conf=include_conf,
+        exclude=exclude or None,
+        fe=fe_module,
+    )

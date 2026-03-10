@@ -35,18 +35,36 @@ from sklearn.utils.class_weight import compute_sample_weight
 sys.path.insert(0, str(Path(__file__).parent))
 from encoder import load_splits
 
-N_CATS  = 295      # 294 label-encoded classes + 1 OOV
-
 
 # ---------------------------------------------------------------------------
 # Preprocessing
 # ---------------------------------------------------------------------------
 
-def fit_ohe(X_train: np.ndarray) -> OneHotEncoder:
+_MAX_OHE_CATS = 300   # cap OHE at this many categories; beyond this, OHE adds
+                      # mostly-zero columns that hurt GBM without adding signal.
+                      # category_closure_rate (numeric) already captures per-category
+                      # signal for the full vocabulary.
+
+
+def _load_n_cats(splits_dir: Path) -> int:
+    """Read actual category vocab size from the fitted LabelEncoder, capped at _MAX_OHE_CATS.
+
+    High-cardinality OHE hurts GBM — category_closure_rate (numeric) carries
+    the signal for rare categories so we don't need to OHE all of them.
+    """
+    enc_path = splits_dir / "category_encoder.pkl"
+    if enc_path.exists():
+        with open(enc_path, "rb") as f:
+            enc = pickle.load(f)
+        return min(len(enc.classes_) + 1, _MAX_OHE_CATS)  # +1 OOV, capped
+    return _MAX_OHE_CATS
+
+
+def fit_ohe(X_train: np.ndarray, n_cats: int) -> OneHotEncoder:
     """Fit OHE on the category column of X_train."""
     cat_col = X_train.shape[1] - 1  # last column is always primary_category
     ohe = OneHotEncoder(
-        categories=[list(range(N_CATS))],
+        categories=[list(range(n_cats))],
         sparse_output=False,
         handle_unknown="ignore",   # unseen category → all-zero row
     )
@@ -62,8 +80,8 @@ def apply_ohe(X: np.ndarray, ohe: OneHotEncoder) -> np.ndarray:
     return np.hstack([X_num, X_cat]).astype(np.float32)
 
 
-def build_feature_names(numeric_names: list[str]) -> list[str]:
-    cat_names = [f"cat_{i}" for i in range(N_CATS)]
+def build_feature_names(numeric_names: list[str], n_cats: int) -> list[str]:
+    cat_names = [f"cat_{i}" for i in range(n_cats)]
     return numeric_names + cat_names
 
 
@@ -98,22 +116,24 @@ def train_gbm(
     with open(splits_dir / "feature_names.json") as f:
         numeric_names: list[str] = json.load(f)
 
+    n_cats = _load_n_cats(splits_dir)
+    n_numeric = X_train.shape[1] - 1
     print(f"Train: {len(y_train):,}  (closed={(y_train==0).sum()}  open={(y_train==1).sum()})")
     print(f"Val:   {len(y_val):,}  (closed={(y_val==0).sum()}  open={(y_val==1).sum()})")
+    print(f"n_numeric: {n_numeric}  |  n_cats (OHE): {n_cats}")
 
     # --- OHE ---
-    print(f"\nOne-hot encoding primary_category ({N_CATS} values) ...")
-    ohe = fit_ohe(X_train)
+    print(f"\nOne-hot encoding primary_category ({n_cats} values) ...")
+    ohe = fit_ohe(X_train, n_cats)
     X_train_ohe = apply_ohe(X_train, ohe)
     X_val_ohe   = apply_ohe(X_val,   ohe)
-    n_numeric = X_train.shape[1] - 1
     print(f"  Feature shape after OHE: {X_train_ohe.shape[1]} "
-          f"({n_numeric} numeric + {N_CATS} category dummies)")
+          f"({n_numeric} numeric + {n_cats} category dummies)")
 
     with open(out_dir / "ohe.pkl", "wb") as f:
         pickle.dump(ohe, f)
 
-    feature_names = build_feature_names(numeric_names)
+    feature_names = build_feature_names(numeric_names, n_cats)
     sample_w = compute_sample_weight("balanced", y_train)
 
     def val_auc(model) -> float:

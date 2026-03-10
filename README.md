@@ -81,7 +81,75 @@ Places pulled from the Overture Maps S3 parquet via DuckDB (see `nyc_small.sql`)
 | `addresses` | string (JSON) | `[{freeform, locality, postcode, region, country}]` |
 | `base_*` | same as above | Corresponding fields for the base place in the pair |
 
-### 3. Yelp Academic Dataset (JSONL)
+### 3. SF Registered Business Locations (GeoJSON)
+
+Source: [SF Open Data — Registered Business Locations](https://data.sfgov.org/Economy-and-Community/Registered-Business-Locations-San-Francisco/g8m3-pdis)
+Snapshot: `data/sf_open_dataset_20260309.geojson` (downloaded 2026-03-09)
+
+Used to augment training labels via geo+name matching against Overture places (`src/util/sf_lookup.py`).
+
+**Label derivation:** A business is labelled `closed=1` if `dba_end_date` is set and ≤ reference date (2026-03-09). Otherwise `open=1`.
+
+**Schema** (33 columns):
+
+| API Field | Display Name | Type | Description |
+|---|---|---|---|
+| `certificate_number` | Business Account Number | Text | 7-digit account number |
+| `ttxid` | Location Id | Text | Location identifier |
+| `ownership_name` | Ownership Name | Text | Business owner(s) name |
+| `dba_name` | DBA Name | Text | Doing Business As / location name |
+| `full_business_address` | Street Address | Text | Business street address |
+| `city` / `state` / `business_zip` | City / State / Zip | Text | Location fields |
+| `dba_start_date` | Business Start Date | Timestamp | Start of business |
+| `dba_end_date` | Business End Date | Timestamp | End date — **key label field** (null = open) |
+| `location_start_date` | Location Start Date | Timestamp | Start at this location |
+| `location_end_date` | Location End Date | Timestamp | End at this location |
+| `administratively_closed` | Administratively Closed | Text | Marked closed by TTX after 3 years of non-filing |
+| `naic_code` / `naic_code_description` | NAICS Code | Text | Industry classification |
+| `lic` / `lic_code_description` | LIC Code | Text | License type |
+| `parking_tax` | Parking Tax | Bool | Pays parking tax |
+| `transient_occupancy_tax` | Transient Occupancy Tax | Bool | Pays hotel/TOT tax |
+| `location` | Business Location | Point | Lat/lon for mapping |
+| `business_corridor` | Business Corridor | Text | Named commercial corridor (if any) |
+| `neighborhoods_analysis_boundaries` | Neighborhood | Text | SF analysis neighborhood |
+| `supervisor_district` | Supervisor District | Text | Board of Supervisors district |
+| `community_benefit_district` | Community Benefit District | Text | CBD boundary |
+| `data_as_of` / `data_loaded_at` | Timestamps | Timestamp | Source/portal update times |
+
+**Record counts (snapshot 2026-03-09):**
+
+| Status | Count |
+|---|---|
+| Total records | 356,351 |
+| Open (no `dba_end_date`) | 164,271 |
+| Closed (`dba_end_date` ≤ 2026-03-09) | 192,068 |
+| Future end date (> ref) | 12 |
+
+**`dba_end_date` distribution for closed records (selected years):**
+
+| Year | Count | Notes |
+|---|---|---|
+| pre-2010 | ~800 | Sparse; legacy records |
+| 2011 | 1,350 | |
+| 2012 | 2,346 | |
+| 2013 | 4,677 | |
+| 2014 | 9,368 | |
+| 2015 | 12,526 | |
+| 2016 | 11,714 | |
+| 2017 | 12,551 | |
+| **2018** | **34,723** | **Anomalous spike — likely batch data correction** |
+| 2019 | 18,958 | |
+| 2020 | 14,591 | |
+| 2021 | 16,275 | |
+| 2022 | 16,034 | |
+| 2023 | 12,499 | |
+| 2024 | 12,154 | |
+| 2025 | 9,268 | |
+| 2026 | 1,043 | |
+
+> **Data quality note:** The 2018 spike (34,723 closures) is ~2x the surrounding years and is likely a mass administrative correction or batch import artifact, not a real closure wave. Closure labels from that year may have lower reliability. The staleness filter in `sf_lookup.py` (`--use-overture-label` / default: skip) helps handle cases where Overture's `update_time` post-dates the SF closure date.
+
+### 4. Yelp Academic Dataset (JSONL)
 
 JSONL format (one JSON object per line). US-only business listings. Used as external enrichment and an independent label source for open/closed status.
 
