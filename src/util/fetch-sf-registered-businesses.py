@@ -75,13 +75,12 @@ conn.sql(f"""
             TRY_CAST(data_as_of    AS TIMESTAMP) AS data_as_of,       -- when source system last updated this record
             TRY_CAST(data_loaded_at AS TIMESTAMP) AS data_loaded_at,  -- when record was loaded to open data portal
 
-            -- Geometry (lat/lng point)
-            geom
-            -- FIX: ST_Read() on GeoJSON exposes all feature properties as flat top-level
-            -- columns directly — do NOT use properties->>'column_name' extraction syntax
-            -- (causes "Referenced column 'properties' not found" Binder Error).
-            -- Similarly, geom is already a geometry object; do NOT wrap it in
-            -- ST_GeomFromGeoJSON() — that also fails with ST_Read() output.
+            -- Geometry: extract lat/lon as plain floats instead of storing a GEOMETRY
+            -- column. DuckDB storage v1.0.0 cannot persist GEOMETRY with CRS identifiers
+            -- (ST_Read assigns EPSG:4326 automatically), so we drop the geometry object
+            -- and keep only the coordinates. All downstream code uses lat/lon directly.
+            ST_Y(geom) AS lat,
+            ST_X(geom) AS lon
         FROM ST_Read('{GEOJSON_PATH}')
     );
 """)

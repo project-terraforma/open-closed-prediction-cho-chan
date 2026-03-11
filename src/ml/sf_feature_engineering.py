@@ -71,12 +71,11 @@ def load_dataset(
     _cache_path = db_path.with_suffix(".spatial_features.parquet")
 
     conn = duckdb.connect(str(db_path), read_only=True)
-    conn.sql("INSTALL spatial; LOAD spatial;")
 
     raw = conn.sql(f"""
         SELECT
-            ST_Y(geom)                  AS lat,
-            ST_X(geom)                  AS lon,
+            lat,
+            lon,
             ({_LABEL_SQL})              AS status,
             naic_code,
             lic,
@@ -94,7 +93,8 @@ def load_dataset(
             -- (data_as_of >= 6 months ago), so the model would learn the label rule,
             -- not a genuine signal.
         FROM sf_registered_businesses
-        WHERE geom IS NOT NULL
+        WHERE lat IS NOT NULL
+          AND lon IS NOT NULL
           AND ({_LABEL_SQL}) IS NOT NULL
     """).df()
     conn.close()

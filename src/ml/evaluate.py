@@ -120,7 +120,7 @@ def print_results(results: list[dict]) -> None:
 # ---------------------------------------------------------------------------
 
 def main(
-    splits_dir: str | Path = "splits",
+    splits_dir: str | Path = "splits/sf",
     models_dir: str | Path = "models",
     evals_dir: str | Path = "models/evals",
 ) -> None:

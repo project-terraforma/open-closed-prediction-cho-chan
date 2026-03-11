@@ -84,7 +84,7 @@ def _print_importances(name: str, feature_names: list[str], importances: np.ndar
 # ---------------------------------------------------------------------------
 
 def train_gbm(
-    splits_dir: str | Path = "splits",
+    splits_dir: str | Path = "splits/sf",
     out_dir: str | Path = "models",
 ) -> None:
     splits_dir = Path(splits_dir)

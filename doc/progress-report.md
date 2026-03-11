@@ -2,6 +2,104 @@
 
 ---
 
+## 2026-03-11 | Kevin Chan
+
+### SF Registered Businesses — Spatial Feature Pipeline & Evaluation
+
+Built and evaluated a full training pipeline using the SF Registered Business
+Locations dataset (SF Open Data Portal, 356k businesses) with spatial KNN
+neighborhood features. This is the first evaluation with spatial context signals.
+
+---
+
+#### Dataset
+
+| | |
+|---|---|
+| **Source** | SF Registered Business Locations (SF Open Data Portal) |
+| **Raw records** | 356,351 |
+| **Labeled (confidently open or closed)** | 308,250 |
+| **Open** | 122,251 (39.7%) |
+| **Closed** | 185,999 (60.3%) |
+| **Uncertain (excluded)** | 37,584 |
+| **Train split** | 100,000 (50k open + 50k closed, balanced) |
+| **Val split** | 61,650 (natural SF distribution: 40% open / 60% closed) |
+
+Label derivation: closed = `dba_end_date <= now` OR `administratively_closed = true`;
+open = no end date, active location, `data_as_of` within 6 months.
+
+---
+
+#### Feature Set (28 total)
+
+**SF-native (10):** `business_age_days`, `naic_code` (categorical), `lic`
+(categorical), `parking_tax`, `transient_occupancy_tax`, `business_zip`,
+`supervisor_district`, `neighborhood`, `in_business_corridor`,
+`in_community_benefit_district`
+
+**Spatial KNN (18):** 6 features × 3 radii (100m / 250m / 500m):
+`closure_rate`, `n_businesses`, `new_business_rate`, `median_business_age`,
+`naics_diversity`, `same_category_closure_rate`
+
+Note: `same_category_closure_rate` has ~60-68% missingness (no NAICS code for
+many SF businesses) — expected per feature spec.
+
+---
+
+#### Pipeline fixes required
+
+- **DuckDB CRS storage bug:** `ST_Read()` on GeoJSON auto-assigns EPSG:4326 CRS to geometry;
+  DuckDB storage v1.0.0 cannot persist GEOMETRY columns with CRS identifiers.
+  Fix: extract `lat`/`lon` as plain float columns (`ST_Y(geom)`, `ST_X(geom)`)
+  at ingest time instead of storing a GEOMETRY column. All downstream code
+  updated to use `lat`/`lon` directly.
+- **Missing dependencies:** `scikit-learn` and `torch` not in `requirements.txt`
+  — installed manually.
+- **Spatial feature audit:** dropped 4 low-signal features (`admin_closed_rate`,
+  `business_age_std`, `parking_tax_rate`, `tot_tax_rate`) reducing spatial
+  features 33 → 21 (then to 18 after self-contained review).
+
+---
+
+#### Results (val set, closed as positive class)
+
+```
+------------------------------------------------------------------
+Model               AUC-ROC  AUC-PR      F1    Prec  Recall    Thr
+------------------------------------------------------------------
+GBM                  0.8847  0.9050  0.8566  0.8256  0.8901   0.36
+MLP head             0.8887  0.9085  0.8592  0.8223  0.8996   0.38
+MLP + NCM            0.8732  0.8928  0.8501  0.8224  0.8797   0.38
+MLP + SLDA           0.8865  0.9069  0.8577  0.8203  0.8986   0.27
+MLP + QDA            0.8798  0.8873  0.8577  0.8135  0.9071   0.66
+------------------------------------------------------------------
+```
+
+Training: 100 max epochs, patience=20, early stopping at epoch 56 (best epoch 36).
+Val loss (0.415) ≈ train loss (0.424) — no overfitting.
+
+---
+
+#### Key findings
+
+**Spatial features provide massive signal lift.** AUC-ROC jumps from 0.734
+(Overture-only, 3k samples) → 0.8887 (SF + spatial, 308k samples). The
+neighborhood closure rate, business density, and age signals capture area-level
+commercial health that individual business attributes cannot.
+
+**All models exceed OKR targets.** KR 1.1 required AUC-ROC ≥ 0.78 and F1 ≥ 0.40.
+Every model here clears both thresholds comfortably (AUC 0.873–0.889, F1 0.850–0.859).
+
+**MLP + SLDA remains the best continual learning option.** Only 0.0022 AUC behind
+MLP head (0.8865 vs 0.8887) while supporting incremental updates. GBM is
+surprisingly competitive here (0.8847) — the SF feature set is highly
+tabular-friendly, reducing the advantage of learned embeddings vs. tree splits.
+
+**MLP + QDA achieves highest recall (0.9071)** at the cost of lowest precision
+(0.8135) — useful if catching closures is more important than avoiding false flags.
+
+---
+
 ## 2026-03-04 | Caleb Cho
 
 ### Cross-Dataset Generalization — Yelp Transfer Experiment

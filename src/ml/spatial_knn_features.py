@@ -155,8 +155,8 @@ class SpatialKNNFeatures:
         conn.sql("INSTALL spatial; LOAD spatial;")
         ref_df = conn.sql(f"""
             SELECT
-                ST_Y(geom)                AS lat,
-                ST_X(geom)                AS lon,
+                lat,
+                lon,
                 ({_LABEL_SQL})            AS status,
                 naic_code,
                 location_start_date,
@@ -164,7 +164,7 @@ class SpatialKNNFeatures:
                 -- administratively_closed, parking_tax, transient_occupancy_tax removed
                 -- (feature audit 2026-03-10 — those reference arrays no longer built)
             FROM sf_registered_businesses
-            WHERE geom IS NOT NULL
+            WHERE lat IS NOT NULL AND lon IS NOT NULL
         """).df()
         conn.close()
         return cls(ref_df)
