@@ -1,3 +1,9 @@
+"""
+Ingest the SF Registered Business Locations dataset into DuckDB.
+
+Source: https://data.sfgov.org/Economy-and-Community/Registered-Business-Locations-San-Francisco/g8m3-pdis/about_data
+Download the GeoJSON export and place it at GEOJSON_PATH before running.
+"""
 import duckdb, os
 
 GEOJSON_PATH = "data/Registered_Business_Locations_SF_.geojson"
@@ -16,61 +22,66 @@ conn.sql(f"""
     CREATE OR REPLACE TABLE sf_registered_businesses AS (
         SELECT
             -- Identifiers (use for dedup/joins, not model features)
-            properties->>'uniqueid'                     AS uniqueid,           -- formula: ttxid-certificate_number
-            properties->>'certificate_number'           AS certificate_number, -- 7-digit business account number
-            properties->>'ttxid'                        AS ttxid,              -- location identifier
+            uniqueid,           -- formula: ttxid-certificate_number
+            certificate_number, -- 7-digit business account number
+            ttxid,              -- location identifier
 
             -- Business identity
-            properties->>'ownership_name'               AS ownership_name,     -- business owner(s) name
-            properties->>'dba_name'                     AS dba_name,           -- doing business as / location name (fuzzy name match for overture)
+            ownership_name,     -- business owner(s) name
+            dba_name,           -- doing business as / location name (fuzzy name match for overture)
 
             -- Physical address
-            properties->>'full_business_address'        AS full_business_address,
-            properties->>'city'                         AS city,
-            properties->>'state'                        AS state,
-            properties->>'business_zip'                 AS business_zip,
+            full_business_address,
+            city,
+            state,
+            business_zip,
 
             -- Business lifecycle dates (key signals for open/closed)
-            TRY_CAST(properties->>'dba_start_date'      AS TIMESTAMP) AS dba_start_date,      -- when the business account opened
-            TRY_CAST(properties->>'dba_end_date'        AS TIMESTAMP) AS dba_end_date,        -- when the business account closed (null = still active)
-            TRY_CAST(properties->>'location_start_date' AS TIMESTAMP) AS location_start_date, -- when business started at this location
-            TRY_CAST(properties->>'location_end_date'   AS TIMESTAMP) AS location_end_date,   -- when business left this location (not necessarily closed)
+            TRY_CAST(dba_start_date      AS TIMESTAMP) AS dba_start_date,      -- when the business account opened
+            TRY_CAST(dba_end_date        AS TIMESTAMP) AS dba_end_date,        -- when the business account closed (null = still active)
+            TRY_CAST(location_start_date AS TIMESTAMP) AS location_start_date, -- when business started at this location
+            TRY_CAST(location_end_date   AS TIMESTAMP) AS location_end_date,   -- when business left this location (not necessarily closed)
 
             -- Closure flag (no filing/contact with TTX for 3+ years, or notified closed by another city dept)
-            properties->>'administratively_closed'      AS administratively_closed,
+            administratively_closed,
 
             -- Mailing address (may differ from business address)
-            properties->>'mailing_address_1'            AS mailing_address_1,
-            properties->>'mail_city'                    AS mail_city,
-            properties->>'mail_state'                   AS mail_state,
-            properties->>'mail_zipcode'                 AS mail_zipcode,
+            mailing_address_1,
+            mail_city,
+            mail_state,
+            mail_zipcode,
 
             -- Industry classification (NAICS) — maps to Overture category
-            properties->>'naic_code'                    AS naic_code,                      -- NAICS industry code
-            properties->>'naic_code_description'        AS naic_code_description,          -- "Multiple" if more than one
-            properties->>'naics_code_descriptions_list' AS naics_code_descriptions_list,   -- semicolon-separated list of all NAICS descriptions
+            naic_code,                      -- NAICS industry code
+            naic_code_description,          -- "Multiple" if more than one
+            naics_code_descriptions_list,   -- semicolon-separated list of all NAICS descriptions
 
             -- License type
-            properties->>'lic'                          AS lic,                            -- license code(s), space-separated if multiple
-            properties->>'lic_code_description'         AS lic_code_description,           -- "Multiple" if more than one
-            properties->>'lic_code_descriptions_list'   AS lic_code_descriptions_list,     -- semicolon-separated list of all license descriptions
+            lic,                            -- license code(s), space-separated if multiple
+            lic_code_description,           -- "Multiple" if more than one
+            lic_code_descriptions_list,     -- semicolon-separated list of all license descriptions
 
             -- Tax flags (business type indicators)
-            TRY_CAST(properties->>'parking_tax'         AS BOOLEAN) AS parking_tax,            -- pays SF parking tax
-            TRY_CAST(properties->>'transient_occupancy_tax' AS BOOLEAN) AS transient_occupancy_tax, -- pays hotel/short-term rental tax
+            TRY_CAST(parking_tax             AS BOOLEAN) AS parking_tax,            -- pays SF parking tax
+            TRY_CAST(transient_occupancy_tax AS BOOLEAN) AS transient_occupancy_tax, -- pays hotel/short-term rental tax
 
             -- SF geographic boundaries
-            properties->>'business_corridor'            AS business_corridor,                  -- SF business corridor (nullable)
-            properties->>'neighborhoods_analysis_boundaries' AS neighborhoods_analysis_boundaries, -- SF analysis neighborhood
-            properties->>'supervisor_district'          AS supervisor_district,                -- SF supervisor district
-            properties->>'community_benefit_district'   AS community_benefit_district,         -- SF community benefit district (nullable)
+            business_corridor,                  -- SF business corridor (nullable)
+            neighborhoods_analysis_boundaries,  -- SF analysis neighborhood
+            supervisor_district,                -- SF supervisor district
+            community_benefit_district,         -- SF community benefit district (nullable)
 
             -- Data freshness metadata
-            TRY_CAST(properties->>'data_as_of'          AS TIMESTAMP) AS data_as_of,       -- when source system last updated this record
-            TRY_CAST(properties->>'data_loaded_at'      AS TIMESTAMP) AS data_loaded_at,   -- when record was loaded to open data portal
+            TRY_CAST(data_as_of    AS TIMESTAMP) AS data_as_of,       -- when source system last updated this record
+            TRY_CAST(data_loaded_at AS TIMESTAMP) AS data_loaded_at,  -- when record was loaded to open data portal
 
             -- Geometry (lat/lng point)
-            ST_GeomFromGeoJSON(geometry::VARCHAR)       AS geom
+            geom
+            -- FIX: ST_Read() on GeoJSON exposes all feature properties as flat top-level
+            -- columns directly — do NOT use properties->>'column_name' extraction syntax
+            -- (causes "Referenced column 'properties' not found" Binder Error).
+            -- Similarly, geom is already a geometry object; do NOT wrap it in
+            -- ST_GeomFromGeoJSON() — that also fails with ST_Read() output.
         FROM ST_Read('{GEOJSON_PATH}')
     );
 """)

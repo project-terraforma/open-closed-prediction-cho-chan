@@ -11,9 +11,15 @@ hyperspheres ("balls"), allowing fast radius lookups without computing distances
 to every point. Here it lets us find all SF businesses within X meters of any
 query location in O(log n) time instead of O(n), which matters at 350k+ points.
 
-Produces 33 features total:
-  - 10 base features × 3 radii = 30 features
+Produces 21 features total:
+  - 6 base features × 3 radii = 18 features
   - 1 category-specific closure rate × 3 radii = 3 features (NaN if no naic_code)
+
+Dropped as low-signal noise (feature audit 2026-03-10):
+  admin_closed_rate  — largely a subset of closure_rate; redundant signal
+  business_age_std   — std of neighbor ages adds noise without predictive value
+  parking_tax_rate   — % of neighbors paying parking tax is weakly predictive
+  tot_tax_rate       — hotel/short-term-rental tax rate irrelevant for most businesses
 
 Usage:
     from spatial_knn_features import SpatialKNNFeatures
@@ -84,9 +90,10 @@ class SpatialKNNFeatures:
 
         Args:
             ref_df: DataFrame with columns:
-                lat, lon, status, administratively_closed, naic_code,
-                parking_tax, transient_occupancy_tax,
+                lat, lon, status, naic_code,
                 location_start_date, dba_start_date
+                (administratively_closed, parking_tax, transient_occupancy_tax
+                 were removed in feature audit 2026-03-10 — no longer accessed)
         """
         ref_df = ref_df.dropna(subset=["lat", "lon"]).reset_index(drop=True)
 
@@ -99,9 +106,8 @@ class SpatialKNNFeatures:
         # never touches the original DataFrame — every neighbor lookup is a fast
         # numpy integer-index into these arrays.
         self._is_closed = (ref_df["status"] == "closed").values.astype(float)
-        self._is_admin_closed = (
-            ref_df["administratively_closed"].astype(str).str.lower() == "true"
-        ).values.astype(float)
+        # NOTE: admin_closed_rate removed (feature audit 2026-03-10) — was largely
+        # a subset of closure_rate. self._is_admin_closed no longer computed.
 
         # PERF: business age is computed with fully vectorized numpy datetime arithmetic
         # instead of a row-by-row Python apply() loop. On 350k rows this is ~100x faster.
@@ -127,8 +133,8 @@ class SpatialKNNFeatures:
         # toward open (since uncertain records have NULL status, not 'closed').
         self._status_known = ref_df["status"].notna().values
 
-        self._parking_tax = ref_df["parking_tax"].fillna(False).values.astype(float)
-        self._tot_tax = ref_df["transient_occupancy_tax"].fillna(False).values.astype(float)
+        # NOTE: parking_tax_rate and tot_tax_rate removed (feature audit 2026-03-10) —
+        # low-signal features. self._parking_tax and self._tot_tax no longer computed.
 
         # Pre-compute max radius in radians — BallTree uses radians for haversine,
         # so we convert once here rather than on every transform() call.
@@ -152,12 +158,11 @@ class SpatialKNNFeatures:
                 ST_Y(geom)                AS lat,
                 ST_X(geom)                AS lon,
                 ({_LABEL_SQL})            AS status,
-                administratively_closed,
                 naic_code,
-                parking_tax,
-                transient_occupancy_tax,
                 location_start_date,
                 dba_start_date
+                -- administratively_closed, parking_tax, transient_occupancy_tax removed
+                -- (feature audit 2026-03-10 — those reference arrays no longer built)
             FROM sf_registered_businesses
             WHERE geom IS NOT NULL
         """).df()
@@ -260,15 +265,12 @@ class SpatialKNNFeatures:
             idxs = all_idxs[:n]
 
             # Subset reference arrays to neighbors
-            is_closed       = self._is_closed[idxs]
-            is_admin_closed = self._is_admin_closed[idxs]
-            status_known    = self._status_known[idxs]
-            ages            = self._business_age_days[idxs]
-            is_new          = self._is_new[idxs]
-            naic_codes      = self._naic_codes[idxs]
-            naic_known      = self._naic_known[idxs]
-            parking_tax     = self._parking_tax[idxs]
-            tot_tax         = self._tot_tax[idxs]
+            is_closed    = self._is_closed[idxs]
+            status_known = self._status_known[idxs]
+            ages         = self._business_age_days[idxs]
+            is_new       = self._is_new[idxs]
+            naic_codes   = self._naic_codes[idxs]
+            naic_known   = self._naic_known[idxs]
 
             # --- Closure signals ---
             # FIX: only average over neighbors whose status is confidently known.
@@ -278,7 +280,7 @@ class SpatialKNNFeatures:
             feat[f"closure_rate{suffix}"] = (
                 float(is_closed[status_known].mean()) if n_known > 0 else np.nan
             )
-            feat[f"admin_closed_rate{suffix}"] = is_admin_closed.mean()
+            # admin_closed_rate REMOVED (feature audit 2026-03-10): redundant subset of closure_rate.
 
             # --- Vitality signals ---
             feat[f"n_businesses{suffix}"]      = float(n)
@@ -288,9 +290,7 @@ class SpatialKNNFeatures:
             feat[f"median_business_age{suffix}"] = (
                 float(np.median(valid_ages)) if len(valid_ages) > 0 else np.nan
             )
-            feat[f"business_age_std{suffix}"] = (
-                float(np.std(valid_ages)) if len(valid_ages) > 1 else np.nan
-            )
+            # business_age_std REMOVED (feature audit 2026-03-10): adds noise without signal.
 
             # --- Diversity signal ---
             # PERF: uses pre-computed _naic_known boolean mask (set in __init__)
@@ -299,9 +299,8 @@ class SpatialKNNFeatures:
                 float(len(set(naic_codes[naic_known]))) if naic_known.any() else np.nan
             )
 
-            # --- Tax signals ---
-            feat[f"parking_tax_rate{suffix}"] = parking_tax.mean()
-            feat[f"tot_tax_rate{suffix}"]     = tot_tax.mean()
+            # parking_tax_rate and tot_tax_rate REMOVED (feature audit 2026-03-10):
+            # % of neighbors paying parking/hotel tax is weakly predictive of closure.
 
             # --- Category-specific closure rate (only if query has a NAICS code) ---
             if query_naic is not None:
@@ -320,17 +319,15 @@ class SpatialKNNFeatures:
 # ---------------------------------------------------------------------------
 
 def _nan_features_for_radius(r: int, include_category: bool = True) -> dict:
+    # 6 base features kept (feature audit 2026-03-10 removed admin_closed_rate,
+    # business_age_std, parking_tax_rate, tot_tax_rate as low-signal noise).
     suffix = f"_{r}m"
     d = {
-        f"closure_rate{suffix}":             np.nan,
-        f"admin_closed_rate{suffix}":        np.nan,
-        f"n_businesses{suffix}":             np.nan,
-        f"new_business_rate{suffix}":        np.nan,
-        f"median_business_age{suffix}":      np.nan,
-        f"business_age_std{suffix}":         np.nan,
-        f"naics_diversity{suffix}":          np.nan,
-        f"parking_tax_rate{suffix}":         np.nan,
-        f"tot_tax_rate{suffix}":             np.nan,
+        f"closure_rate{suffix}":               np.nan,
+        f"n_businesses{suffix}":               np.nan,
+        f"new_business_rate{suffix}":          np.nan,
+        f"median_business_age{suffix}":        np.nan,
+        f"naics_diversity{suffix}":            np.nan,
         f"same_category_closure_rate{suffix}": np.nan,
     }
     return d

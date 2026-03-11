@@ -12,19 +12,42 @@ Outputs to splits/:
 primary_category is label-encoded to int (for MLP embedding layer).
 Numerical features are left unscaled — BatchNorm inside the encoder handles this.
 
-Run:
-    python src/split.py data/project_c_samples.json
-    python src/split.py data/project_c_samples.json --augment data/yelp_features.jsonl
-    python src/split.py data/project_c_samples.json --augment data/parquet_augment.json data/yelp_features.jsonl
-    python src/split.py data/project_c_samples.json --include-conf
+Run (Overture, default):
+    python src/ml/split.py data/project_c_samples.json
+    python src/ml/split.py data/project_c_samples.json --augment data/yelp_features.jsonl
+    python src/ml/split.py data/project_c_samples.json --augment data/parquet_augment.json data/yelp_features.jsonl
+    python src/ml/split.py data/project_c_samples.json --include-conf
 
-With --augment:
+Run (SF registered businesses):
+    python src/ml/split.py --source sf --db data/sf_registered_businesses.ddb
+    python src/ml/split.py --source sf --db data/sf_registered_businesses.ddb --out-dir splits/sf
+    python src/ml/split.py --source sf --db data/sf_registered_businesses.ddb --sample 50000
+
+    Outputs to splits/sf/ (separate from Overture splits).
+    Encodes 5 SF categorical columns: naic_code, lic, business_zip,
+    supervisor_district, neighborhood. All encoders saved to splits/sf/.
+
+With --sample N (SF only):
+    Randomly samples N records per class for the TRAIN set, producing a 50/50
+    balanced train set (N open + N closed = 2N total). Val is always kept at
+    the natural SF distribution (~60% closed / ~40% open) so val AUC measures
+    real discrimination performance.
+
+    Why 50/50 for train: the SF dataset is ~60% closed / ~40% open, which already
+    differs from the Overture deployment distribution (~90% open). Balancing train
+    forces the MLP encoder to learn discriminative features for both classes rather
+    than relying on the majority-class shortcut. See make_sf_splits() for full notes.
+
+    The spatial feature cache (built from the full 318k dataset) is reused
+    regardless of --sample — sampling only slices the cached feature matrix.
+
+With --augment (Overture only):
     The original file is split 80/20 as usual; the val set is kept as-is
     (permanent hard-case benchmark).  All records from the augment file(s) go
     directly into the train set — none contaminate val.
     Multiple files can be passed: --augment file1.jsonl file2.jsonl ...
 
-With --include-conf:
+With --include-conf (Overture only):
     Include the 5 source/record confidence features (max_source_confidence,
     min_source_confidence, mean_source_confidence, confidence_spread, confidence).
     Default is to exclude them — see engineer note on static-confidence providers.
@@ -208,18 +231,221 @@ def make_splits(
     }
 
 
+# ---------------------------------------------------------------------------
+# SF registered businesses split
+# ---------------------------------------------------------------------------
+
+# Categorical columns in the SF feature set — each gets its own LabelEncoder,
+# fit on train only. Unseen values on val map to len(classes_) (OOV index).
+SF_CATEGORICAL_FEATURES = [
+    "naic_code",
+    "lic",
+    "business_zip",
+    "supervisor_district",
+    "neighborhood",
+]
+
+
+def make_sf_splits(
+    db_path: str | Path = "data/sf_registered_businesses.ddb",
+    out_dir: str | Path = "splits/sf",
+    n_per_class: int | None = None,
+) -> dict:
+    """Load SF registered businesses, encode categoricals, split 80/20, and save.
+
+    --- Class balance note ---
+    The SF dataset is ~60% closed / ~40% open. This already differs substantially
+    from the Overture deployment distribution (~90% open / ~10% closed). Training
+    on the raw SF distribution would bias the encoder toward predicting closed.
+
+    A 50/50 balanced sample (--sample N) is recommended for the TRAIN set because:
+      1. The MLP encoder learns better discriminative embeddings when both classes
+         are equally represented — it can't rely on the majority-class shortcut.
+      2. The class_weights in train.py already handle imbalance via weighted
+         cross-entropy; with 50/50 the weights become 1.0/1.0, simplifying training.
+      3. NCM/SLDA class means are more stable when computed from equal-size groups.
+
+    Keep the VAL set at the natural SF distribution (do NOT balance it) so that
+    val AUC reflects real-world discrimination performance.
+
+    When the model is eventually applied to Overture (~90% open), confidence
+    scores will need post-hoc calibration (e.g. Platt scaling / isotonic
+    regression) against Overture-labeled examples to correct the prior shift.
+
+    Output is compatible with train.py / encoder.py without any changes:
+      - naic_code is placed last (X[:, -1]) as the single primary category,
+        matching encoder.py's PlaceDataset convention.
+      - naic_code encoder is saved as category_encoder.pkl (train.py hardcodes
+        this filename).
+      - NaN in numeric/spatial columns is imputed with per-column train medians
+        (saved to numeric_medians.json) so BatchNorm1d does not receive NaN.
+      - The other 4 SF categoricals (lic, business_zip, supervisor_district,
+        neighborhood) remain as label-encoded ints in the numeric block.
+
+    Args:
+        db_path:    Path to the DuckDB file produced by fetch-sf-registered-businesses.py.
+        out_dir:    Directory to write split arrays and encoders (default: splits/sf/).
+        n_per_class: If set, randomly sample this many records per class for TRAIN
+            after the 80/20 split. Val is always kept at the natural SF distribution.
+            See class balance note above and module docstring for --sample details.
+
+    Returns:
+        Dict with keys: X_train, X_val, y_train, y_val, encoders.
+    """
+    from sf_feature_engineering import load_dataset as sf_load_dataset
+
+    out_dir = Path(out_dir)
+    out_dir.mkdir(parents=True, exist_ok=True)
+
+    print(f"Loading SF dataset from {db_path} ...")
+    X_df, y = sf_load_dataset(db_path)
+    print(f"Loaded {len(y):,} records  |  open={y.sum():,}  closed={(y==0).sum():,}")
+
+    idx = np.arange(len(y))
+    idx_train, idx_val = train_test_split(
+        idx, test_size=VAL_SIZE, stratify=y, random_state=RANDOM_SEED
+    )
+
+    X_train_df = X_df.iloc[idx_train].reset_index(drop=True)
+    X_val_df   = X_df.iloc[idx_val].reset_index(drop=True)
+    y_train    = y[idx_train]
+    y_val      = y[idx_val]
+
+    # --- Optional: balance TRAIN by sampling N records per class ---
+    # Applied after 80/20 split so the val set is unaffected and reflects the
+    # natural SF distribution (~60% closed / ~40% open). This gives an honest
+    # val AUC while the encoder trains on a balanced signal.
+    #
+    # The spatial feature cache (built over all 318k businesses) is reused
+    # regardless of --sample — sampling just slices the cached feature matrix.
+    if n_per_class is not None:
+        rng = np.random.default_rng(RANDOM_SEED)
+        open_idx_train   = np.where(y_train == 1)[0]
+        closed_idx_train = np.where(y_train == 0)[0]
+        n_open   = min(n_per_class, len(open_idx_train))
+        n_closed = min(n_per_class, len(closed_idx_train))
+        keep_idx = np.sort(np.concatenate([
+            rng.choice(open_idx_train,   size=n_open,   replace=False),
+            rng.choice(closed_idx_train, size=n_closed, replace=False),
+        ]))
+        X_train_df = X_train_df.iloc[keep_idx].reset_index(drop=True)
+        y_train    = y_train[keep_idx]
+        print(f"  Train balanced: {n_open:,} open + {n_closed:,} closed = {len(y_train):,} total")
+        print(f"  Val unchanged:  {(y_val==1).sum():,} open + {(y_val==0).sum():,} closed (natural SF distribution)")
+
+    # --- Encode each SF categorical: fit on train, apply to val ---
+    encoders = {}
+    for col in SF_CATEGORICAL_FEATURES:
+        enc = LabelEncoder()
+        # Fill NaN with a sentinel string so LabelEncoder sees a complete array
+        train_vals = X_train_df[col].fillna("__MISSING__").astype(str)
+        X_train_df[col] = enc.fit_transform(train_vals)
+
+        val_map = {c: i for i, c in enumerate(enc.classes_)}
+        X_val_df[col] = (
+            X_val_df[col].fillna("__MISSING__").astype(str)
+            .map(val_map)
+            .fillna(len(enc.classes_))  # OOV → one past the last known index
+            .astype(int)
+        )
+        encoders[col] = enc
+
+    # Save one encoder file per categorical column
+    for col, enc in encoders.items():
+        with open(out_dir / f"{col}_encoder.pkl", "wb") as f:
+            pickle.dump(enc, f)
+
+    # Save naic_code encoder as category_encoder.pkl — train.py loads this
+    # filename unconditionally (train.py:189). naic_code is also placed last
+    # in the feature matrix (X[:, -1]) to match PlaceDataset's single-category
+    # convention in encoder.py.
+    with open(out_dir / "category_encoder.pkl", "wb") as f:
+        pickle.dump(encoders["naic_code"], f)
+
+    # --- Reorder columns: naic_code last so X[:, -1] = category index ---
+    non_cat_cols = [c for c in X_df.columns if c != "naic_code"]
+    all_features = non_cat_cols + ["naic_code"]
+
+    # --- NaN imputation on numeric columns (train medians, fit on train only) ---
+    # Spatial KNN features return NaN when 0 neighbors exist at a radius.
+    # PyTorch BatchNorm1d propagates NaN → kills gradients. Impute before saving.
+    # train_medians saved to numeric_medians.json for inference-time use.
+    numeric_cols = non_cat_cols  # naic_code (last) is categorical, skip it
+    train_medians = X_train_df[numeric_cols].median()
+    X_train_df[numeric_cols] = X_train_df[numeric_cols].fillna(train_medians)
+    X_val_df[numeric_cols]   = X_val_df[numeric_cols].fillna(train_medians)
+    train_medians.to_json(out_dir / "numeric_medians.json")
+
+    # --- Convert to float32 arrays ---
+    X_train = X_train_df[all_features].to_numpy(dtype=np.float32)
+    X_val   = X_val_df[all_features].to_numpy(dtype=np.float32)
+
+    # --- Save ---
+    np.save(out_dir / "X_train.npy", X_train)
+    np.save(out_dir / "X_val.npy",   X_val)
+    np.save(out_dir / "y_train.npy", y_train)
+    np.save(out_dir / "y_val.npy",   y_val)
+
+    with open(out_dir / "feature_names.json", "w") as f:
+        json.dump(all_features, f, indent=2)
+
+    print(f"\nSplit complete  (seed={RANDOM_SEED})")
+    print(f"  Train: {len(y_train):>6,}  |  closed={(y_train==0).sum():,}  open={(y_train==1).sum():,}")
+    print(f"  Val:   {len(y_val):>6,}  |  closed={(y_val==0).sum():,}  open={(y_val==1).sum():,}")
+    print(f"  X shape: {X_train.shape[1]} features  (last col = naic_code category)")
+    print(f"  naic_code vocab: {len(encoders['naic_code'].classes_)} (+1 OOV)")
+    print(f"\nSaved to {out_dir}/")
+
+    return {
+        "X_train": X_train, "X_val": X_val,
+        "y_train": y_train, "y_val": y_val,
+        "encoders": encoders,
+    }
+
+
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
+    parser.add_argument(
+        "--source", choices=["overture", "sf"], default="overture",
+        help="Which dataset pipeline to use (default: overture)",
+    )
+
+    # Overture-only arguments
     parser.add_argument("data", type=Path, nargs="?",
                         default=Path("data/project_c_samples.json"))
     parser.add_argument(
         "--augment", type=Path, nargs="+", default=None,
-        help="One or more JSONL files added to train only "
+        help="(Overture only) One or more JSONL files added to train only "
              "(e.g. --augment data/yelp_features.jsonl data/parquet_augment.json)",
     )
     parser.add_argument(
         "--include-conf", action="store_true", default=False,
-        help="Include the 5 confidence features (excluded by default)",
+        help="(Overture only) Include the 5 confidence features (excluded by default)",
     )
+
+    # SF-only arguments
+    parser.add_argument(
+        "--db", type=Path, default=Path("data/sf_registered_businesses.ddb"),
+        help="(SF only) Path to the SF registered businesses DuckDB file",
+    )
+    parser.add_argument(
+        "--out-dir", type=Path, default=None,
+        help="Output directory for splits (default: splits/ for overture, splits/sf/ for sf)",
+    )
+    parser.add_argument(
+        "--sample", type=int, default=None, metavar="N", dest="n_per_class",
+        help="(SF only) Sample N records per class for TRAIN (e.g. --sample 50000 → "
+             "50k open + 50k closed = 100k balanced train set). "
+             "Val is always kept at the natural SF distribution. "
+             "Default: use all train data at natural distribution.",
+    )
+
     args = parser.parse_args()
-    make_splits(args.data, augment_paths=args.augment, include_conf=args.include_conf)
+
+    if args.source == "sf":
+        out_dir = args.out_dir or Path("splits/sf")
+        make_sf_splits(db_path=args.db, out_dir=out_dir, n_per_class=args.n_per_class)
+    else:
+        out_dir = args.out_dir or Path("splits")
+        make_splits(args.data, augment_paths=args.augment,
+                    include_conf=args.include_conf, out_dir=out_dir)
