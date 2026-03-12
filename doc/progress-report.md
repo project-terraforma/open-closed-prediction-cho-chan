@@ -2,6 +2,101 @@
 New log goes to the top with date and name
 ---
 
+## 2026-03-11 | Caleb Cho
+
+### SF Dataset — Feature Importance Analysis & Overture Implications
+
+#### SF GBM feature importances (trained directly on SF registry)
+
+```
+Feature                  GBM importance   MLP perm. importance
+--------------------------------------------------------------
+category_closure_rate       0.396            +0.019
+location_age_days           0.394            +0.171   ← #1 for MLP
+business_age_days           0.103            +0.041
+has_lic                     0.063            +0.039
+transient_occupancy_tax     0.023            +0.012
+has_naic_code               0.004            +0.124   ← #2 for MLP
+naic_code_description       0.002            +0.008
+```
+
+GBM and MLP agree on the top signals but weight them differently:
+- GBM splits heavily on `category_closure_rate` and `location_age_days` (≈equal, ~0.40 each)
+- MLP relies most on `location_age_days` (+0.171) and `has_naic_code` (+0.124) — two features
+  that GBM underweights, likely because GBM captures them indirectly through correlated splits
+
+#### SF model performance (val set: 71,271 samples, 54% closed / 46% open)
+
+```
+Model        AUC-ROC  AUC-PR    F1    Notes
+--------------------------------------------
+GBM           0.8867  0.8870  0.836
+XGBoost       0.8846  0.8842  0.835
+MLP head      0.8812  0.8797  0.832
+MLP + SLDA    0.8811  0.8794  0.833
+```
+
+All targets met (AUC-ROC ≥ 0.80, AUC-PR ≥ 0.50, F1 ≥ 0.40).
+
+#### Why SF achieves 0.88 vs Overture's 0.72
+
+| Factor | SF registry | Overture |
+|---|---|---|
+| Label quality | Ground-truth administrative record | Inferred from `operating_status` (noisy) |
+| Class balance | 54% closed / 46% open | 9% closed / 91% open |
+| Age signal | Direct: `dba_start_date`, `location_start_date` | Indirect: `msft_update_age_days` (source recency, not business age) |
+| Missing-data signal | `has_naic_code` — cleared on closure (73% closed rate when missing) | `completeness_score` — weaker proxy |
+| Regulatory signal | `has_lic` (license type) | None |
+
+**The gap is data quality, not model capacity.** The 0.88 SF result proves the
+MLP architecture has headroom; it's the noisy Overture labels and weaker features
+that cap Overture performance at 0.72.
+
+#### Cross-dataset signal implications
+
+`category_closure_rate` is the **universal signal** — #1 in both SF GBM (0.396)
+and Overture GBM (0.400). It transfers reliably across datasets.
+
+The strongest SF-only signal (`location_age_days`) has no direct Overture equivalent.
+Overture doesn't expose a place creation date; `msft_update_age_days` is a proxy for
+source recency rather than business age. This is the biggest feature gap between the
+two pipelines.
+
+#### SF label noise investigation (`sf_lookup.py` fixes)
+
+Two bugs discovered and fixed in the SF augmentation pipeline:
+
+1. **`_parse_dt` didn't handle SF date format** — `dba_end_date` is stored as
+   `'2017-03-10T00:00:00.000'` (sub-second precision). Python < 3.11 `fromisoformat`
+   rejects the `.000` suffix. Fixed by stripping fractional seconds before parsing.
+
+2. **Staleness filter was silent for parquet records** — `rec.get("update_time")`
+   returned None for parquet aug records because Overture's `update_time` is nested
+   inside `sources[].update_time`, not a top-level field. Fixed by falling back to
+   the primary source (`property == ""`) when the top-level field is absent.
+
+3. **Staleness filter over-aggressive for parquet** — After fixing the parsing,
+   tested the staleness filter (skip aug records where Overture is fresher than
+   SF closure). Found that 88% of parquet records have primary source `update_time`
+   in 2025 — so any SF closure before 2025 triggers staleness. This removed 4,383 / 13,729
+   aug records (32%) and degraded GBM 0.7453→0.6852. Parquet source `update_time`
+   reflects when *any* field was updated, not when existence was verified — it is not
+   a reliable signal for "business is still open." Filter kept in code (default off);
+   not recommended for parquet aug runs.
+
+#### Current best Overture config (restored)
+
+```
+nsim=0.75, lsim=0.85, asim=0.0 (disabled), staleness=off
+Aug: data/sf_aug.json (13,729 records, all written)
+
+GBM       0.7453
+MLP head  0.7205
+MLP+SLDA  0.7350
+```
+
+---
+
 ## 2026-03-09 | Caleb Cho
 
 ### SF Registered Business Dataset — Option B (SF-Native Features)
