@@ -136,6 +136,9 @@ def extract_features(record: dict[str, Any]) -> dict[str, Any]:
         "has_neighborhood":        has_neighborhood,
         # categorical
         "naic_code_description":   naic_desc,
+        # passthrough geo (not model features — used for spatial join)
+        "_lat": float(record["_lat"]) if record.get("_lat") is not None else float("nan"),
+        "_lon": float(record["_lon"]) if record.get("_lon") is not None else float("nan"),
     }
 
 

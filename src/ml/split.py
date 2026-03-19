@@ -84,6 +84,16 @@ NUMERIC_FEATURES_BASE = [
 ]
 CATEGORICAL_FEATURES = ["primary_category"]
 
+SPATIAL_FEATURES = [
+    f"{feat}_{r}m"
+    for r in [100, 250, 500]
+    for feat in [
+        "closure_rate", "n_businesses", "new_business_rate",
+        "median_business_age", "naics_diversity", "same_category_closure_rate",
+    ]
+]
+# 6 features × 3 radii = 18 features
+
 
 def make_splits(
     data_path: str | Path,
@@ -92,6 +102,8 @@ def make_splits(
     include_conf: bool = False,
     exclude: list[str] | None = None,
     fe=None,
+    enable_spatial: bool = False,
+    spatial_ref: str | Path = "data/sf_registered_businesses.ddb",
 ) -> dict:
     """Load dataset, encode, split, and save.
 
@@ -148,6 +160,28 @@ def make_splits(
             y_train    = np.concatenate([y_train, y_aug])
             print(f"  +{len(y_aug):,} records  "
                   f"({(y_aug==0).sum():,} closed, {(y_aug==1).sum():,} open)")
+
+    # --- Spatial neighborhood features (optional) ---
+    if enable_spatial:
+        import sys as _sys
+        _sys.path.insert(0, str(Path(__file__).parent))
+        from spatial_knn_features import SpatialKNNFeatures
+        print(f"Building spatial featurizer from {spatial_ref} ...")
+        featurizer = SpatialKNNFeatures.from_file(spatial_ref)
+
+        geo_train = X_train_df[["_lat", "_lon"]].rename(columns={"_lat": "lat", "_lon": "lon"})
+        geo_val   = X_val_df[["_lat", "_lon"]].rename(columns={"_lat": "lat", "_lon": "lon"})
+
+        spatial_train = featurizer.transform(geo_train, exclude_self=False)
+        spatial_val   = featurizer.transform(geo_val,   exclude_self=False)
+
+        X_train_df = pd.concat([X_train_df.reset_index(drop=True),
+                                 spatial_train.reset_index(drop=True)], axis=1)
+        X_val_df   = pd.concat([X_val_df.reset_index(drop=True),
+                                 spatial_val.reset_index(drop=True)], axis=1)
+
+        numeric_features = numeric_features + SPATIAL_FEATURES
+        print(f"  Spatial features added: {len(SPATIAL_FEATURES)}")
 
     # --- Encode categorical column (fit on combined train only) ---
     enc = LabelEncoder()
@@ -217,9 +251,10 @@ def make_splits(
         json.dump(all_features, f, indent=2)
 
     # --- Report ---
-    conf_note = "  (+conf)" if include_conf else "  (no-conf)"
+    conf_note = f"  (include_conf={str(include_conf).lower()})"
+    spatial_note = f"  (enable_spatial={str(enable_spatial).lower()})" if enable_spatial else ""
     aug_note = "  (val = original benchmark only)" if augment_paths else ""
-    print(f"\nSplit complete  (seed={RANDOM_SEED}){conf_note}{aug_note}")
+    print(f"\nSplit complete  (seed={RANDOM_SEED}){conf_note}{spatial_note}{aug_note}")
     print(f"  Train: {len(y_train):>6,}  |  closed={(y_train==0).sum():,}  open={(y_train==1).sum():,}")
     print(f"  Val:   {len(y_val):>6,}  |  closed={(y_val==0).sum():,}  open={(y_val==1).sum():,}")
     print(f"  X shape: {X_train.shape[1]} features  ({len(numeric_features)} numeric + {len(CATEGORICAL_FEATURES)} categorical)")
@@ -252,12 +287,25 @@ if __name__ == "__main__":
         help="One or more files added to train only",
     )
     parser.add_argument(
-        "--include-conf", action="store_true", default=None,
+        "--include-conf", type=lambda x: x.lower() in ("true", "1", "yes"),
+        default=None, metavar="true|false",
         help="Include the 5 confidence features (overrides config; no-op for --schema sf)",
     )
     parser.add_argument(
         "--exclude", nargs="+", default=None,
         help="Feature names to drop (additive with config features.exclude)",
+    )
+    parser.add_argument(
+        "--enable-spatial",
+        type=lambda x: x.lower() in ("true", "1", "yes"),
+        default=False, metavar="true|false",
+        help="Compute 18 spatial neighborhood features from SF reference BallTree",
+    )
+    parser.add_argument(
+        "--spatial-ref", type=Path,
+        default=Path("data/sf_registered_businesses.ddb"),
+        help="Reference pool for SpatialKNNFeatures — GeoJSON (.geojson/.json) "
+             "or DuckDB (.ddb). Default: data/sf_registered_businesses.ddb",
     )
     args = parser.parse_args()
 
@@ -289,4 +337,6 @@ if __name__ == "__main__":
         include_conf=include_conf,
         exclude=exclude or None,
         fe=fe_module,
+        enable_spatial=args.enable_spatial,
+        spatial_ref=args.spatial_ref,
     )

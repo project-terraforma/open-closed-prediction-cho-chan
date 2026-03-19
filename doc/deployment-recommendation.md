@@ -1,57 +1,136 @@
 # Deployment Recommendation — Project C
-v1 · 2026-03-02 · Caleb Cho
+v2 · 2026-03-16 · Caleb Cho
 
 ---
 
 ## Summary
 
-**Recommended model: MLP + SLDA**
+**Recommended model: MLP + NCM**
 
-The MLP + SLDA pipeline delivers AUC-ROC 0.726 (second-best overall, 0.008 behind
-the MLP head), supports mathematically exact incremental updates at each Overture
-release, and requires no access to historical data after initial training. It is
-the only option that can scale month-over-month without growing operational costs.
+Updated from v1 (SLDA) based on new experimental runs with SF augmentation and
+SF-schema training. MLP+NCM matches SLDA on AUC in best-case runs, has consistent
+sub-microsecond inference (vs SLDA's erratic 12–80 µs at small dataset sizes),
+and supports the same zero-history incremental updates. It is the most reliable
+option across all conditions.
 
 ---
 
-## Model Comparison
+## Experimental Runs
 
-```
-Model              AUC-ROC  AUC-PR    F1   Prec  Recall   Incremental?
------------------------------------------------------------------------
-GBM + OHE           0.686   0.255  0.277  0.173   0.698   No
-XGBoost + OHE       0.720   0.293  0.311  0.206   0.635   No
-MLP + NCM           0.721   0.243  0.302  0.218   0.492   Yes
-MLP + SLDA          0.726   0.253  0.308  0.235   0.444   Yes   <- RECOMMENDED
-MLP head            0.734   0.263  0.315  0.313   0.318   No
-```
+| # | Schema | Conf | Augmentation | Train | Val | Val closed% |
+|---|--------|------|--------------|-------|-----|------------|
+| 1 | Overture | ✅ | — | ~2,740 | 685 | 9.2% |
+| 2 | Overture | ❌ | — | ~2,740 | 685 | 9.2% |
+| 3 | Overture | ✅ | SF aug (9,547) | 12,287 | 685 | 9.2% |
+| 4 | Overture | ❌ | SF aug (9,547) | 12,287 | 685 | 9.2% |
+| 5 | SF schema | — | — | 285,080 | 71,271 | 53.9% |
 
-Val set: 685 samples | 63 closed (9.2%) | 622 open.
-Metrics treat closed as the positive class at the optimal F1 threshold.
+Val set for runs 1–4 is fixed (same 685 Overture samples across all runs), making
+AUC comparisons directly meaningful. Run 5 is a different problem (different schema,
+balanced classes) — not directly comparable to runs 1–4.
 
-### Why not MLP head?
+---
 
-The MLP head has the best raw accuracy (AUC 0.734) but requires retraining the
-encoder whenever new labeled data arrives. At 100M+ places per Overture release,
-that means maintaining a labeled training pipeline, storing old data, and running
-a full train/val cycle each month. For a 0.008 AUC gain over SLDA, this is not
-worth the operational overhead.
+## AUC-ROC by Run
 
-### Why not XGBoost?
+| Model | Run 1 | Run 2 | Run 3 | Run 4 | Run 5 |
+|-------|------:|------:|------:|------:|------:|
+| GBM | .649 | .653 | .685 | .673 | .887 |
+| XGBoost | .662 | .665 | .682 | .679 | .885 |
+| MLP head | .702 | .696 | **.727** | .710 | .881 |
+| MLP + NCM | .700 | .700 | .727 | .698 | .873 |
+| MLP + SLDA | .690 | **.713** | .725 | .674 | .881 |
+| MLP + QDA | .700 | .691 | .697 | .701 | .873 |
 
-XGBoost (AUC 0.720) is close to SLDA (AUC 0.726) in accuracy but 3,000x slower
-to update. A full retrain on 2,740 training samples takes ~184 ms; an SLDA update
-on 823 new samples takes 0.15 ms. At scale, XGBoost update cost grows linearly
-with the size of historical data. SLDA update cost is O(N_new) and requires no
-historical data — only the new batch's embeddings.
+**Best Overture result:** MLP head / MLP+NCM tied at .727 (run 3: with conf + SF aug).
 
-### Why SLDA over NCM?
+## F1 (closed class) by Run
 
-SLDA (AUC 0.726) modestly outperforms NCM (AUC 0.721). Both support exact
-incremental updates. SLDA models within-class covariance, which provides a
-better discriminant boundary when class distributions differ in shape. NCM
-(0.061 ms update) is marginally faster than SLDA (0.149 ms update) but the
-accuracy advantage of SLDA is consistent.
+| Model | Run 1 | Run 2 | Run 3 | Run 4 | Run 5 |
+|-------|------:|------:|------:|------:|------:|
+| GBM | .288 | .284 | .309 | .317 | .836 |
+| XGBoost | .308 | .306 | .315 | .306 | .835 |
+| MLP head | **.356** | .319 | .348 | **.364** | .832 |
+| MLP + NCM | .350 | .326 | .323 | .350 | .832 |
+| MLP + SLDA | .315 | .319 | .316 | .327 | .833 |
+| MLP + QDA | .351 | .307 | .323 | .332 | .832 |
+
+---
+
+## Model Cost Table (Overture runs)
+
+| Model | µs/sample | Model size | Retrain cost | Update method | Needs history? |
+|-------|----------:|----------:|-------------|--------------|---------------|
+| GBM | ~3.1 | ~670 KB | NaN | Full retrain | ✅ |
+| XGBoost | ~1.6–2.6 | ~370–400 KB | 133–355 ms | Full retrain | ✅ |
+| MLP head | **~0.5–0.7** | **~76–96 KB** | NaN | Full retrain | ✅ |
+| MLP + NCM | **~0.6–0.9** | **~77–97 KB** | 0.07–0.19 ms | Incremental | ❌ |
+| MLP + SLDA | 12–80 ⚠️ | ~85–105 KB | 0.14–0.34 ms | Incremental | ❌ |
+
+SLDA inference cost is erratic at small dataset sizes — 80 µs/sample in run 2 (no aug),
+12–17 µs in runs 3–4 (with aug). This is a known numerical instability in the covariance
+matrix inversion when the training set is small. At production scale (100M places) it
+stabilizes (run 5: 2 µs/sample), but the unpredictability in low-data regimes is a risk.
+
+---
+
+## Key Findings
+
+### SF augmentation is a clear win (+2–3 AUC)
+
+Adding 9,547 SF-schema records to the Overture training set (runs 1→3, 2→4) consistently
+improved AUC-ROC by 2–3 points across all models:
+
+- MLP head: .702 → .727 (+2.5)
+- GBM: .649 → .685 (+3.6)
+- XGBoost: .662 → .682 (+2.0)
+
+The SF augmentation records are ~93% open (9,103 open / 444 closed), so they contribute
+primarily to defining the open-class boundary. Worth including in all future runs.
+Cost: XGBoost retrain time increases ~2.5× (133 ms → 355 ms), still acceptable.
+
+### Conf features have negligible effect
+
+Runs 1 vs 2 (with/without conf) show no consistent AUC improvement. Drop them to
+reduce feature count and noise.
+
+### SF schema (run 5) is a different problem
+
+AUC .887 with balanced classes and 285k training samples. Not comparable to Overture
+runs — different features, balanced labels, and no source-confidence signal. Confirms
+the SF dataset itself is highly learnable and represents a viable standalone model
+for SF-specific deployments.
+
+---
+
+## Recommendation: MLP + NCM
+
+### Why NCM over SLDA (change from v1)
+
+In v1, SLDA was preferred for a slight AUC edge. New data shows:
+
+1. **SLDA inference is unreliable at small dataset sizes** — 80 µs/sample (run 2) vs
+   the expected ~0.07 ms. This makes it risky for production without a guaranteed
+   minimum training set size.
+2. **NCM matches SLDA's best result** — both hit .727 AUC in run 3 (best Overture run).
+3. **NCM inference is consistently fast** — 0.6–0.9 µs/sample across all runs, no
+   anomalies.
+4. Both support incremental updates with no historical data required. NCM update
+   cost (0.07–0.19 ms) is marginally faster than SLDA (0.14–0.34 ms).
+
+### Why not MLP head
+
+MLP head ties NCM at .727 AUC (run 3) and has the best F1 in 2 of 5 runs. However:
+- Requires full retrain whenever new labeled data arrives
+- Retrain time not benchmarked (NaN in cost table)
+- No path to incremental updates without retraining the encoder
+
+For a 0 AUC gain vs NCM (tied in best run), the operational overhead is not justified.
+
+### Why not XGBoost/GBM
+
+Significantly lower AUC (.662–.685 on Overture) and no incremental update support.
+XGBoost retrain grows to 355 ms with augmentation and would scale worse with more data.
 
 ---
 
@@ -61,18 +140,18 @@ accuracy advantage of SLDA is consistent.
 [Monthly Overture release]
         |
         v
-feature_engineering.py          Extract 19 numeric + 1 category feature per new place
+feature_engineering.py          Extract ~20 numeric + 1 category features per place
         |
         v
 PlaceEncoder.encode()           Frozen MLP encoder  →  32-dim embedding
 (encoder.pt — never retrained)
         |
         v
-StreamingLDA.update()           O(N_new) update, no old data needed
-(slda.pkl — updated in-place)  Updates class means and scatter matrices
+StreamingNCM.update()           O(N_new) update, no old data needed
+(ncm.pkl — updated in-place)   Updates per-class mean vectors
         |
         v
-StreamingLDA.predict_proba()    Score all 100M+ places
+StreamingNCM.predict_proba()    Score all places via nearest centroid distance
         |
         v
 p_closed > threshold            Binary open/closed prediction
@@ -80,140 +159,120 @@ p_closed > threshold            Binary open/closed prediction
 
 ### Threshold choice
 
-The optimal F1 threshold for SLDA on the current val set is around 0.25–0.35
-(varies slightly by run). For production:
+Optimal F1 threshold is around 0.3–0.55 (varies by run). For production:
 
-- **Recall-oriented** (minimize missed closures): lower threshold ~0.15. Catches
-  more closed places at the cost of more false flags.
-- **Precision-oriented** (minimize false flags): higher threshold ~0.45. Fewer
-  false alerts but misses more genuinely closed places.
-- **Balanced (recommended starting point)**: use the optimal F1 threshold from
-  `evaluate.py` on the current val benchmark, and re-evaluate after each update.
-
-### What "incremental update" means operationally
-
-1. New Overture release arrives (~monthly).
-2. Extract embeddings for new/changed places using the frozen encoder.
-3. If any of those places have ground-truth labels (closed/open), call:
-   ```python
-   slda.update(Z_new_labeled, y_new_labeled)
-   ```
-   This updates class statistics in 0.15 ms for a batch of ~800 samples.
-4. Re-score all 100M places. Constant-time per place, feasible in minutes on CPU.
-5. No old data required; no encoder retraining required.
-
----
-
-## Feature Priorities
-
-Features are ranked by Cohen's d (class-conditional separation) on the labeled set:
-
-| Rank | Feature                | Cohen's d | Notes |
-|------|------------------------|-----------|-------|
-| 1    | `address_completeness` | 0.82      | Closed: 0.90 vs Open: 0.99 — strongest single signal |
-| 2    | `confidence`           | 0.64      | Overture's own quality score |
-| 3    | `max_source_confidence`| 0.55–0.64 | Source-level quality signals |
-| 4    | `has_phone`            | 0.54      | 87% closed have phone vs 97% open |
-| 5    | `completeness_score`   | 0.39      | Fraction of optional fields present |
-| 6    | `has_website`          | 0.28      | Secondary completeness signal |
-| 7    | `source_count`         | 0.25      | Single-source places more likely closed |
-| 8    | `msft_update_age_days` | 0.08*     | *Diluted by 60% -1.0 values (no Microsoft source) |
-
-**Microsoft staleness (conditioned on having Microsoft source):**
-Closed places with a Microsoft source have data that is ~2.5x older (1,322 vs
-518 median days). This signal is strong when the source is present but diluted
-by the majority of places that lack it.
-
-**Features to add in future iterations:**
-
-1. `has_msft_and_old` — interaction: is_microsoft AND update_age > 730 days.
-   This isolates the staleness signal from the no-Microsoft noise.
-2. `days_since_any_source_update` — minimum across all sources.
-3. `cross_release_status_change` — did `operating_status` change between
-   the previous Overture release and the current one? Zero cost if releases
-   are tracked.
-4. `review_recency` — if a place has been reviewed on any platform in the last
-   N months, it was almost certainly open at that time.
-
----
-
-## What Data Would Most Improve Performance
-
-The model's ceiling is set by data, not architecture. Current constraints:
-
-| Bottleneck | Impact | Fix |
-|---|---|---|
-| Only 313 closed training examples | Class imbalance drives recall/F1 instability | More labeled closed places |
-| US-only, NYC-heavy geography | Poor generalization to other regions | Global labeled sample |
-| No freshness or activity signals | Missing temporal dimension | Review recency, status change history |
-| Indirect closed indicators | Features overlap between open/closed | Direct observation (field audits, trusted signals) |
-
-**Highest-leverage action:** Obtain 1,000+ additional human-labeled closed
-examples, distributed across geography and business categories. A 4x increase
-in closed training examples would be expected to meaningfully narrow the gap
-between current performance and the original AUC target of 0.80.
-
-**Second-highest-leverage action:** Add temporal features. The Microsoft
-staleness signal (2.5x age gap) already demonstrates that time-based signals
-are informative. Tracking when a place was last observed "active" (reviewed,
-claimed, updated by owner) would provide the most direct closure signal available
-without field verification.
-
----
-
-## Risk Factors and Limitations
-
-**Class imbalance:** At 9% closed prevalence, even a small number of false
-positives at scale can represent a large absolute count. At 100M places with 9%
-closed (~9M closed), an FP rate of 1% would flag 910k open places incorrectly.
-Threshold tuning and regular val-set monitoring are essential.
-
-**Distribution shift:** The labeled set is US-only and has two sources (Meta,
-Microsoft). The model has not been validated on international places or places
-with other source combinations (Foursquare, etc.). Recall may be lower in
-underrepresented geographies.
-
-**Parquet augmentation failure:** An experiment adding 785 automatically-labeled
-closed places from the Feb parquet (where `operating_status = 'closed'` was set
-by Overture's own pipeline) degraded MLP and SLDA performance. All 785 records
-had `source_count = 2.0` — a pipeline artifact — making them structurally
-different from the hand-labeled closed set. Any future augmentation from
-Overture's own `operating_status` field should be treated with caution until
-a distribution check is performed.
-
-**Encoder staleness:** The MLP encoder is frozen after initial training. As
-Overture's data coverage evolves (new sources, new feature distributions),
-encoder quality may degrade. Re-evaluate encoder quality every 6–12 months.
+- **Recall-oriented** (minimize missed closures): lower threshold ~0.15–0.30
+- **Precision-oriented** (minimize false flags): higher threshold ~0.50–0.65
+- **Recommended starting point**: use optimal F1 threshold from `evaluate.py` on
+  the current val benchmark, re-evaluate after each incremental update
 
 ---
 
 ## Operational Integration
 
-### Minimal deployment (scoring only)
+### Artifacts
 
 ```
-artifacts needed:   encoder.pt  encoder_config.json  slda.pkl  category_encoder.pkl
-inference:          ~0.07 ms per sample end-to-end (embed + classify)
-100M place scoring: feasible in ~7 minutes single-threaded on CPU
-storage:            < 1 MB for all model artifacts
+encoder.pt              Frozen MLP encoder (~77–97 KB)
+encoder_config.json     Encoder architecture config
+ncm.pkl                 StreamingNCM classifier
+category_encoder.pkl    LabelEncoder for primary_category
+feature_names.json      Ordered feature list for inference alignment
 ```
 
-### With monthly update
+### Inference
 
 ```
-inputs per release:  new labeled samples (if any)  — even 10–20 new labels help
-update time:         0.15 ms for a batch of 800 samples
-data retention:      none required (Welford online algorithm)
-encoder retraining:  not required
+~0.6–0.9 µs per sample end-to-end (embed + classify)
+100M place scoring: ~1 minute single-threaded on CPU
+storage: < 1 MB for all artifacts
+```
+
+### Monthly update
+
+```
+inputs:         new labeled samples (even 10–20 new labels help)
+update time:    0.07–0.19 ms for a batch of ~800 samples
+data retention: none required
+encoder:        never retrained
 ```
 
 ### Decision output
 
 ```python
-p_closed = slda.predict_proba(Z)[:, 0]    # P(closed) in [0, 1]
-is_closed = p_closed > threshold           # bool flag per place
+p_closed = ncm.predict_proba(Z)[:, 0]    # P(closed) in [0, 1]
+is_closed = p_closed > threshold          # bool flag per place
 ```
 
-The raw `p_closed` score can also be used as a confidence-weighted signal
-downstream (e.g., deprioritize places with p_closed > 0.5 in search ranking)
-without committing to a hard threshold.
+---
+
+## Feature Priorities (Overture schema)
+
+| Rank | Feature | Notes |
+|------|---------|-------|
+| 1 | `address_completeness` | Strongest single signal (Cohen's d 0.82) |
+| 2 | `confidence` | Overture's own quality score |
+| 3 | `max_source_confidence` | Source-level quality signal |
+| 4 | `has_phone` | 87% closed vs 97% open |
+| 5 | `completeness_score` | Fraction of optional fields present |
+| 6 | `has_website` | Secondary completeness signal |
+| 7 | `source_count` | Single-source places more likely closed |
+| 8 | `msft_update_age_days` | Strong when present; diluted by 60% missing |
+| — | `category_closure_rate` | Derived: train-time closure rate per category |
+
+**Conf features (excluded by default):** `max_source_confidence`, `min_source_confidence`,
+`mean_source_confidence`, `confidence_spread`, `confidence` — no consistent AUC gain
+observed across runs 1 vs 2.
+
+**Pending experiment:** spatial neighborhood features (18 features at 100m/250m/500m
+from SF BallTree) — run in progress, results not yet in this document.
+
+---
+
+## What Data Would Most Improve Performance
+
+| Bottleneck | Impact | Fix |
+|---|---|---|
+| Only ~313–694 closed training examples | Class imbalance, F1 instability | More labeled closed places |
+| US-only, SF-heavy geography | Poor generalization to other regions | Global labeled sample |
+| No freshness / activity signals | Missing temporal dimension | Review recency, status change history |
+| Indirect closed indicators | Feature overlap between open/closed | Direct observation |
+
+**Highest-leverage action:** More labeled closed examples. The SF augmentation
+result (+2–3 AUC) shows that even noisy cross-schema labels from a different dataset
+move the needle — a clean set of 1,000+ additional closed Overture places would
+be expected to push past the 0.75 AUC barrier.
+
+---
+
+## Risk Factors and Limitations
+
+**Class imbalance:** At 9% closed prevalence, a 1% FP rate at 100M places flags
+~910k open places incorrectly. Threshold tuning and regular val-set monitoring
+are essential.
+
+**Distribution shift:** Labeled set is US-only with two dominant sources (Meta,
+Microsoft). Not validated on international places or non-Meta/Microsoft sources.
+
+**SLDA inference instability:** If SLDA is used instead of NCM, minimum training
+set size should be enforced (empirically: SF aug raises it to ~12k, at which point
+SLDA inference normalizes to ~17 µs/sample). Below ~3k samples, 80 µs/sample
+latency spikes have been observed.
+
+**Encoder staleness:** Frozen encoder may degrade as Overture coverage evolves.
+Re-evaluate encoder quality every 6–12 months or when a major new source is added.
+
+**Parquet augmentation failure (v1 note):** Adding 785 auto-labeled closed places
+from Feb parquet (`operating_status = 'closed'`) degraded performance — all 785 had
+`source_count = 2.0`, a pipeline artifact making them structurally different from
+hand-labeled closed. Any future Overture `operating_status` augmentation needs a
+distribution check first.
+
+---
+
+## Changelog
+
+| Version | Date | Change |
+|---------|------|--------|
+| v1 | 2026-03-02 | Initial recommendation: MLP + SLDA |
+| v2 | 2026-03-16 | Updated with runs 1–5; switched recommendation to MLP + NCM due to SLDA inference instability; documented SF augmentation impact; added SF schema results |

@@ -35,10 +35,11 @@ from sklearn.model_selection import StratifiedShuffleSplit
 from sklearn.utils.class_weight import compute_sample_weight
 from torch.utils.data import DataLoader
 
-sys.path.insert(0, str(Path(__file__).parent))
-from encoder import PlaceDataset, PlaceEncoder, load_splits, N_NUMERIC
+sys.path.insert(0, str(Path(__file__).parent.parent / "ml"))
+from encoder import PlaceDataset, PlaceEncoder, load_splits
 from evaluate import best_f1_threshold, evaluate_scores
 from ncm import NearestClassMean
+from qda import StreamingQDA
 from slda import StreamingLDA
 
 
@@ -341,7 +342,7 @@ def main(
     with open(models_dir / "encoder_config.json") as f:
         cfg = json.load(f)
     device = torch.device("cpu")
-    encoder = PlaceEncoder(cat_vocab_size=cfg["cat_vocab_size"]).to(device)
+    encoder = PlaceEncoder(cat_vocab_size=cfg["cat_vocab_size"], n_numeric=cfg["n_numeric"], cfg=cfg.get("model")).to(device)
     encoder.load_state_dict(torch.load(models_dir / "encoder.pt", map_location=device,
                                        weights_only=True))
     encoder.eval()
@@ -506,6 +507,35 @@ def main(
             "incremental":    True,
         })
 
+    # -----------------------------------------------------------------------
+    # MLP + QDA
+    # -----------------------------------------------------------------------
+    qda_path = models_dir / "qda.pkl"
+    if qda_path.exists():
+        print("Timing MLP + QDA ...")
+        with open(qda_path, "rb") as f:
+            qda: StreamingQDA = pickle.load(f)
+        p_closed_qda = qda.predict_proba(Z_val)[:, 0]
+        infer_ms  = time_embed_then_classify(encoder, qda, X_val, y_val)
+        upd_ms, _ = time_cl_update(encoder, X_train, y_train, StreamingQDA)
+        model_kb  = artifact_size_kb([models_dir / "encoder.pt",
+                                       models_dir / "encoder_config.json",
+                                       qda_path])
+
+        entries.append({
+            "name":           "MLP + QDA",
+            "auc_roc":        auc_from_scores(p_closed_qda, y_val),
+            "f1":             f1_from_scores(p_closed_qda, y_val),
+            "infer_ms":       infer_ms,
+            "us_per_sample":  infer_ms * 1000 / n_val,
+            "scale_min":      (infer_ms / 1000 / n_val * SCALE_TARGET) / 60,
+            "model_kb":       model_kb,
+            "update_method":  "incremental",
+            "update_ms":      upd_ms,
+            "needs_old_data": False,
+            "incremental":    True,
+        })
+
     # --- Print table ---
     if entries:
         print_table(entries)
@@ -522,7 +552,7 @@ def main(
             print()
 
     # --- Save ---
-    out_path = models_dir / "cost_table.json"
+    out_path = models_dir / f"cost_table_{int(time.time())}.json"
     with open(out_path, "w") as f:
         json.dump(entries, f, indent=2, default=lambda v: None if np.isnan(v) else v)
     print(f"Results saved to {out_path}")

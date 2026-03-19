@@ -11,7 +11,7 @@ training:
   gamma: 0.0           # focal loss exponent (0 = standard weighted CE, 2 = focal)
 
 features:
-  include_conf: true   # include 5 confidence features (confidence, max/min/mean_source_confidence, confidence_spread)
+  include_conf: false   # include 5 confidence features (confidence, max/min/mean_source_confidence, confidence_spread)
   exclude:             # ablation: drop features redundant or near-identical in this dataset
     - has_only_meta              # subsumed by has_single_source (broader) + has_meta
     - n_sources_with_update_time # near-identical to has_microsoft in labeled dataset
